@@ -1,0 +1,332 @@
+/* ==========================================================
+   Main Window
+========================================================== */
+
+QMainWindow,
+QWidget {
+    background: #F5F7FB;
+    color: #111827;
+    font-family: "Segoe UI";
+    font-size: 14px;
+}
+
+
+/* ==========================================================
+   Sidebar
+========================================================== */
+
+QWidget#Sidebar {
+    background: #111827;
+}
+
+QLabel#SidebarLogo {
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 20px;
+}
+
+QPushButton#MenuButton {
+
+    background: transparent;
+
+    border: none;
+
+    color: #D1D5DB;
+
+    text-align: left;
+
+    padding: 14px 18px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+}
+
+QPushButton#MenuButton:hover {
+
+    background: #1F2937;
+
+    color: white;
+}
+
+QPushButton#MenuButton:checked {
+
+    background: #2563EB;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   Topbar
+========================================================== */
+
+QWidget#TopBar {
+
+    background: white;
+
+    border-bottom: 1px solid #E5E7EB;
+}
+
+QLabel#TopTitle {
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    color: #111827;
+}
+
+QLabel#TopDate {
+
+    color: #6B7280;
+
+    font-size: 13px;
+}
+
+QLineEdit#SearchBox {
+
+    background: #F3F4F6;
+
+    border: 1px solid #D1D5DB;
+
+    border-radius: 10px;
+
+    padding-left: 16px;
+
+    color: #111827;
+
+    font-size: 14px;
+}
+
+QLineEdit#SearchBox:focus {
+
+    border: 2px solid #2563EB;
+}
+
+QPushButton#ProfileButton {
+
+    background: #2563EB;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 10px 18px;
+
+    font-weight: bold;
+}
+
+QPushButton#ProfileButton:hover {
+
+    background: #1D4ED8;
+}
+
+
+/* ==========================================================
+   Welcome
+========================================================== */
+
+QLabel#WelcomeTitle {
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    color: #111827;
+}
+
+QLabel#WelcomeSubtitle {
+
+    color: #6B7280;
+
+    font-size: 14px;
+}
+
+
+/* ==========================================================
+   Stat Cards
+========================================================== */
+
+QFrame#StatCard {
+
+    background: white;
+
+    border-radius: 16px;
+
+    border: 1px solid #ECECEC;
+}
+
+QLabel#CardTitle {
+
+    color: #6B7280;
+
+    font-size: 13px;
+}
+
+QLabel#CardValue {
+
+    font-size: 26px;
+
+    font-weight: bold;
+
+    color: #111827;
+}
+
+QLabel#CardSubtitle {
+
+    color: #9CA3AF;
+
+    font-size: 12px;
+}
+
+QLabel#CardTrend {
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   Tables
+========================================================== */
+
+QFrame#RecentOrders,
+QFrame#DeliveryTable {
+
+    background: white;
+
+    border-radius: 16px;
+}
+
+QTableWidget {
+
+    background: white;
+
+    border: none;
+
+    alternate-background-color: #F9FAFB;
+
+    selection-background-color: #DBEAFE;
+
+    font-size: 13px;
+
+    gridline-color: #F3F4F6;
+}
+
+QHeaderView::section {
+
+    background: #F3F4F6;
+
+    border: none;
+
+    padding: 10px;
+
+    color: #374151;
+
+    font-weight: bold;
+}
+
+QTableCornerButton::section {
+
+    background: #F3F4F6;
+
+    border: none;
+}
+
+
+/* ==========================================================
+   Charts
+========================================================== */
+
+QFrame#ChartCard {
+
+    background: white;
+
+    border-radius: 16px;
+
+    border: 1px solid #ECECEC;
+}
+
+QLabel#ChartTitle {
+
+    color: #111827;
+
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   Quick Actions
+========================================================== */
+
+QFrame#QuickAction {
+
+    background: white;
+
+    border-radius: 16px;
+}
+
+QPushButton#ActionButton {
+
+    border: none;
+
+    border-radius: 12px;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    padding: 18px;
+}
+
+QPushButton#ActionButton:hover {
+
+    border: 2px solid white;
+}
+
+
+/* ==========================================================
+   ScrollBar
+========================================================== */
+
+QScrollBar:vertical {
+
+    background: transparent;
+
+    width: 10px;
+}
+
+QScrollBar::handle:vertical {
+
+    background: #CBD5E1;
+
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical:hover {
+
+    background: #94A3B8;
+}
+
+QScrollBar::add-line,
+QScrollBar::sub-line {
+
+    height: 0;
+}
+
+QScrollBar::add-page,
+QScrollBar::sub-page {
+
+    background: transparent;
+}

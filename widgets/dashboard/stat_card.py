@@ -1,0 +1,215 @@
+from PySide6.QtWidgets import (
+    QFrame,
+    QLabel,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGraphicsDropShadowEffect
+)
+
+from PySide6.QtGui import QColor, QFont
+from PySide6.QtCore import Qt
+
+import qtawesome as qta
+
+
+class StatCard(QFrame):
+
+    def __init__(
+        self,
+        title,
+        value,
+        icon,
+        color,
+        trend=""
+    ):
+        super().__init__()
+
+        self.color = color
+
+        self.setMinimumHeight(170)
+        self.setMinimumWidth(230)
+
+        self.build_ui(
+            title,
+            value,
+            icon,
+            trend
+        )
+
+    # --------------------------------------------------
+
+    def build_ui(
+        self,
+        title,
+        value,
+        icon,
+        trend
+    ):
+
+        self.setStyleSheet(f"""
+
+        QFrame{{
+
+            background:#1B2333;
+
+            border:2px solid transparent;
+
+            border-radius:18px;
+
+        }}
+
+        """)
+
+        shadow = QGraphicsDropShadowEffect()
+
+        shadow.setBlurRadius(30)
+
+        shadow.setOffset(0,8)
+
+        shadow.setColor(
+            QColor(0,0,0,160)
+        )
+
+        self.setGraphicsEffect(shadow)
+
+        root = QVBoxLayout(self)
+
+        root.setContentsMargins(
+            22,
+            20,
+            22,
+            20
+        )
+
+        root.setSpacing(4)
+
+        # -----------------------------------
+        # Header
+        # -----------------------------------
+
+        top = QHBoxLayout()
+
+        icon_label = QLabel()
+
+        icon_label.setPixmap(
+
+            qta.icon(
+                icon,
+                color=self.color
+            ).pixmap(32,32)
+
+        )
+
+        top.addWidget(icon_label)
+
+        top.addStretch()
+
+        badge = QLabel("●")
+
+        badge.setStyleSheet(f"""
+            color:{self.color};
+            font-size:16px;
+        """)
+
+        top.addWidget(badge)
+
+        root.addLayout(top)
+
+        # -----------------------------------
+        # Title
+        # -----------------------------------
+
+        title_lbl = QLabel(title)
+
+        title_lbl.setStyleSheet("""
+
+            color:#9CA3AF;
+
+            font-size:14px;
+
+            font-weight:600;
+
+        """)
+
+        root.addWidget(title_lbl)
+
+        # -----------------------------------
+        # Value
+        # -----------------------------------
+
+        value_lbl = QLabel(value)
+
+        value_lbl.setFont(
+            QFont(
+                "Segoe UI",
+                26,
+                QFont.Bold
+            )
+        )
+
+        value_lbl.setStyleSheet("""
+
+            color:white;
+
+        """)
+
+        root.addWidget(value_lbl)
+
+        root.addStretch()
+
+        # -----------------------------------
+        # Trend
+        # -----------------------------------
+
+        trend_layout = QHBoxLayout()
+
+        arrow = QLabel()
+
+        arrow.setPixmap(
+
+            qta.icon(
+                "fa5s.arrow-up",
+                color="#22C55E"
+            ).pixmap(14,14)
+
+        )
+
+        trend_layout.addWidget(arrow)
+
+        trend_lbl = QLabel(trend)
+
+        trend_lbl.setStyleSheet("""
+
+            color:#22C55E;
+
+            font-size:13px;
+
+            font-weight:600;
+
+        """)
+
+        trend_layout.addWidget(trend_lbl)
+
+        trend_layout.addStretch()
+
+        root.addLayout(trend_layout)
+
+    # --------------------------------------------------
+
+    def enterEvent(self,event):
+
+        self.move(
+            self.x(),
+            self.y()-2
+        )
+
+        super().enterEvent(event)
+
+    def leaveEvent(self,event):
+
+        self.move(
+            self.x(),
+            self.y()+2
+        )
+
+        super().leaveEvent(event)

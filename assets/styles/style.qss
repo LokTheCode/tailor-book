@@ -1,0 +1,72 @@
+/* General App Base */
+QWidget {
+    background-color: #121417;
+    color: #E2E8F0;
+    font-family: 'Segoe UI', MacSystemFont, sans-serif;
+    font-size: 14px;
+}
+
+/* Page Titles */
+QLabel#PageTitle {
+    font-size: 20px;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+/* Card Containers (Used across Settings, Dashboard, Measurements) */
+QFrame#InfoCard, QFrame#StatCard {
+    background-color: #1E222B;
+    border: 1px solid #2A303C;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+/* Input Controls */
+QLineEdit, QTextEdit {
+    background-color: #161920;
+    border: 1px solid #2A303C;
+    border-radius: 6px;
+    padding: 8px;
+    color: #FFFFFF;
+}
+
+QLineEdit:focus, QTextEdit:focus {
+    border: 1px solid #C4A77D;
+}
+
+/* Standard Buttons */
+QPushButton#PrimaryButton {
+    background-color: #C4A77D;
+    color: #121417;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 8px 16px;
+    border: none;
+}
+
+QPushButton#PrimaryButton:hover {
+    background-color: #D4B78D;
+}
+
+/* Sidebar Styling */
+QFrame#SettingMenu, QFrame#Sidebar {
+    background-color: #181B22;
+    border-right: 1px solid #2A303C;
+}
+
+QListWidget {
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+QListWidget::item {
+    padding: 10px;
+    border-radius: 6px;
+    color: #A0AEC0;
+}
+
+QListWidget::item:selected {
+    background-color: #2A303C;
+    color: #C4A77D;
+}
