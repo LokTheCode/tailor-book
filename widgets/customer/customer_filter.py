@@ -11,6 +11,8 @@ from PySide6.QtCore import Qt, Signal
 
 import qtawesome as qta
 
+from data.customer_crud import CUSTOMER_TYPES
+
 
 class CustomerFilter(QWidget):
 
@@ -81,6 +83,10 @@ class CustomerFilter(QWidget):
             QLineEdit.LeadingPosition
         )
 
+        # Press Enter in either box to search
+        self.searchName.returnPressed.connect(self.filterClicked.emit)
+        self.mobile.returnPressed.connect(self.filterClicked.emit)
+
         layout.addWidget(
             self.mobile,
             2
@@ -106,12 +112,7 @@ class CustomerFilter(QWidget):
 
         self.customerType = QComboBox()
 
-        self.customerType.addItems([
-            "All Customers",
-            "Regular",
-            "VIP",
-            "Wholesale"
-        ])
+        self.customerType.addItems(["All Customers"] + CUSTOMER_TYPES)
 
         layout.addWidget(self.customerType)
 
@@ -119,17 +120,6 @@ class CustomerFilter(QWidget):
         # City
         # --------------------------------------------
 
-        self.city = QComboBox()
-
-        self.city.addItems([
-            "All Cities",
-            "Delhi",
-            "Mumbai",
-            "Jaipur",
-            "Lucknow"
-        ])
-
-        layout.addWidget(self.city)
 
         # --------------------------------------------
         # Reset

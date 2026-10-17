@@ -105,8 +105,9 @@ class CustomerDataService:
             params.append(f"%{name_query.strip()}%")
 
         if mobile_query.strip():
-            where_clauses.append("c.mobile LIKE ?")
-            params.append(f"%{mobile_query.strip()}%")
+            # Match the main or the alternate number
+            where_clauses.append("(c.mobile LIKE ? OR c.alternate_mobile LIKE ?)")
+            params.extend([f"%{mobile_query.strip()}%"] * 2)
 
         if status_filter == "Active":
             where_clauses.append("c.is_active = 1")
@@ -136,7 +137,10 @@ class CustomerDataService:
                 c.mobile,
                 c.is_active,
                 COUNT(DISTINCT o.id) as total_orders,
-                COALESCE(SUM(o.remaining_amount), 0.0) as total_pending,
+                COALESCE(SUM(
+                    CASE WHEN LOWER(o.status) = 'cancelled' THEN 0
+                         ELSE o.remaining_amount END
+                ), 0.0) as total_pending,
                 MAX(o.order_date) as last_order_date,
                 (SELECT COUNT(*) FROM customer_measurements cm WHERE cm.customer_id = c.id) as measurement_count
             FROM customers c

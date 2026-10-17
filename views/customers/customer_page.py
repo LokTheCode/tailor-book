@@ -19,6 +19,8 @@ from widgets.customer.customer_pagination import CustomerPagination
 from views.customers.customer_form import CustomerForm
 
 from data.customer_data import CustomerDataService
+import data.customer_crud as db
+from data.customer_crud import CustomerHasOrders
 
 
 class CustomerPage(QWidget):
@@ -382,14 +384,7 @@ class CustomerPage(QWidget):
             self.form_page
         )
 
-        # Optional back signal
-        if hasattr(
-            self.form,
-            "backRequested"
-        ):
-            self.form.backRequested.connect(
-                self.show_customer_list
-            )
+        self.connect_form()
 
     # ==========================================================
     # EDIT CUSTOMER
@@ -422,20 +417,25 @@ class CustomerPage(QWidget):
             self.form_page
         )
 
-        # Optional back signal
-        if hasattr(
-            self.form,
-            "backRequested"
-        ):
-            self.form.backRequested.connect(
-                self.show_customer_list
-            )
+        self.connect_form()
+
+    # ==========================================================
+    # FORM SIGNALS
+    # ==========================================================
+
+    def connect_form(self):
+        """Back, Cancel, Save, Update and Delete all return to the list."""
+
+        self.form.backRequested.connect(self.show_customer_list)
+        self.form.customerSaved.connect(self.show_customer_list)
+        self.form.customerUpdated.connect(self.show_customer_list)
+        self.form.customerDeleted.connect(self.show_customer_list)
 
     # ==========================================================
     # SHOW CUSTOMER LIST
     # ==========================================================
 
-    def show_customer_list(self):
+    def show_customer_list(self, *_):
 
         self.stack.setCurrentWidget(
             self.customer_list_page
@@ -452,32 +452,43 @@ class CustomerPage(QWidget):
         customer_id: int
     ):
 
+        customer = db.get_customer_by_id(customer_id)
+        if customer is None:
+            self.refresh_all_data()
+            return
+
+        name = customer["name"]
+
         reply = QMessageBox.question(
             self,
             "Delete Customer",
-            "Are you sure you want to delete this customer?",
-            QMessageBox.Yes |
+            f"Delete {name} and all their measurements?\n\nThis can't be undone.",
+            QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )
 
-        if reply == QMessageBox.Yes:
+        if reply != QMessageBox.Yes:
+            return
 
-            conn = (
-                CustomerDataService
-                .get_connection()
+        try:
+            db.delete_customer(customer_id)
+
+        except CustomerHasOrders as error:
+
+            # Customers with orders are deactivated instead, so their
+            # order history keeps pointing at a real customer
+            reply = QMessageBox.question(
+                self,
+                "Customer has orders",
+                f"{error}\n\nDeactivate {name} now?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes
             )
 
-            cursor = conn.cursor()
+            if reply == QMessageBox.Yes:
+                db.set_customer_active(customer_id, False)
 
-            cursor.execute(
-                "DELETE FROM customers WHERE id = ?",
-                (customer_id,)
-            )
-
-            conn.commit()
-            conn.close()
-
-            self.refresh_all_data()
+        self.refresh_all_data()
 
     # ==========================================================
     # EXPORT CUSTOMERS
@@ -510,12 +521,16 @@ class CustomerPage(QWidget):
                 id,
                 name,
                 mobile,
+                alternate_mobile,
                 email,
                 gender,
                 customer_type,
-                is_active,
+                reference,
+                address,
+                CASE WHEN is_active = 1 THEN 'Active' ELSE 'Inactive' END,
                 created_at
             FROM customers
+            ORDER BY id
             """
         )
 
@@ -523,30 +538,43 @@ class CustomerPage(QWidget):
 
         conn.close()
 
-        with open(
-            file_path,
-            mode="w",
-            newline="",
-            encoding="utf-8"
-        ) as f:
+        try:
+            # utf-8-sig so Excel shows ₹ and Hindi names correctly
+            with open(
+                file_path,
+                mode="w",
+                newline="",
+                encoding="utf-8-sig"
+            ) as f:
 
-            writer = csv.writer(f)
+                writer = csv.writer(f)
 
-            writer.writerow([
-                "ID",
-                "Name",
-                "Mobile",
-                "Email",
-                "Gender",
-                "Customer Type",
-                "Is Active",
-                "Created At"
-            ])
+                writer.writerow([
+                    "ID",
+                    "Name",
+                    "Mobile",
+                    "Alternate Mobile",
+                    "Email",
+                    "Gender",
+                    "Customer Type",
+                    "Reference",
+                    "Address",
+                    "Status",
+                    "Created At"
+                ])
 
-            writer.writerows(rows)
+                writer.writerows(rows)
+
+        except OSError as error:
+            QMessageBox.warning(
+                self,
+                "Export Failed",
+                f"Couldn't write the file. If it's open in Excel, close it and try again.\n\n{error}"
+            )
+            return
 
         QMessageBox.information(
             self,
             "Export Success",
-            "Customers exported successfully!"
+            f"Exported {len(rows)} customers to:\n{file_path}"
         )
