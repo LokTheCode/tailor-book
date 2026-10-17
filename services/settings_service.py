@@ -82,6 +82,8 @@ DEFAULTS = {
 
     # ---------------- Backup ----------------
     "backup_folder": ("", "Folder for backups (empty = Documents\\TailorBackups)"),
+    "backup_daily": ("1", "Make one automatic backup every day"),
+    "last_auto_backup_date": ("", "Date of the last daily backup (YYYY-MM-DD)"),
     "backup_on_exit": ("1", "Make a backup when the app closes"),
     "backup_keep": ("10", "How many automatic backups to keep"),
     "last_backup_at": ("", "When the last backup was made"),

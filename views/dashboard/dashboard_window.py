@@ -1,6 +1,6 @@
 # views/dashboard/dashboard_window.py
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -139,6 +139,31 @@ class DashboardWindow(QMainWindow):
 
         self.allowed = allowed
         self.setup_shortcuts()
+        self.setup_daily_backup()
+
+    # ----------------------------------------------------
+    # DAILY BACKUP (Settings > Backup)
+    # ----------------------------------------------------
+
+    def setup_daily_backup(self):
+        # First check shortly after opening, then every 30 minutes
+        QTimer.singleShot(60 * 1000, self.run_daily_backup)
+        self.backup_timer = QTimer(self)
+        self.backup_timer.timeout.connect(self.run_daily_backup)
+        self.backup_timer.start(30 * 60 * 1000)
+
+    def run_daily_backup(self):
+        """Back up in the background so the app never freezes."""
+        import threading
+        from services import backup_service
+
+        def work():
+            try:
+                backup_service.daily_backup_if_due()
+            except Exception as error:
+                print(f"Daily backup failed: {error}")
+
+        threading.Thread(target=work, daemon=True).start()
 
     # ----------------------------------------------------
     # KEYBOARD SHORTCUTS (listed in utils/shortcuts.py)

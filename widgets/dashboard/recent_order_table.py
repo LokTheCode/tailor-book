@@ -2,13 +2,14 @@ from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QTableWidget, QTableW
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont
 
+from utils.table import setup_table
+
 class RecentOrderTable(QFrame):
     def __init__(self):
         super().__init__()
         self.build_ui()
 
     def build_ui(self):
-        self.setMinimumHeight(360)
         root = QVBoxLayout(self)
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(15)
@@ -22,13 +23,8 @@ class RecentOrderTable(QFrame):
         self.table = QTableWidget()
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["Order", "Customer", "Dress", "Delivery", "Status", "Amount"])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table.verticalHeader().hide()
-        self.table.setAlternatingRowColors(True)
-        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.table.setShowGrid(False)
-        self.table.setMinimumHeight(270)
+        # Shared look (utils/table.py); the dashboard shows 6 rows
+        setup_table(self.table, visible_rows=6)
         root.addWidget(self.table)
 
     def update_data(self, orders_data):
