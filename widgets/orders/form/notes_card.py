@@ -25,75 +25,8 @@ class NotesCard(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("NotesCard")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#NotesCard{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel{
-
-            color:#D1D5DB;
-
-            font-size:13px;
-
-        }
-
-        QTextEdit{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:10px;
-
-            padding:12px;
-
-            font-size:13px;
-
-        }
-
-        QPushButton{
-
-            background:#2563EB;
-
-            color:white;
-
-            border:none;
-
-            border-radius:8px;
-
-            padding:8px 16px;
-
-        }
-
-        QPushButton:hover{
-
-            background:#1D4ED8;
-
-        }
-
-        """)
 
         root = QVBoxLayout(self)
 
@@ -109,7 +42,7 @@ class NotesCard(QFrame):
 
         title = QLabel("Order Notes")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         header.addWidget(title)
 
@@ -165,12 +98,16 @@ class NotesCard(QFrame):
         quick = QHBoxLayout()
 
         self.btnUrgent = QPushButton("Urgent")
+        self.btnUrgent.setObjectName("ChipButton")
 
         self.btnTrial = QPushButton("Trial Required")
+        self.btnTrial.setObjectName("ChipButton")
 
         self.btnExpress = QPushButton("Express")
+        self.btnExpress.setObjectName("ChipButton")
 
         self.btnDelivery = QPushButton("Home Delivery")
+        self.btnDelivery.setObjectName("ChipButton")
 
         quick.addWidget(self.btnUrgent)
 

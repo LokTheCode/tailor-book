@@ -15,21 +15,7 @@ class BasicInformation(QFrame):
         self.build_ui()
 
     def build_ui(self):
-        self.setObjectName("CustomerInformation")
-        self.setStyleSheet("""
-        QFrame#CustomerInformation {
-            background:#1F2937;
-            border:1px solid #374151;
-            border-radius:18px;
-        }
-        QLabel { background:Transparent; color:#E5E7EB; font-size:13px; font-weight:600; }
-        QLabel#Title { color:white; font-size:18px; font-weight:bold; }
-        QLineEdit, QComboBox, QTextEdit {
-            background:#111827; color:white; border:1px solid #374151;
-            border-radius:10px; padding:10px;
-        }
-        QLineEdit:focus, QComboBox:focus, QTextEdit:focus { border:2px solid #3B82F6; }
-        """)
+        self.setObjectName("Card")
 
         layout = QGridLayout(self)
         layout.setContentsMargins(25, 25, 25, 25)
@@ -38,7 +24,7 @@ class BasicInformation(QFrame):
 
         # Title
         title = QLabel("Basic Information")
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
         layout.addWidget(title, 0, 0, 1, 4)
 
         # Name & Mobile

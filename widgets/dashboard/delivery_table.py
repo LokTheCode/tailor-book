@@ -10,22 +10,14 @@ class DeliveryTable(QFrame):
 
     def build_ui(self):
         self.setMinimumWidth(330)
-        self.setObjectName("DeliveryTable")
-        self.setStyleSheet("""
-        QFrame#DeliveryTable { background:#1B2333; border-radius:18px; }
-        QLabel#Title { background: transparent; color:white; font-size:18px; font-weight:bold; }
-        QLabel#Customer { color:white; font-size:15px; font-weight:bold; }
-        QLabel#Dress { color:#CBD5E1; font-size:13px; }
-        QLabel#Time { color:#9CA3AF; font-size:12px; }
-        QWidget#Item { background:#111827; border-radius:12px; border:1px solid #2D3748; }
-        """)
+        self.setObjectName("Card")
 
         self.root = QVBoxLayout(self)
         self.root.setContentsMargins(20, 20, 20, 20)
         self.root.setSpacing(15)
 
         title = QLabel("Today's Deliveries")
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
         self.root.addWidget(title)
 
         self.items_container = QVBoxLayout()
@@ -41,7 +33,7 @@ class DeliveryTable(QFrame):
 
         for item in deliveries_list:
             card = QWidget()
-            card.setObjectName("Item")
+            card.setObjectName("InnerPanel")
             row = QHBoxLayout(card)
             row.setContentsMargins(12, 12, 12, 12)
             row.setSpacing(12)
@@ -54,16 +46,16 @@ class DeliveryTable(QFrame):
             info.setSpacing(3)
 
             lbl_customer = QLabel(item.customer)
-            lbl_customer.setObjectName("Customer")
+            lbl_customer.setObjectName("ValueText")
 
             lbl_dress = QLabel(item.dress)
-            lbl_dress.setObjectName("Dress")
+            lbl_dress.setObjectName("FieldLabel")
 
             time_row = QHBoxLayout()
             time_icon = QLabel()
             time_icon.setPixmap(qta.icon("fa5s.clock", color="#9CA3AF").pixmap(13, 13))
             lbl_time = QLabel(item.time)
-            lbl_time.setObjectName("Time")
+            lbl_time.setObjectName("MutedText")
 
             time_row.addWidget(time_icon)
             time_row.addWidget(lbl_time)

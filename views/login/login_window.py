@@ -24,8 +24,6 @@ from PySide6.QtCore import Qt, Signal
 
 import qtawesome as qta
 
-from config import DEBUG
-from utils.style_loader import load_style
 from services.auth_service import AuthService
 
 
@@ -40,14 +38,9 @@ class LoginWindow(QWidget):
         self.setWindowTitle("Dev Tailor ERP")
         self.resize(1600, 850)
 
-        self.debug = DEBUG
 
         self.build_ui()
 
-        if self.debug:
-            load_style(self, "assets/styles/debug.qss")
-        else:
-            load_style(self, "assets/styles/login.qss")
 
     def build_ui(self):
         self.create_background()
@@ -98,14 +91,8 @@ class LoginWindow(QWidget):
 
     def create_overlay(self):
         self.overlay = QFrame(self)
+        self.overlay.setObjectName("LoginOverlay")
         self.overlay.setGeometry(self.rect())
-        self.overlay.setStyleSheet("""
-        background:qlineargradient(
-            x1:0, y1:0, x2:1, y2:1,
-            stop:0 rgba(20,35,90,180),
-            stop:1 rgba(90,30,150,180)
-        );
-        """)
 
     def create_login_card(self):
         self.card = QFrame()
@@ -117,12 +104,6 @@ class LoginWindow(QWidget):
         shadow.setOffset(0, 12)
         shadow.setColor(QColor(0, 0, 0, 180))
 
-        self.card.setStyleSheet("""
-        QFrame{
-            background:rgba(22,25,40,225);
-            border-radius:22px;
-        }
-        """)
 
         self.card.setGraphicsEffect(shadow)
 
@@ -138,13 +119,13 @@ class LoginWindow(QWidget):
 
     def create_header(self):
         title = QLabel("Welcome to Dev Tailor")
-        title.setObjectName("Title")
+        title.setObjectName("LoginTitle")
         title.setAlignment(Qt.AlignCenter)
         title.setFont(QFont("Segoe UI", 22, QFont.Bold))
         self.card_layout.addWidget(title)
 
         subtitle = QLabel("Smart Tailoring Management System")
-        subtitle.setObjectName("Subtitle")
+        subtitle.setObjectName("LoginSubtitle")
         subtitle.setAlignment(Qt.AlignCenter)
         subtitle.setFont(QFont("Segoe UI", 12))
         self.card_layout.addWidget(subtitle)
@@ -154,8 +135,8 @@ class LoginWindow(QWidget):
     def create_login_form(self):
         # Divider
         divider = QLabel("──────────── Login ────────────")
+        divider.setObjectName("LoginDivider")
         divider.setAlignment(Qt.AlignCenter)
-        divider.setStyleSheet("color:#9096A5;font-size:14px;")
 
         self.card_layout.addWidget(divider)
         self.card_layout.addSpacing(20)
@@ -210,20 +191,13 @@ class LoginWindow(QWidget):
         row = QHBoxLayout()
 
         remember = QCheckBox("Remember Me")
-        remember.setStyleSheet("""
-            color:white;
-            font-size:13px;
-        """)
 
         row.addWidget(remember)
         row.addStretch()
 
         forgot = QLabel("<a href='#'>Forgot Password?</a>")
+        forgot.setObjectName("LoginLink")
         forgot.setOpenExternalLinks(False)
-        forgot.setStyleSheet("""
-            color:#6D8DFF;
-            font-size:13px;
-        """)
 
         row.addWidget(forgot)
 
@@ -284,16 +258,13 @@ class LoginWindow(QWidget):
         self.card_layout.addStretch()
 
         divider = QLabel("──────────── OR ────────────")
+        divider.setObjectName("LoginDivider")
         divider.setAlignment(Qt.AlignCenter)
-        divider.setStyleSheet("color:#9096A5;font-size:14px;")
         self.card_layout.addWidget(divider)
 
         title = QLabel("Connect With Us")
+        title.setObjectName("LoginFooter")
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("""
-            color:#C8CDD9;
-            font-size:13px;
-        """)
         self.card_layout.addWidget(title)
         self.card_layout.addSpacing(15)
 
@@ -301,33 +272,24 @@ class LoginWindow(QWidget):
         social.setSpacing(20)
         social.setAlignment(Qt.AlignCenter)
 
+        # Brand colours live in theme.qss (QPushButton#SocialButton[brand=...])
         icons = [
-            ("fa5b.facebook-f", "#1877F2"),
-            ("fa5b.instagram", "#E4405F"),
-            ("fa5b.linkedin-in", "#0A66C2"),
-            ("fa5s.globe", "#10B981")
+            ("fa5b.facebook-f", "facebook"),
+            ("fa5b.instagram", "instagram"),
+            ("fa5b.linkedin-in", "linkedin"),
+            ("fa5s.globe", "website")
         ]
 
-        for icon_name, color in icons:
+        for icon_name, brand in icons:
             btn = QPushButton()
+            btn.setObjectName("SocialButton")
+            btn.setProperty("brand", brand)
             btn.setFixedSize(48, 48)
             btn.setIcon(
                 qta.icon(icon_name, color="white")
             )
             btn.setIconSize(btn.size() * 0.45)
             btn.setCursor(Qt.PointingHandCursor)
-            btn.setStyleSheet(f"""
-                QPushButton {{
-                    background:{color};
-                    border:none;
-                    border-radius:24px;
-                }}
-                QPushButton:hover {{
-                    background:white;
-                    color:{color};
-                    border:2px solid {color};
-                }}
-            """)
 
             shadow = QGraphicsDropShadowEffect()
             shadow.setBlurRadius(18)
@@ -342,11 +304,7 @@ class LoginWindow(QWidget):
 
     def create_footer(self):
         footer = QLabel("© 2026 Dev Tailor ERP")
-        footer.setStyleSheet("""
-            color:#C8CDD9;
-            font-size:13px;
-        """)
         footer.setAlignment(Qt.AlignCenter)
-        footer.setObjectName("Footer")
+        footer.setObjectName("LoginFooter")
         self.card_layout.addSpacing(20)
         self.card_layout.addWidget(footer)

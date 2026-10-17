@@ -40,16 +40,15 @@ class CustomerStatCard(QFrame):
         layout.addLayout(top)
 
         self.lbl_value = QLabel(self.value_text)
-        self.lbl_value.setFont(QFont("Segoe UI", 24, QFont.Bold))
-        self.lbl_value.setStyleSheet("color:white;")
+        self.lbl_value.setObjectName("StatValue")
         layout.addWidget(self.lbl_value)
 
         self.lbl_title = QLabel(self.title_text)
-        self.lbl_title.setStyleSheet("color:#D1D5DB; font-size:14px; font-weight:600;")
+        self.lbl_title.setObjectName("StatTitle")
         layout.addWidget(self.lbl_title)
 
         self.lbl_subtitle = QLabel(self.subtitle_text)
-        self.lbl_subtitle.setStyleSheet("color:#9CA3AF; font-size:12px;")
+        self.lbl_subtitle.setObjectName("StatDescription")
         layout.addWidget(self.lbl_subtitle)
 
     def set_data(self, value: str, subtitle: str):
@@ -64,23 +63,6 @@ class CustomerStats(QWidget):
         self.build_ui()
 
     def build_ui(self):
-        self.setStyleSheet("""
-        QFrame#StatCard{
-            background:#1F2937;
-            border-radius:16px;
-            border:2px solid transparent;
-        }
-        QLabel{
-            background: transparent;
-        }
-        QFrame#StatCard:hover{
-            border:2px solid qlineargradient(
-                x1:0,y1:0, x2:1,y2:0,
-                stop:0 #3B82F6, stop:1 #8B5CF6
-            );
-            background:#263244;
-        }
-        """)
 
         grid = QGridLayout(self)
         grid.setHorizontalSpacing(20)

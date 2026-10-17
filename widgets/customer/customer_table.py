@@ -22,29 +22,7 @@ class CustomerTable(QFrame):
         self.build_ui()
 
     def build_ui(self):
-        self.setObjectName("CustomerTable")
-        self.setStyleSheet("""
-        QFrame#CustomerTable{
-            background:#1F2937;
-            border:1px solid #374151;
-            border-radius:15px;
-        }
-        QTableWidget{
-            background:transparent;
-            color:white;
-            border:none;
-            gridline-color:#374151;
-            alternate-background-color:#111827;
-            selection-background-color:#3B82F6;
-        }
-        QHeaderView::section{
-            background:#111827;
-            color:white;
-            border:none;
-            padding:12px;
-            font-weight:bold;
-        }
-        """)
+        self.setObjectName("Card")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(15, 15, 15, 15)
@@ -115,6 +93,7 @@ class CustomerTable(QFrame):
 
             # Action Buttons Widget (Edit / Delete)
             action_widget = QWidget()
+            action_widget.setObjectName("TableActions")
             action_layout = QHBoxLayout(action_widget)
             action_layout.setContentsMargins(4, 2, 4, 2)
             action_layout.setSpacing(6)
@@ -124,14 +103,13 @@ class CustomerTable(QFrame):
             edit_btn.setIcon(qta.icon("fa5s.edit", color="#3B82F6"))
             edit_btn.setToolTip("Edit Customer")
             edit_btn.setCursor(Qt.PointingHandCursor)
-            edit_btn.setStyleSheet("background: transparent; border: none;")
             edit_btn.clicked.connect(lambda _, cid=c.id: self.editCustomerRequested.emit(cid))
 
             del_btn = QPushButton()
+            del_btn.setObjectName("IconDanger")
             del_btn.setIcon(qta.icon("fa5s.trash-alt", color="#EF4444"))
             del_btn.setToolTip("Delete Customer")
             del_btn.setCursor(Qt.PointingHandCursor)
-            del_btn.setStyleSheet("background: transparent; border: none;")
             del_btn.clicked.connect(lambda _, cid=c.id: self.deleteCustomerRequested.emit(cid))
 
             action_layout.addWidget(edit_btn)

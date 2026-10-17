@@ -20,6 +20,8 @@ class InventoryPagination(QFrame):
         self.current_page = 1
         self.total_pages = 1
 
+        self.setObjectName("Pagination")
+
         layout = QHBoxLayout(self)
 
         layout.setContentsMargins(

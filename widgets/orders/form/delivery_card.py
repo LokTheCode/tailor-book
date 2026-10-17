@@ -34,72 +34,8 @@ class DeliveryCard(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("DeliveryCard")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#DeliveryCard{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel{
-
-            color:#D1D5DB;
-
-            font-size:13px;
-
-        }
-
-        QComboBox,
-        QDateEdit,
-        QTextEdit,
-        QSpinBox{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:8px;
-
-            padding:8px;
-
-            min-height:38px;
-
-        }
-
-        QTextEdit{
-
-            min-height:90px;
-
-        }
-
-        QCheckBox{
-
-            color:white;
-
-            spacing:8px;
-
-        }
-
-        """)
 
         root = QVBoxLayout(self)
 
@@ -115,7 +51,7 @@ class DeliveryCard(QFrame):
 
         title = QLabel("Delivery Information")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         header.addWidget(title)
 

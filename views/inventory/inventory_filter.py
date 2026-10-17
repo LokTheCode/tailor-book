@@ -17,7 +17,7 @@ class InventoryFilter(QFrame):
         super().__init__(parent)
 
         self.setObjectName(
-            "InventoryFilter"
+            "Card"
         )
 
         layout = QHBoxLayout(self)
@@ -36,10 +36,6 @@ class InventoryFilter(QFrame):
 
         self.search.setPlaceholderText(
             "Search item, SKU or category..."
-        )
-
-        self.search.setObjectName(
-            "InventorySearch"
         )
 
         self.search.textChanged.connect(

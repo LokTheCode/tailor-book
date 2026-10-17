@@ -39,76 +39,8 @@ class OrderFilter(QFrame):
     def build_ui(self):
         
 
-        self.setObjectName("OrderFilter")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#OrderFilter{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLineEdit,
-        QComboBox,
-        QDateEdit{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:8px;
-
-            padding:8px;
-
-            min-height:38px;
-
-        }
-
-        QLineEdit:focus,
-        QComboBox:focus,
-        QDateEdit:focus{
-
-            border:2px solid #3B82F6;
-
-        }
-
-        QPushButton{
-
-            background:qlineargradient(
-                x1:0,y1:0,
-                x2:1,y2:0,
-                stop:0 #3B82F6,
-                stop:1 #8B5CF6
-            );
-
-            color:white;
-
-            border:none;
-
-            border-radius:8px;
-
-            padding:10px 18px;
-
-            min-height:40px;
-
-            font-weight:bold;
-
-        }
-
-        QPushButton:hover{
-
-            background:#2563EB;
-
-        }
-
-        """)
 
         layout = QHBoxLayout(self)
 
@@ -261,6 +193,8 @@ class OrderFilter(QFrame):
         # ------------------------------------------------
 
         self.refresh = QPushButton(" Refresh")
+
+        self.refresh.setObjectName("Primary")
 
         self.refresh.setIcon(
             qta.icon(

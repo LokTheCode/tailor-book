@@ -32,51 +32,8 @@ class GarmentList(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("GarmentList")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#GarmentList{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QPushButton{
-
-            background:#2563EB;
-
-            color:white;
-
-            border:none;
-
-            border-radius:8px;
-
-            padding:8px 16px;
-
-        }
-
-        QPushButton:hover{
-
-            background:#1D4ED8;
-
-        }
-
-        """)
 
         root = QVBoxLayout(self)
 
@@ -92,13 +49,15 @@ class GarmentList(QFrame):
 
         title = QLabel("Garments")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         top.addWidget(title)
 
         top.addStretch()
 
         self.addBtn = QPushButton(" Add Garment")
+
+        self.addBtn.setObjectName("Primary")
 
         self.addBtn.setIcon(
             qta.icon(
@@ -125,17 +84,6 @@ class GarmentList(QFrame):
 
         scroll.setMinimumHeight(350)
 
-        scroll.setStyleSheet("""
-
-        QScrollArea{
-
-            border:none;
-
-            background:transparent;
-
-        }
-
-        """)
 
         self.container = QWidget()
 

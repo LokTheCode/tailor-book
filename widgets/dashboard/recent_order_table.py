@@ -9,23 +9,14 @@ class RecentOrderTable(QFrame):
 
     def build_ui(self):
         self.setMinimumHeight(360)
-        self.setStyleSheet("""
-        QFrame { background:#1B2333; border-radius:18px; }
-        QLabel { color:white; font-size:18px; font-weight:bold; }
-        QTableWidget {
-            background:transparent; color:white; border:none;
-            gridline-color:#2D3748; font-size:13px;
-            selection-background-color:#374151; alternate-background-color:#20293D;
-        }
-        QHeaderView::section {
-            background:#111827; color:white; border:none; padding:10px; font-weight:bold;
-        }
-        """)
         root = QVBoxLayout(self)
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(15)
 
+        self.setObjectName("Card")
+
         title = QLabel("Recent Orders")
+        title.setObjectName("CardTitle")
         root.addWidget(title)
 
         self.table = QTableWidget()

@@ -19,67 +19,8 @@ class BusinessInformation(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("BusinessInformation")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#BusinessInformation{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:18px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel{
-
-            color:#E5E7EB;
-
-            font-size:13px;
-
-            font-weight:600;
-
-        }
-
-        QLineEdit,
-        QComboBox,
-        QDoubleSpinBox{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:10px;
-
-            padding:8px;
-
-            min-height:42px;
-
-        }
-
-        QLineEdit:focus,
-        QComboBox:focus,
-        QDoubleSpinBox:focus{
-
-            border:2px solid #3B82F6;
-
-        }
-
-        """)
 
         layout = QGridLayout(self)
 
@@ -95,7 +36,7 @@ class BusinessInformation(QFrame):
 
         title = QLabel("Business Information")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         layout.addWidget(title,0,0,1,4)
 

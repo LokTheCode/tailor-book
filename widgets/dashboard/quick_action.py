@@ -21,62 +21,7 @@ class QuickAction(QFrame):
 
     def build_ui(self):
 
-        self.setStyleSheet("""
-
-        QFrame{
-
-            background:#1B2333;
-
-            border-radius:18px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:20px;
-
-            font-weight:bold;
-
-        }
-
-        QPushButton{
-
-            background:#111827;
-
-            border:1px solid #374151;
-
-            border-radius:14px;
-
-            color:white;
-
-            font-size:14px;
-
-            font-weight:600;
-
-            padding:18px;
-
-            text-align:left;
-
-        }
-
-        QPushButton:hover{
-
-            border:2px solid #3B82F6;
-
-            background:qlineargradient(
-                x1:0,
-                y1:0,
-                x2:1,
-                y2:1,
-                stop:0 #3B82F6,
-                stop:1 #8B5CF6
-            );
-
-        }
-
-        """)
+        self.setObjectName("QuickActions")
 
         root = QVBoxLayout(self)
 
@@ -86,7 +31,7 @@ class QuickAction(QFrame):
 
         title = QLabel("Quick Actions")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         root.addWidget(title)
 

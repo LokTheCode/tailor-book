@@ -84,7 +84,7 @@ class MeasurementForm(QWidget):
         header_card = QFrame()
 
         header_card.setObjectName(
-            "MeasurementHeaderCard"
+            "PageHeader"
         )
 
         header_layout = QHBoxLayout(
@@ -148,10 +148,6 @@ class MeasurementForm(QWidget):
 
         self.back_button = QPushButton(
             "←  Back"
-        )
-
-        self.back_button.setObjectName(
-            "BackButton"
         )
 
         self.back_button.setCursor(
@@ -234,7 +230,7 @@ class MeasurementForm(QWidget):
         customer_card = QFrame()
 
         customer_card.setObjectName(
-            "MeasurementCard"
+            "Card"
         )
 
         customer_card.setSizePolicy(
@@ -312,7 +308,7 @@ class MeasurementForm(QWidget):
         )
 
         self.customer_info.setObjectName(
-            "CustomerInfo"
+            "InfoBox"
         )
 
         self.customer_info.setWordWrap(
@@ -335,7 +331,7 @@ class MeasurementForm(QWidget):
         previous_card = QFrame()
 
         previous_card.setObjectName(
-            "MeasurementCard"
+            "Card"
         )
 
         previous_layout = QVBoxLayout(
@@ -408,7 +404,7 @@ class MeasurementForm(QWidget):
         info_card = QFrame()
 
         info_card.setObjectName(
-            "MeasurementCard"
+            "Card"
         )
 
         info_layout = QVBoxLayout(
@@ -612,7 +608,7 @@ class MeasurementForm(QWidget):
         notes_card = QFrame()
 
         notes_card.setObjectName(
-            "MeasurementCard"
+            "Card"
         )
 
         notes_layout = QVBoxLayout(
@@ -680,7 +676,7 @@ class MeasurementForm(QWidget):
         button_card = QFrame()
 
         button_card.setObjectName(
-            "ActionCard"
+            "Card"
         )
 
         button_layout = QHBoxLayout(
@@ -706,10 +702,6 @@ class MeasurementForm(QWidget):
             "Clear"
         )
 
-        self.clear_button.setObjectName(
-            "SecondaryButton"
-        )
-
         self.clear_button.setMinimumHeight(
             42
         )
@@ -733,7 +725,7 @@ class MeasurementForm(QWidget):
         )
 
         self.delete_button.setObjectName(
-            "DangerButton"
+            "Danger"
         )
 
         self.delete_button.setMinimumHeight(
@@ -754,10 +746,6 @@ class MeasurementForm(QWidget):
 
         self.update_button = QPushButton(
             "Update"
-        )
-
-        self.update_button.setObjectName(
-            "SecondaryButton"
         )
 
         self.update_button.setMinimumHeight(
@@ -781,7 +769,7 @@ class MeasurementForm(QWidget):
         )
 
         self.save_button.setObjectName(
-            "PrimaryButton"
+            "Primary"
         )
 
         self.save_button.setMinimumHeight(
@@ -814,12 +802,6 @@ class MeasurementForm(QWidget):
             scroll,
             1
         )
-
-        # ==================================================
-        # APPLY STYLE
-        # ==================================================
-
-        self.apply_styles()
 
         # Initial button state
         self.update_button.setEnabled(
@@ -1396,263 +1378,3 @@ class MeasurementForm(QWidget):
             True
         )
 
-    # ======================================================
-    # STYLES
-    # ======================================================
-
-    def apply_styles(self):
-
-        self.setStyleSheet("""
-        
-        /* ==================================================
-           MAIN
-           ================================================== */
-
-        #MeasurementForm {
-            background: #111827;
-            color: #F9FAFB;
-        }
-
-        #MeasurementContent {
-            background: #111827;
-        }
-
-        /* ==================================================
-           HEADER
-           ================================================== */
-
-        #MeasurementHeaderCard {
-            background: #18212F;
-            border-bottom: 1px solid #263244;
-        }
-
-        #PageTitle {
-            color: #F9FAFB;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        #PageSubtitle {
-            color: #9CA3AF;
-            font-size: 13px;
-        }
-
-        #BackButton {
-            background: #374151;
-            color: #F9FAFB;
-            border: none;
-            border-radius: 8px;
-            padding: 9px 17px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        #BackButton:hover {
-            background: #4B5563;
-        }
-
-        #BackButton:pressed {
-            background: #1F2937;
-        }
-
-        /* ==================================================
-           CARDS
-           ================================================== */
-
-        #MeasurementCard {
-            background: #18212F;
-            border: 1px solid #263244;
-            border-radius: 14px;
-        }
-
-        #ActionCard {
-            background: #18212F;
-            border: 1px solid #263244;
-            border-radius: 14px;
-        }
-
-        #CardTitle {
-            color: #F9FAFB;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        #CardSubtitle {
-            color: #94A3B8;
-            font-size: 12px;
-        }
-
-        #CustomerInfo {
-            color: #CBD5E1;
-            background: transparent;
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        /* ==================================================
-           LABELS
-           ================================================== */
-
-        QLabel {
-            background: transparent;
-        }
-
-        #FieldLabel {
-            color: #CBD5E1;
-            font-size: 12px;
-            font-weight: 600;
-            padding-bottom: 2px;
-        }
-
-        /* ==================================================
-           INPUTS
-           ================================================== */
-
-        QLineEdit,
-        QComboBox,
-        QTextEdit,
-        QListWidget {
-            background: #1F2937;
-            color: #F9FAFB;
-            border: 1px solid #374151;
-            border-radius: 9px;
-            padding: 9px 11px;
-            font-size: 13px;
-        }
-
-        QLineEdit:hover,
-        QComboBox:hover,
-        QTextEdit:hover,
-        QListWidget:hover {
-            border: 1px solid #4B5563;
-        }
-
-        QLineEdit:focus,
-        QComboBox:focus,
-        QTextEdit:focus {
-            border: 2px solid #3B82F6;
-        }
-
-        QComboBox::drop-down {
-            border: none;
-            width: 30px;
-        }
-
-        QComboBox QAbstractItemView {
-            background: #1F2937;
-            color: #F9FAFB;
-            border: 1px solid #374151;
-            selection-background-color: #2563EB;
-            selection-color: white;
-            padding: 4px;
-        }
-
-        /* ==================================================
-           PREVIOUS MEASUREMENTS
-           ================================================== */
-
-        QListWidget {
-            padding: 6px;
-        }
-
-        QListWidget::item {
-            color: #E5E7EB;
-            padding: 11px 10px;
-            border-radius: 8px;
-            margin: 2px 0;
-        }
-
-        QListWidget::item:hover {
-            background: #263244;
-        }
-
-        QListWidget::item:selected {
-            background: #2563EB;
-            color: white;
-        }
-
-        /* ==================================================
-           BUTTONS
-           ================================================== */
-
-        QPushButton {
-            border: none;
-            border-radius: 9px;
-            padding: 10px 18px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        #PrimaryButton {
-            background: #2563EB;
-            color: white;
-            min-width: 150px;
-        }
-
-        #PrimaryButton:hover {
-            background: #3B82F6;
-        }
-
-        #PrimaryButton:pressed {
-            background: #1D4ED8;
-        }
-
-        #SecondaryButton {
-            background: #374151;
-            color: #F9FAFB;
-        }
-
-        #SecondaryButton:hover {
-            background: #4B5563;
-        }
-
-        #DangerButton {
-            background: #7F1D1D;
-            color: #FEE2E2;
-        }
-
-        #DangerButton:hover {
-            background: #991B1B;
-        }
-
-        QPushButton:disabled {
-            background: #1F2937;
-            color: #6B7280;
-        }
-
-        /* ==================================================
-           SCROLL
-           ================================================== */
-
-        QScrollArea {
-            background: transparent;
-            border: none;
-        }
-
-        QScrollBar:vertical {
-            background: #111827;
-            width: 8px;
-            margin: 2px;
-        }
-
-        QScrollBar::handle:vertical {
-            background: #374151;
-            border-radius: 4px;
-            min-height: 30px;
-        }
-
-        QScrollBar::handle:vertical:hover {
-            background: #4B5563;
-        }
-
-        QScrollBar::add-line:vertical,
-        QScrollBar::sub-line:vertical {
-            height: 0;
-        }
-
-        QScrollBar::add-page:vertical,
-        QScrollBar::sub-page:vertical {
-            background: none;
-        }
-
-        """)

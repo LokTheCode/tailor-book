@@ -22,59 +22,8 @@ class OrderSummary(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("OrderSummary")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#OrderSummary{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel#Value{
-
-            color:white;
-
-            font-size:14px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel#Amount{
-
-            color:#10B981;
-
-            font-size:20px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel{
-
-            color:#D1D5DB;
-
-            font-size:13px;
-
-        }
-
-        """)
 
         root = QVBoxLayout(self)
 
@@ -90,7 +39,7 @@ class OrderSummary(QFrame):
 
         title = QLabel("Order Summary")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         header.addWidget(title)
 
@@ -179,15 +128,8 @@ class OrderSummary(QFrame):
 
         line = QFrame()
 
-        line.setFrameShape(
-            QFrame.HLine
-        )
+        line.setObjectName("Separator")
 
-        line.setStyleSheet("""
-
-        color:#374151;
-
-        """)
 
         root.addWidget(line)
 
@@ -235,17 +177,8 @@ class OrderSummary(QFrame):
 
         totalCard = QFrame()
 
-        totalCard.setStyleSheet("""
+        totalCard.setObjectName("InnerPanel")
 
-        QFrame{
-
-            background:#111827;
-
-            border-radius:12px;
-
-        }
-
-        """)
 
         totalLayout = QVBoxLayout(totalCard)
 
@@ -259,7 +192,7 @@ class OrderSummary(QFrame):
 
         self.total = QLabel("₹ 0.00")
 
-        self.total.setObjectName("Amount")
+        self.total.setObjectName("AmountText")
 
         self.total.setAlignment(Qt.AlignCenter)
 
@@ -284,7 +217,7 @@ class OrderSummary(QFrame):
 
         value = QLabel("-")
 
-        value.setObjectName("Value")
+        value.setObjectName("ValueText")
 
         value.setAlignment(
             Qt.AlignRight |

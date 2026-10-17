@@ -1,15 +1,17 @@
-Main Background 	Light Gray	    #F4F6F9
-Sidebar	            Dark Navy	    #1E293B
-Sidebar Hover	    Blue	        #334155
-Top Header	        White	        #FFFFFF
-Cards	            White	        #FFFFFF
-Primary Button	    Emerald	        #10B981
-Button Hover	    Dark Emerald	#059669
-Danger	            Red	            #EF4444
-Warning	            Orange	        #F59E0B
-Success	            Green	        #22C55E
-Text	            Dark Gray       #1F2937
-Border	            Light Gray      #E5E7EB
+Theme (all styling lives in assets/styles/theme.qss)
+
+Main Background     Dark Slate      #111827
+Sidebar             Darker Slate    #0F172A
+Cards / Surface     Slate           #1F2937
+Hover               Slate Blue      #273549
+Border              Gray            #374151
+Primary Button      Blue -> Purple  #3B82F6 -> #8B5CF6
+Primary Hover       Darker          #2563EB -> #7C3AED
+Success             Emerald         #10B981
+Warning             Orange          #F59E0B
+Danger              Red             #DC2626
+Text                Near White      #F9FAFB
+Muted Text          Gray            #9CA3AF
 
 
 Sidebar

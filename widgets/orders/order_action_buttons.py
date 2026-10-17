@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
     QPushButton
 )
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 
 import qtawesome as qta
 
@@ -28,33 +28,8 @@ class OrderActionButtons(QWidget):
 
     def build_ui(self):
 
-        self.setStyleSheet("""
-
-        QPushButton{
-
-            background:#111827;
-
-            border:1px solid #374151;
-
-            border-radius:8px;
-
-            min-width:34px;
-            max-width:34px;
-
-            min-height:34px;
-            max-height:34px;
-
-        }
-
-        QPushButton:hover{
-
-            background:#2563EB;
-
-            border:1px solid #3B82F6;
-
-        }
-
-        """)
+        self.setObjectName("TableActions")
+        self.setAttribute(Qt.WA_StyledBackground, True)
 
         layout = QHBoxLayout(self)
 
@@ -193,6 +168,9 @@ class OrderActionButtons(QWidget):
         # --------------------------------------------
 
         self.deleteBtn = QPushButton()
+
+
+        self.deleteBtn.setObjectName("IconDanger")
 
         self.deleteBtn.setToolTip("Delete Order")
 

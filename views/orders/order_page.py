@@ -49,40 +49,6 @@ class OrderPage(QWidget):
             "OrderPage"
         )
 
-        self.setStyleSheet("""
-        
-        /* =====================================================
-           MAIN PAGE
-           ===================================================== */
-
-        QWidget#OrderPage {
-            background: #111827;
-            color: #F9FAFB;
-        }
-
-        /* =====================================================
-           SCROLL AREA
-           ===================================================== */
-
-        QScrollArea {
-            background: #111827;
-            border: none;
-        }
-
-        QScrollArea QWidget {
-            background: #111827;
-        }
-
-        /* =====================================================
-           FORM PAGE
-           ===================================================== */
-
-        QFrame#OrderFormContainer {
-            background: #111827;
-            border: none;
-        }
-
-        """)
 
         main = QVBoxLayout(self)
 

@@ -53,49 +53,6 @@ class CustomerForm(QWidget):
 
         self.setObjectName("CustomerForm")
 
-        self.setStyleSheet(
-            """
-            QWidget {
-                background:#111827;
-                color:white;
-                font-family:Segoe UI;
-            }
-
-            QScrollArea {
-                border:none;
-                background:#111827;
-            }
-
-            QLabel#Title {
-                color:white;
-                font-size:24px;
-                font-weight:700;
-            }
-
-            QLabel#Subtitle {
-                color:#9CA3AF;
-                font-size:13px;
-            }
-
-            QPushButton#BackButton {
-                background:#374151;
-                color:white;
-                border:none;
-                border-radius:8px;
-                padding:8px 16px;
-                font-size:13px;
-                font-weight:600;
-            }
-
-            QPushButton#BackButton:hover {
-                background:#4B5563;
-            }
-
-            QPushButton#BackButton:pressed {
-                background:#1F2937;
-            }
-            """
-        )
 
         main_layout = QVBoxLayout(self)
 
@@ -146,7 +103,7 @@ class CustomerForm(QWidget):
         # ------------------------------------------------------
 
         self.title_label = QLabel("Add New Customer")
-        self.title_label.setObjectName("Title")
+        self.title_label.setObjectName("PageTitle")
 
         header_layout.addWidget(
             self.title_label,
@@ -165,8 +122,6 @@ class CustomerForm(QWidget):
         # ------------------------------------------------------
 
         self.back_button = QPushButton("←  Back")
-
-        self.back_button.setObjectName("BackButton")
 
         self.back_button.setCursor(
             Qt.PointingHandCursor
@@ -286,17 +241,6 @@ class CustomerForm(QWidget):
 
         msg.setText(text)
 
-        msg.setStyleSheet(
-            """
-            QMessageBox {
-                background-color:#1F2937;
-            }
-
-            QLabel {
-                color:white;
-            }
-            """
-        )
 
         msg.exec()
 
@@ -569,21 +513,6 @@ class MainWindow(QWidget):
             QHeaderView.Stretch
         )
 
-        self.table.setStyleSheet(
-            """
-            QTableWidget {
-                background-color:#1F2937;
-                color:white;
-                gridline-color:#374151;
-            }
-
-            QHeaderView::section {
-                background-color:#111827;
-                color:white;
-                padding:5px;
-            }
-            """
-        )
 
         layout.addWidget(
             self.table,

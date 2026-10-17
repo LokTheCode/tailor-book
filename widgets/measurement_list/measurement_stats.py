@@ -26,14 +26,6 @@ class MeasurementStats(QFrame):
             "MeasurementStats"
         )
 
-        self.setStyleSheet("""
-        
-        QFrame#MeasurementStats {
-            background: transparent;
-            border: none;
-        }
-
-        """)
 
         layout = QGridLayout(self)
 

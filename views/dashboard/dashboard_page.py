@@ -19,13 +19,6 @@ class DashboardPage(QWidget):
 
     def build_ui(self):
         self.setObjectName("DashboardPage")
-        self.setStyleSheet("""
-        QWidget#DashboardPage { background:#111827; border:none; }
-        QScrollArea#DashboardScroll { background:#111827; border:none; }
-        QScrollArea#DashboardScroll > QWidget { background:#111827; border:none; }
-        QLabel#Welcome { color:white; font-size:30px; font-weight:700; }
-        QLabel#Subtitle { color:#9CA3AF; font-size:14px; }
-        """)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -40,17 +33,16 @@ class DashboardPage(QWidget):
         content = QWidget()
         content.setObjectName("DashboardContent")
         scroll.setWidget(content)
-        content.setStyleSheet("QWidget#DashboardContent { background:#111827; border:none; }")
 
         root = QVBoxLayout(content)
         root.setContentsMargins(30, 25, 30, 25)
         root.setSpacing(25)
 
         title = QLabel("Welcome Back, Admin 👋")
-        title.setObjectName("Welcome")
+        title.setObjectName("PageTitle")
 
         subtitle = QLabel("Here's what's happening in your tailoring shop today.")
-        subtitle.setObjectName("Subtitle")
+        subtitle.setObjectName("PageSubtitle")
         root.addWidget(title)
         root.addWidget(subtitle)
 

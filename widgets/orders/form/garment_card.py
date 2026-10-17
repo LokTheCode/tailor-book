@@ -43,104 +43,8 @@ class GarmentCard(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("GarmentCard")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#GarmentCard{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel{
-
-            color:#D1D5DB;
-
-            font-size:13px;
-
-        }
-
-        QLineEdit,
-        QTextEdit,
-        QComboBox,
-        QSpinBox,
-        QDoubleSpinBox,
-        QDateEdit{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:8px;
-
-            padding:8px;
-
-            min-height:38px;
-
-        }
-
-        QTextEdit{
-
-            min-height:80px;
-
-        }
-
-        QCheckBox{
-
-            color:white;
-
-        }
-
-        QPushButton{
-
-            border:none;
-
-            border-radius:8px;
-
-            padding:8px 14px;
-
-            color:white;
-
-            background:#2563EB;
-
-        }
-
-        QPushButton:hover{
-
-            background:#1D4ED8;
-
-        }
-
-        QPushButton#Remove{
-
-            background:#DC2626;
-
-        }
-
-        QPushButton#Remove:hover{
-
-            background:#B91C1C;
-
-        }
-
-        """)
 
         root = QVBoxLayout(self)
 
@@ -158,7 +62,7 @@ class GarmentCard(QFrame):
             f"Garment #{self.index}"
         )
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         header.addWidget(title)
 
@@ -166,7 +70,7 @@ class GarmentCard(QFrame):
 
         self.removeBtn = QPushButton(" Remove")
 
-        self.removeBtn.setObjectName("Remove")
+        self.removeBtn.setObjectName("Danger")
 
         self.removeBtn.setIcon(
             qta.icon(
@@ -925,19 +829,8 @@ class GarmentCard(QFrame):
             "Garment Total : ₹ 0.00"
         )
 
-        self.totalLabel.setStyleSheet("""
+        self.totalLabel.setObjectName("AmountText")
 
-        QLabel{
-
-            color:#10B981;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        """)
 
         footer.addWidget(
             self.totalLabel

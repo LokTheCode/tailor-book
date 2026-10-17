@@ -49,7 +49,7 @@ class ReportStatCard(QFrame):
         super().__init__(parent)
 
         self.setObjectName(
-            "ReportStatCard"
+            "StatCard"
         )
 
         layout = QVBoxLayout(
@@ -72,7 +72,7 @@ class ReportStatCard(QFrame):
         )
 
         self.title_label.setObjectName(
-            "ReportStatTitle"
+            "StatTitle"
         )
 
         self.value_label = QLabel(
@@ -80,7 +80,7 @@ class ReportStatCard(QFrame):
         )
 
         self.value_label.setObjectName(
-            "ReportStatValue"
+            "StatValue"
         )
 
         self.description_label = QLabel(
@@ -88,7 +88,7 @@ class ReportStatCard(QFrame):
         )
 
         self.description_label.setObjectName(
-            "ReportStatDescription"
+            "StatDescription"
         )
 
         layout.addWidget(
@@ -150,214 +150,6 @@ class ReportPage(QWidget):
             "ReportPage"
         )
 
-        self.setStyleSheet("""
-        /* ==================================================
-           PAGE
-        ================================================== */
-
-        QWidget#ReportPage {
-            background: #111827;
-            color: #F9FAFB;
-        }
-
-        QScrollArea {
-            background: #111827;
-            border: none;
-        }
-
-        /* ==================================================
-           HEADER
-        ================================================== */
-
-        QFrame#ReportHeader {
-            background: #18212F;
-            border: 1px solid #263244;
-            border-radius: 14px;
-        }
-
-        QLabel#ReportTitle {
-            color: #F9FAFB;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        QLabel#ReportSubtitle {
-            color: #9CA3AF;
-            font-size: 13px;
-        }
-
-        QLabel#FilterLabel {
-            color: #94A3B8;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* ==================================================
-           STAT CARD
-        ================================================== */
-
-        QFrame#ReportStatCard {
-            background: #18212F;
-            border: 1px solid #263244;
-            border-radius: 14px;
-        }
-
-        QLabel#ReportStatTitle {
-            color: #94A3B8;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        QLabel#ReportStatValue {
-            color: #F9FAFB;
-            font-size: 23px;
-            font-weight: 700;
-        }
-
-        QLabel#ReportStatDescription {
-            color: #64748B;
-            font-size: 11px;
-        }
-
-        /* ==================================================
-           REPORT CARD
-        ================================================== */
-
-        QFrame#ReportCard {
-            background: #18212F;
-            border: 1px solid #263244;
-            border-radius: 14px;
-        }
-
-        QLabel#ReportCardTitle {
-            color: #F9FAFB;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        QLabel#ReportCardSubtitle {
-            color: #94A3B8;
-            font-size: 12px;
-        }
-
-        /* ==================================================
-           COMBO BOX
-        ================================================== */
-
-        QComboBox {
-            background: #1F2937;
-            color: #F9FAFB;
-            border: 1px solid #374151;
-            border-radius: 9px;
-            padding: 8px 11px;
-            min-height: 22px;
-        }
-
-        QComboBox:hover {
-            border: 1px solid #4B5563;
-        }
-
-        QComboBox:focus {
-            border: 2px solid #3B82F6;
-        }
-
-        QComboBox::drop-down {
-            border: none;
-            width: 30px;
-        }
-
-        QComboBox QAbstractItemView {
-            background: #1F2937;
-            color: #F9FAFB;
-            border: 1px solid #374151;
-            selection-background-color: #2563EB;
-        }
-
-        /* ==================================================
-           DATE EDIT
-        ================================================== */
-
-        QDateEdit {
-            background: #1F2937;
-            color: #F9FAFB;
-            border: 1px solid #374151;
-            border-radius: 9px;
-            padding: 8px 10px;
-            min-height: 22px;
-        }
-
-        QDateEdit:hover {
-            border: 1px solid #4B5563;
-        }
-
-        QDateEdit:focus {
-            border: 2px solid #3B82F6;
-        }
-
-        QDateEdit::drop-down {
-            border: none;
-            width: 28px;
-        }
-
-        /* ==================================================
-           BUTTONS
-        ================================================== */
-
-        QPushButton#RefreshButton,
-        QPushButton#ExportButton {
-            border: none;
-            border-radius: 8px;
-            padding: 9px 16px;
-            font-weight: 600;
-        }
-
-        QPushButton#RefreshButton {
-            background: #374151;
-            color: #F9FAFB;
-        }
-
-        QPushButton#RefreshButton:hover {
-            background: #4B5563;
-        }
-
-        QPushButton#ExportButton {
-            background: #2563EB;
-            color: white;
-        }
-
-        QPushButton#ExportButton:hover {
-            background: #3B82F6;
-        }
-
-        /* ==================================================
-           TABLE
-        ================================================== */
-
-        QTableWidget {
-            background: #18212F;
-            alternate-background-color: #1B2635;
-            color: #F9FAFB;
-            border: none;
-            gridline-color: transparent;
-            selection-background-color: #263B63;
-            selection-color: white;
-        }
-
-        QTableWidget::item {
-            padding: 8px;
-            border-bottom: 1px solid #263244;
-        }
-
-        QHeaderView::section {
-            background: #111827;
-            color: #94A3B8;
-            border: none;
-            border-bottom: 1px solid #263244;
-            padding: 10px 8px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-        """)
 
         main_layout = QVBoxLayout(
             self
@@ -416,7 +208,7 @@ class ReportPage(QWidget):
         header = QFrame()
 
         header.setObjectName(
-            "ReportHeader"
+            "Card"
         )
 
         header_layout = QVBoxLayout(
@@ -451,7 +243,7 @@ class ReportPage(QWidget):
         )
 
         title.setObjectName(
-            "ReportTitle"
+            "PageTitle"
         )
 
         subtitle = QLabel(
@@ -459,7 +251,7 @@ class ReportPage(QWidget):
         )
 
         subtitle.setObjectName(
-            "ReportSubtitle"
+            "PageSubtitle"
         )
 
         title_box.addWidget(
@@ -505,7 +297,7 @@ class ReportPage(QWidget):
         )
 
         report_type_label.setObjectName(
-            "FilterLabel"
+            "FieldLabel"
         )
 
         self.report_type = QComboBox()
@@ -552,7 +344,7 @@ class ReportPage(QWidget):
         )
 
         date_range_label.setObjectName(
-            "FilterLabel"
+            "FieldLabel"
         )
 
         self.date_range = QComboBox()
@@ -604,7 +396,7 @@ class ReportPage(QWidget):
         )
 
         start_label.setObjectName(
-            "FilterLabel"
+            "FieldLabel"
         )
 
         self.start_date_edit = QDateEdit()
@@ -656,7 +448,7 @@ class ReportPage(QWidget):
         )
 
         end_label.setObjectName(
-            "FilterLabel"
+            "FieldLabel"
         )
 
         self.end_date_edit = QDateEdit()
@@ -724,10 +516,6 @@ class ReportPage(QWidget):
             "↻  Refresh"
         )
 
-        refresh_button.setObjectName(
-            "RefreshButton"
-        )
-
         refresh_button.setCursor(
             Qt.PointingHandCursor
         )
@@ -749,7 +537,7 @@ class ReportPage(QWidget):
         )
 
         download_button.setObjectName(
-            "ExportButton"
+            "Primary"
         )
 
         download_button.setCursor(
@@ -778,11 +566,8 @@ class ReportPage(QWidget):
 
         self.selected_range_label = QLabel()
 
-        self.selected_range_label.setStyleSheet("""
-            color: #94A3B8;
-            font-size: 12px;
-            padding-left: 3px;
-        """)
+        self.selected_range_label.setObjectName("MutedText")
+
 
         root.addWidget(
             self.selected_range_label
@@ -1046,7 +831,7 @@ class ReportPage(QWidget):
         card = QFrame()
 
         card.setObjectName(
-            "ReportCard"
+            "Card"
         )
 
         layout = QVBoxLayout(
@@ -1069,7 +854,7 @@ class ReportPage(QWidget):
         )
 
         title_label.setObjectName(
-            "ReportCardTitle"
+            "CardTitle"
         )
 
         subtitle_label = QLabel(
@@ -1077,7 +862,7 @@ class ReportPage(QWidget):
         )
 
         subtitle_label.setObjectName(
-            "ReportCardSubtitle"
+            "CardSubtitle"
         )
 
         layout.addWidget(

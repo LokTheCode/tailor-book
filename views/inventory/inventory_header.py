@@ -18,7 +18,7 @@ class InventoryHeader(QFrame):
         super().__init__(parent)
 
         self.setObjectName(
-            "InventoryHeader"
+            "PageHeader"
         )
 
         layout = QHBoxLayout(self)
@@ -38,7 +38,7 @@ class InventoryHeader(QFrame):
         )
 
         title.setObjectName(
-            "InventoryTitle"
+            "PageTitle"
         )
 
         subtitle = QLabel(
@@ -46,7 +46,7 @@ class InventoryHeader(QFrame):
         )
 
         subtitle.setObjectName(
-            "InventorySubtitle"
+            "PageSubtitle"
         )
 
         title_layout.addWidget(title)
@@ -64,10 +64,6 @@ class InventoryHeader(QFrame):
             "↻ Refresh"
         )
 
-        refresh_btn.setObjectName(
-            "InventoryRefreshButton"
-        )
-
         refresh_btn.clicked.connect(
             self.refreshClicked.emit
         )
@@ -81,7 +77,7 @@ class InventoryHeader(QFrame):
         )
 
         add_btn.setObjectName(
-            "InventoryAddButton"
+            "Primary"
         )
 
         add_btn.clicked.connect(

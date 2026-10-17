@@ -53,7 +53,7 @@ class StockTransactionDialog(QDialog):
         )
 
         title.setObjectName(
-            "StockDialogTitle"
+            "CardTitle"
         )
 
         layout.addWidget(
@@ -166,7 +166,7 @@ class StockTransactionDialog(QDialog):
         )
 
         save.setObjectName(
-            "StockSaveButton"
+            "Primary"
         )
 
         save.clicked.connect(

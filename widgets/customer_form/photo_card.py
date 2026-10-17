@@ -14,38 +14,18 @@ class PhotoCard(QFrame):
         self.build_ui()
 
     def build_ui(self):
-        self.setObjectName("PhotoCard")
-        self.setStyleSheet("""
-        QFrame#PhotoCard {
-            background: #1F2937;
-            border: 1px solid #374151;
-            border-radius: 18px;
-        }
-        QLabel { color: white; }
-        QLabel#Title { background: transparent; font-size: 18px; font-weight: bold; }
-        QLabel#CustomerId { background: transparent; color: #9CA3AF; font-size: 13px; }
-        QLabel#Image { background: #111827; border: 3px solid #3B82F6; border-radius: 70px; }
-        QPushButton {
-            background: #293548; color: white; border: none;
-            border-radius: 10px; padding: 10px; font-weight: 600;
-        }
-        QPushButton:hover {
-            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3B82F6, stop:1 #8B5CF6);
-        }
-        QPushButton#Remove { background: #DC2626; }
-        QPushButton#Remove:hover { background: #B91C1C; }
-        """)
+        self.setObjectName("Card")
 
         root = QVBoxLayout(self)
         root.setContentsMargins(20, 20, 20, 20)
         root.setSpacing(15)
 
         title = QLabel("Customer Photo")
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
         root.addWidget(title)
 
         self.image = QLabel()
-        self.image.setObjectName("Image")
+        self.image.setObjectName("Avatar")
         self.image.setFixedSize(140, 140)
         self.image.setAlignment(Qt.AlignCenter)
         self.reset_image_placeholder()
@@ -57,18 +37,18 @@ class PhotoCard(QFrame):
         root.addWidget(upload)
 
         remove = QPushButton(" Remove")
-        remove.setObjectName("Remove")
+        remove.setObjectName("Danger")
         remove.setIcon(qta.icon("fa5s.trash", color="white"))
         remove.clicked.connect(self.remove_photo)
         root.addWidget(remove)
 
         self.cid_label = QLabel("Customer ID : AUTO")
-        self.cid_label.setObjectName("CustomerId")
+        self.cid_label.setObjectName("MutedText")
         self.cid_label.setAlignment(Qt.AlignCenter)
         root.addWidget(self.cid_label)
 
         joined = QLabel("Joined : Today")
-        joined.setObjectName("CustomerId")
+        joined.setObjectName("MutedText")
         joined.setAlignment(Qt.AlignCenter)
         root.addWidget(joined)
 

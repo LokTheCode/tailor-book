@@ -19,73 +19,8 @@ class AddressInformation(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("AddressInformation")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#AddressInformation{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:18px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel{
-
-            color:#E5E7EB;
-
-            font-size:13px;
-
-            font-weight:600;
-
-        }
-
-        QLineEdit,
-        QTextEdit,
-        QComboBox{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:10px;
-
-            padding:10px;
-
-            min-height:42px;
-
-        }
-
-        QTextEdit{
-
-            min-height:90px;
-
-        }
-
-        QLineEdit:focus,
-        QTextEdit:focus,
-        QComboBox:focus{
-
-            border:2px solid #3B82F6;
-
-        }
-
-        """)
 
         layout = QGridLayout(self)
 
@@ -99,7 +34,7 @@ class AddressInformation(QFrame):
 
         title = QLabel("Address Information")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         layout.addWidget(title,0,0,1,4)
 

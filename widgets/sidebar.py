@@ -24,6 +24,8 @@ class HoverButton(QPushButton):
         self.active = False
 
         self.setCursor(Qt.PointingHandCursor)
+        self.setObjectName("MenuButton")
+        self.setProperty("active", False)
         self.setMinimumHeight(48)
 
         self.update_icon()
@@ -87,6 +89,8 @@ class Sidebar(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.setObjectName("Sidebar")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.setFixedWidth(250)
 
         self.buttons = {}
@@ -97,64 +101,6 @@ class Sidebar(QWidget):
 
     def build_ui(self):
 
-        self.setStyleSheet("""
-        
-
-        QLabel#Logo{
-            color:#ffffff;
-            font-size:22px;
-            font-weight:bold;
-            padding:20px;
-            text-transform:uppercase;
-        }
-
-        QPushButton{
-
-            background:transparent;
-
-            color:white;
-
-            border:none;
-
-            text-align:left;
-
-            padding:14px 20px;
-
-            font-size:15px;
-
-            border-radius:10px;
-
-        }
-
-        QPushButton:hover{
-
-            background:qlineargradient(
-                x1:0,y1:0,
-                x2:1,y2:0,
-                stop:0 #3B82F6,
-                stop:1 #8B5CF6
-            );
-
-            color:white;
-
-        }
-
-        QPushButton#Active{
-
-            background:qlineargradient(
-                x1:0,y1:0,
-                x2:1,y2:0,
-                stop:0 #3B82F6,
-                stop:1 #8B5CF6
-            );
-
-            color:white;
-
-            font-weight:bold;
-
-        }
-
-        """)
 
         layout = QVBoxLayout(self)
 
@@ -164,7 +110,7 @@ class Sidebar(QWidget):
 
         logo = QLabel("Dev Tailor ERP")
 
-        logo.setObjectName("Logo")
+        logo.setObjectName("SidebarLogo")
 
         logo.setAlignment(Qt.AlignCenter)
 
@@ -218,13 +164,13 @@ class Sidebar(QWidget):
 
             if name == menu_name:
 
-                button.setObjectName("Active")
+                button.setProperty("active", True)
 
                 button.setActive(True)
 
             else:
 
-                button.setObjectName("")
+                button.setProperty("active", False)
 
                 button.setActive(False)
 

@@ -21,7 +21,7 @@ class DynamicMeasurementSection(QFrame):
         self.fields = {}
         self.field_config = fields
 
-        self.setObjectName("MeasurementSection")
+        self.setObjectName("Card")
 
         self.setup_ui(title)
 
@@ -49,7 +49,7 @@ class DynamicMeasurementSection(QFrame):
         title_label = QLabel(title)
 
         title_label.setObjectName(
-            "MeasurementSectionTitle"
+            "CardTitle"
         )
 
         layout.addWidget(title_label)
@@ -75,17 +75,13 @@ class DynamicMeasurementSection(QFrame):
             field_label = QLabel(label)
 
             field_label.setObjectName(
-                "MeasurementFieldLabel"
+                "FieldLabel"
             )
 
             field = QLineEdit()
 
             field.setPlaceholderText(
                 f"Enter {label}"
-            )
-
-            field.setObjectName(
-                "MeasurementField"
             )
 
             field_container.addWidget(

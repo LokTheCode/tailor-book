@@ -24,12 +24,6 @@ class OrderStats(QFrame):
             "OrderStats"
         )
 
-        self.setStyleSheet("""
-            QFrame#OrderStats {
-                background: transparent;
-                border: none;
-            }
-        """)
 
         layout = QGridLayout(self)
 

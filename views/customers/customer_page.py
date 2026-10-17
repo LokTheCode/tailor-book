@@ -38,16 +38,6 @@ class CustomerPage(QWidget):
 
     def build_ui(self):
 
-        self.setStyleSheet("""
-        QWidget {
-            background: #111827;
-        }
-
-        QScrollArea {
-            border: none;
-            background: #111827;
-        }
-        """)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -101,9 +91,6 @@ class CustomerPage(QWidget):
 
         container = QWidget()
 
-        container.setStyleSheet(
-            "background:#111827;"
-        )
 
         root = QVBoxLayout(container)
 

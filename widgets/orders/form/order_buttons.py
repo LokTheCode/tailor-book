@@ -30,97 +30,8 @@ class OrderButtons(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("OrderButtons")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#OrderButtons{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QPushButton{
-
-            color:white;
-
-            border:none;
-
-            border-radius:8px;
-
-            padding:12px 20px;
-
-            font-size:13px;
-
-            min-height:42px;
-
-        }
-
-        QPushButton#Primary{
-
-            background:#2563EB;
-
-        }
-
-        QPushButton#Primary:hover{
-
-            background:#1D4ED8;
-
-        }
-
-        QPushButton#Success{
-
-            background:#10B981;
-
-        }
-
-        QPushButton#Success:hover{
-
-            background:#059669;
-
-        }
-
-        QPushButton#Warning{
-
-            background:#F59E0B;
-
-        }
-
-        QPushButton#Warning:hover{
-
-            background:#D97706;
-
-        }
-
-        QPushButton#Danger{
-
-            background:#DC2626;
-
-        }
-
-        QPushButton#Danger:hover{
-
-            background:#B91C1C;
-
-        }
-
-        QPushButton#Gray{
-
-            background:#4B5563;
-
-        }
-
-        QPushButton#Gray:hover{
-
-            background:#374151;
-
-        }
-
-        """)
 
         root = QHBoxLayout(self)
 
@@ -140,8 +51,6 @@ class OrderButtons(QFrame):
             " Preview"
         )
 
-        self.previewBtn.setObjectName("Gray")
-
         root.addWidget(self.previewBtn)
 
         self.invoiceBtn = QPushButton(
@@ -151,8 +60,6 @@ class OrderButtons(QFrame):
             ),
             " Invoice"
         )
-
-        self.invoiceBtn.setObjectName("Gray")
 
         root.addWidget(self.invoiceBtn)
 

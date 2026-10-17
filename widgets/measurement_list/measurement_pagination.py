@@ -28,85 +28,8 @@ class MeasurementPagination(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("MeasurementPagination")
+        self.setObjectName("Pagination")
 
-        self.setStyleSheet("""
-
-        QFrame#CustomerPagination{
-        
-                    background:#1F2937;
-        
-                    border:1px solid #374151;
-        
-                    border-radius:15px;
-        
-                }
-        
-                QLabel{
-        
-                    background:Transparent;
-        
-                    color:white;
-        
-                    font-size:13px;
-        
-                }
-        
-                QPushButton{
-        
-                    background:Transparent;
-        
-                    color:white;
-        
-                    border:1px solid #374151;
-        
-                    border-radius:8px;
-        
-                    min-width:36px;
-        
-                    min-height:36px;
-        
-                    font-weight:600;
-        
-                }
-        
-                QPushButton:hover{
-        
-                    background:#2563EB;
-        
-                    border:1px solid #3B82F6;
-        
-                }
-        
-                QPushButton:disabled{
-        
-                    background:#0F172A;
-        
-                    color:#6B7280;
-        
-                    border:1px solid #374151;
-        
-                }
-        
-                QComboBox{
-        
-                    background:Transparent;
-        
-                    color:white;
-        
-                    border:1px solid #374151;
-        
-                    border-radius:8px;
-        
-                    padding:6px;
-        
-                    min-width:60px;
-        
-                    min-height:24px;
-        
-                }
-
-        """)
 
         layout = QHBoxLayout(self)
 

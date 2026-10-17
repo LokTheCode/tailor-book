@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QFormLayout,
+    QFrame,
     QLabel,
     QLineEdit,
     QComboBox,
@@ -67,7 +68,7 @@ class InventoryForm(QWidget):
         )
 
         self.title.setObjectName(
-            "InventoryFormTitle"
+            "PageTitle"
         )
 
         header.addWidget(
@@ -84,7 +85,13 @@ class InventoryForm(QWidget):
         # FORM
         # ======================================================
 
-        form = QFormLayout()
+        form_card = QFrame()
+
+        form_card.setObjectName("Card")
+
+        form = QFormLayout(form_card)
+
+        form.setContentsMargins(24, 24, 24, 24)
 
         form.setSpacing(12)
 
@@ -270,8 +277,8 @@ class InventoryForm(QWidget):
             self.description
         )
 
-        layout.addLayout(
-            form
+        layout.addWidget(
+            form_card
         )
 
         layout.addStretch()
@@ -297,7 +304,7 @@ class InventoryForm(QWidget):
         )
 
         save.setObjectName(
-            "InventorySaveButton"
+            "Primary"
         )
 
         save.clicked.connect(
