@@ -24,70 +24,8 @@ class OrderHeader(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("OrderHeader")
+        self.setObjectName("PageHeader")
 
-        self.setStyleSheet("""
-
-        QFrame#OrderHeader{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:18px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:28px;
-
-            font-weight:700;
-
-        }
-
-        QLabel#Subtitle{
-
-            color:#9CA3AF;
-
-            font-size:13px;
-
-        }
-
-        QPushButton{
-
-            color:white;
-
-            border:none;
-
-            border-radius:10px;
-
-            padding:12px 20px;
-
-            min-height:46px;
-
-            font-size:14px;
-
-            font-weight:600;
-
-            background:qlineargradient(
-                x1:0,y1:0,
-                x2:1,y2:0,
-                stop:0 #3B82F6,
-                stop:1 #8B5CF6
-            );
-
-        }
-
-        QPushButton:hover{
-
-            background:#2563EB;
-
-        }
-
-        """)
 
         layout = QHBoxLayout(self)
 
@@ -99,13 +37,13 @@ class OrderHeader(QFrame):
 
         title = QLabel("Orders")
 
-        title.setObjectName("Title")
+        title.setObjectName("PageTitle")
 
         subtitle = QLabel(
             "Manage tailoring orders, production and delivery."
         )
 
-        subtitle.setObjectName("Subtitle")
+        subtitle.setObjectName("PageSubtitle")
 
         left.addWidget(title)
 
@@ -118,6 +56,8 @@ class OrderHeader(QFrame):
         # Right Side
 
         self.add_btn = QPushButton(" New Order")
+
+        self.add_btn.setObjectName("Primary")
 
         self.add_btn.setIcon(
             qta.icon(

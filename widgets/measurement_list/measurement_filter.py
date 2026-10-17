@@ -40,75 +40,9 @@ class MeasurementFilter(QFrame):
     def build_ui(self):
 
         self.setObjectName(
-            "MeasurementFilter"
+            "Card"
         )
 
-        self.setStyleSheet("""
-        
-        QLineEdit,
-        QComboBox,
-        QDateEdit {
-
-            background:#1F2937;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:12px;
-
-            padding:10px 12px;
-
-            font-size:13px;
-
-        }
-
-        QLineEdit:focus,
-        QComboBox:focus,
-        QDateEdit:focus {
-
-            border:2px solid #3B82F6;
-
-        }
-
-        QPushButton {
-
-            background:#1F2937;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:12px;
-
-            padding:10px 12px;
-
-            font-weight:600;
-
-        }
-
-        QPushButton:hover {
-
-            background:#293548;
-
-            border-color:#3B82F6;
-
-        }
-
-        QPushButton#Primary {
-
-            border:none;
-
-            background:qlineargradient(
-                x1:0,y1:0,
-                x2:1,y2:0,
-                stop:0 #3B82F6,
-                stop:1 #8B5CF6
-            );
-
-        }
-
-        """)
 
         root = QHBoxLayout(self)
 

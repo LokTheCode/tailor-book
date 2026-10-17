@@ -28,79 +28,8 @@ class OrderPagination(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("OrderPagination")
+        self.setObjectName("Pagination")
 
-        self.setStyleSheet("""
-
-        QFrame#OrderPagination{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLabel{
-
-            color:white;
-
-            font-size:13px;
-
-        }
-
-        QPushButton{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:8px;
-
-            min-width:36px;
-
-            min-height:36px;
-
-            font-weight:bold;
-
-        }
-
-        QPushButton:hover{
-
-            background:#2563EB;
-
-        }
-
-        QPushButton:disabled{
-
-            background:#0F172A;
-
-            color:#6B7280;
-
-        }
-
-        QComboBox{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:8px;
-
-            padding:6px;
-
-            min-width:90px;
-
-            min-height:36px;
-
-        }
-
-        """)
 
         layout = QHBoxLayout(self)
 

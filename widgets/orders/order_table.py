@@ -20,6 +20,9 @@ class OrderActionButtons(QWidget):
     def __init__(self, order, parent=None):
         super().__init__(parent)
 
+        self.setObjectName("TableActions")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+
         self.order = order
 
         layout = QHBoxLayout(self)
@@ -31,7 +34,6 @@ class OrderActionButtons(QWidget):
         # ======================================================
 
         view_btn = QPushButton("View")
-        view_btn.setObjectName("OrderViewButton")
         view_btn.setCursor(Qt.PointingHandCursor)
 
         view_btn.clicked.connect(
@@ -44,7 +46,6 @@ class OrderActionButtons(QWidget):
         # ======================================================
 
         edit_btn = QPushButton("Edit")
-        edit_btn.setObjectName("OrderEditButton")
         edit_btn.setCursor(Qt.PointingHandCursor)
 
         edit_btn.clicked.connect(
@@ -57,7 +58,7 @@ class OrderActionButtons(QWidget):
         # ======================================================
 
         delete_btn = QPushButton("Delete")
-        delete_btn.setObjectName("OrderDeleteButton")
+        delete_btn.setObjectName("IconDanger")
         delete_btn.setCursor(Qt.PointingHandCursor)
 
         delete_btn.clicked.connect(
@@ -93,9 +94,12 @@ class OrderTable(QWidget):
 
     def build_ui(self):
 
+        self.setObjectName("Card")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+
         layout = QVBoxLayout(self)
 
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(12, 12, 12, 12)
         layout.setSpacing(0)
 
         # ======================================================
@@ -103,8 +107,6 @@ class OrderTable(QWidget):
         # ======================================================
 
         self.table = QTableWidget()
-
-        self.table.setObjectName("OrderTable")
 
         self.table.setColumnCount(10)
 

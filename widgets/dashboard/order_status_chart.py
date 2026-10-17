@@ -2,6 +2,7 @@ from PySide6.QtCharts import QChart, QChartView, QPieSeries
 from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QHBoxLayout
 from PySide6.QtGui import QColor, QPainter, QFont
 from PySide6.QtCore import Qt, QMargins
+import qtawesome as qta
 
 class OrderStatusChart(QFrame):
     def __init__(self):
@@ -12,15 +13,14 @@ class OrderStatusChart(QFrame):
     def build_ui(self):
         self.setMinimumWidth(360)
         self.setMinimumHeight(380)
-        self.setStyleSheet("QFrame { background:#1B2333; border-radius:18px; } QLabel { color:white; }")
-        self.setObjectName("OrderStatusChart")
+        self.setObjectName("Card")
 
         self.root = QVBoxLayout(self)
         self.root.setContentsMargins(20, 20, 20, 20)
         self.root.setSpacing(10)
 
         title = QLabel("Order Status")
-        title.setFont(QFont("Segoe UI", 15, QFont.Bold))
+        title.setObjectName("CardTitle")
         self.root.addWidget(title)
 
         self.series = QPieSeries()
@@ -35,7 +35,6 @@ class OrderStatusChart(QFrame):
 
         view = QChartView(self.chart)
         view.setRenderHint(QPainter.Antialiasing)
-        view.setStyleSheet("QChartView { background:transparent; border:none; }")
         view.setMinimumHeight(220)
         self.root.addWidget(view)
 
@@ -64,14 +63,15 @@ class OrderStatusChart(QFrame):
         row = QHBoxLayout()
         row.setContentsMargins(0, 0, 0, 0)
 
-        dot = QLabel("●")
-        dot.setStyleSheet(f"color:{color}; font-size:16px;")
+        # Colour comes from the data, so draw the dot as an icon
+        dot = QLabel()
+        dot.setPixmap(qta.icon("fa5s.circle", color=color).pixmap(12, 12))
 
         lbl = QLabel(text)
-        lbl.setStyleSheet("color:#D1D5DB; font-size:13px;")
+        lbl.setObjectName("FieldLabel")
 
         number = QLabel(str(value))
-        number.setStyleSheet("color:white; font-size:13px; font-weight:bold;")
+        number.setObjectName("ValueText")
 
         row.addWidget(dot)
         row.addWidget(lbl)
@@ -80,5 +80,4 @@ class OrderStatusChart(QFrame):
 
         wrapper = QFrame()
         wrapper.setLayout(row)
-        wrapper.setStyleSheet("QFrame { background:transparent; border:none; }")
         return wrapper

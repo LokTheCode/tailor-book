@@ -22,75 +22,8 @@ class CustomerSelector(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("CustomerSelector")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#CustomerSelector{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:700;
-
-        }
-
-        QLabel{
-
-            color:#D1D5DB;
-
-            font-size:13px;
-
-        }
-
-        QLineEdit{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:8px;
-
-            padding:8px;
-
-            min-height:38px;
-
-        }
-
-        QPushButton{
-
-            background:#2563EB;
-
-            color:white;
-
-            border:none;
-
-            border-radius:8px;
-
-            padding:10px 18px;
-
-        }
-
-        QPushButton:hover{
-
-            background:#1D4ED8;
-
-        }
-
-        """)
 
         root = QVBoxLayout(self)
 
@@ -102,7 +35,7 @@ class CustomerSelector(QFrame):
 
         title = QLabel("Customer Information")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         root.addWidget(title)
 
@@ -127,6 +60,8 @@ class CustomerSelector(QFrame):
         searchLayout.addWidget(self.search)
 
         self.newCustomer = QPushButton("New Customer")
+
+        self.newCustomer.setObjectName("Primary")
 
         self.newCustomer.setIcon(
             qta.icon(

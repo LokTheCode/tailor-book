@@ -54,237 +54,6 @@ class OrderForm(QWidget):
 
     def setup_ui(self):
 
-        self.setStyleSheet("""
-        /* =====================================================
-           MAIN
-           ===================================================== */
-
-        QWidget#OrderForm {
-            background: #111827;
-            color: #F9FAFB;
-            font-family: Segoe UI;
-        }
-
-        QScrollArea {
-            border: none;
-            background: #111827;
-        }
-
-        /* =====================================================
-           HEADER
-           ===================================================== */
-
-        QLabel#Title {
-            color: #FFFFFF;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        QLabel#Subtitle {
-            color: #9CA3AF;
-            font-size: 13px;
-        }
-
-        QPushButton#BackButton {
-            background: #374151;
-            color: #FFFFFF;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        QPushButton#BackButton:hover {
-            background: #4B5563;
-        }
-
-        QPushButton#BackButton:pressed {
-            background: #1F2937;
-        }
-
-        /* =====================================================
-           CARDS
-           ===================================================== */
-
-        QFrame#OrderCard {
-            background: #18212F;
-            border: 1px solid #263244;
-            border-radius: 14px;
-        }
-
-        QFrame#SummaryCard {
-            background: #18212F;
-            border: 1px solid #263244;
-            border-radius: 14px;
-        }
-
-        QFrame#ActionCard {
-            background: #18212F;
-            border: 1px solid #263244;
-            border-radius: 14px;
-        }
-
-        QLabel#CardTitle {
-            color: #F9FAFB;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        QLabel#CardSubtitle {
-            color: #94A3B8;
-            font-size: 12px;
-        }
-
-        QLabel#FieldLabel {
-            color: #CBD5E1;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        QLabel#CustomerInfo {
-            background: #1F2937;
-            color: #CBD5E1;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 13px;
-        }
-
-        /* =====================================================
-           INPUTS
-           ===================================================== */
-
-        QLineEdit,
-        QComboBox,
-        QDateEdit,
-        QDoubleSpinBox,
-        QTextEdit {
-
-            background: #1F2937;
-            color: #F9FAFB;
-            border: 1px solid #374151;
-            border-radius: 9px;
-            padding: 9px 11px;
-            font-size: 13px;
-        }
-
-        QLineEdit,
-        QComboBox,
-        QDateEdit,
-        QDoubleSpinBox {
-            min-height: 22px;
-        }
-
-        QLineEdit:hover,
-        QComboBox:hover,
-        QDateEdit:hover,
-        QDoubleSpinBox:hover,
-        QTextEdit:hover {
-            border: 1px solid #4B5563;
-        }
-
-        QLineEdit:focus,
-        QComboBox:focus,
-        QDateEdit:focus,
-        QDoubleSpinBox:focus,
-        QTextEdit:focus {
-            border: 2px solid #3B82F6;
-        }
-
-        QComboBox::drop-down,
-        QDateEdit::drop-down {
-            border: none;
-            width: 30px;
-        }
-
-        QComboBox QAbstractItemView {
-            background: #1F2937;
-            color: #F9FAFB;
-            border: 1px solid #374151;
-            selection-background-color: #2563EB;
-            selection-color: white;
-        }
-
-        /* =====================================================
-           SUMMARY
-           ===================================================== */
-
-        QLabel#SummaryLabel {
-            color: #9CA3AF;
-            font-size: 12px;
-        }
-
-        QLabel#SummaryValue {
-            color: #FFFFFF;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        /* =====================================================
-           BUTTONS
-           ===================================================== */
-
-        QPushButton {
-            border: none;
-            border-radius: 9px;
-            padding: 10px 18px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        QPushButton#CancelButton {
-            background: #374151;
-            color: #FFFFFF;
-        }
-
-        QPushButton#CancelButton:hover {
-            background: #4B5563;
-        }
-
-        QPushButton#SaveButton {
-            background: #2563EB;
-            color: #FFFFFF;
-            min-width: 140px;
-        }
-
-        QPushButton#SaveButton:hover {
-            background: #3B82F6;
-        }
-
-        QPushButton#SaveButton:pressed {
-            background: #1D4ED8;
-        }
-
-        /* =====================================================
-           SCROLLBAR
-           ===================================================== */
-
-        QScrollBar:vertical {
-            background: #111827;
-            width: 8px;
-            margin: 2px;
-        }
-
-        QScrollBar::handle:vertical {
-            background: #374151;
-            border-radius: 4px;
-            min-height: 30px;
-        }
-
-        QScrollBar::handle:vertical:hover {
-            background: #4B5563;
-        }
-
-        QScrollBar::add-line:vertical,
-        QScrollBar::sub-line:vertical {
-            height: 0;
-        }
-
-        QScrollBar::add-page:vertical,
-        QScrollBar::sub-page:vertical {
-            background: transparent;
-        }
-        """)
 
         # ======================================================
         # MAIN
@@ -365,7 +134,7 @@ class OrderForm(QWidget):
         )
 
         self.title.setObjectName(
-            "Title"
+            "PageTitle"
         )
 
         self.subtitle = QLabel(
@@ -373,7 +142,7 @@ class OrderForm(QWidget):
         )
 
         self.subtitle.setObjectName(
-            "Subtitle"
+            "PageSubtitle"
         )
 
         title_box.addWidget(
@@ -400,10 +169,6 @@ class OrderForm(QWidget):
 
         self.back_btn = QPushButton(
             "←  Back"
-        )
-
-        self.back_btn.setObjectName(
-            "BackButton"
         )
 
         self.back_btn.setCursor(
@@ -441,7 +206,7 @@ class OrderForm(QWidget):
         customer_card = QFrame()
 
         customer_card.setObjectName(
-            "OrderCard"
+            "Card"
         )
 
         customer_layout = QVBoxLayout(
@@ -538,7 +303,7 @@ class OrderForm(QWidget):
         )
 
         self.mobile_label.setObjectName(
-            "CustomerInfo"
+            "InfoBox"
         )
 
         customer_layout.addWidget(
@@ -557,7 +322,7 @@ class OrderForm(QWidget):
         order_card = QFrame()
 
         order_card.setObjectName(
-            "OrderCard"
+            "Card"
         )
 
         order_layout = QVBoxLayout(
@@ -1189,7 +954,7 @@ class OrderForm(QWidget):
         summary_card = QFrame()
 
         summary_card.setObjectName(
-            "SummaryCard"
+            "Card"
         )
 
         summary_layout = QHBoxLayout(
@@ -1247,7 +1012,7 @@ class OrderForm(QWidget):
         action_card = QFrame()
 
         action_card.setObjectName(
-            "ActionCard"
+            "Card"
         )
 
         action_layout = QHBoxLayout(
@@ -1267,10 +1032,6 @@ class OrderForm(QWidget):
             "Cancel"
         )
 
-        self.cancel_btn.setObjectName(
-            "CancelButton"
-        )
-
         self.cancel_btn.setCursor(
             Qt.PointingHandCursor
         )
@@ -1284,7 +1045,7 @@ class OrderForm(QWidget):
         )
 
         self.save_btn.setObjectName(
-            "SaveButton"
+            "Primary"
         )
 
         self.save_btn.setCursor(
@@ -1363,7 +1124,7 @@ class OrderForm(QWidget):
         card = QFrame()
 
         card.setObjectName(
-            "OrderCard"
+            "Card"
         )
 
         layout = QVBoxLayout(
@@ -1467,7 +1228,7 @@ class OrderForm(QWidget):
         )
 
         label.setObjectName(
-            "SummaryLabel"
+            "StatTitle"
         )
 
         value_label = QLabel(
@@ -1475,7 +1236,7 @@ class OrderForm(QWidget):
         )
 
         value_label.setObjectName(
-            "SummaryValue"
+            "StatValue"
         )
 
         layout.addWidget(

@@ -38,15 +38,17 @@ class SettingPage(QWidget):
 
         left = QFrame()
 
-        left.setObjectName("SettingMenu")
+        left.setObjectName("Card")
 
         left.setFixedWidth(220)
 
         leftLayout = QVBoxLayout(left)
 
+        leftLayout.setContentsMargins(16, 16, 16, 16)
+
         title = QLabel("Settings")
 
-        title.setObjectName("PageTitle")
+        title.setObjectName("CardTitle")
 
         leftLayout.addWidget(title)
 
@@ -92,9 +94,13 @@ class SettingPage(QWidget):
 
         card = QFrame()
 
-        card.setObjectName("InfoCard")
+        card.setObjectName("Card")
 
         grid = QGridLayout(card)
+
+        grid.setContentsMargins(24, 24, 24, 24)
+
+        grid.setSpacing(14)
 
         # ----------------------------------------
 
@@ -145,7 +151,7 @@ class SettingPage(QWidget):
             )
         )
 
-        upload.setObjectName("PrimaryButton")
+        upload.setObjectName("Primary")
 
         upload.clicked.connect(self.upload_logo)
 
@@ -167,7 +173,7 @@ class SettingPage(QWidget):
 
         save = QPushButton(" Save Settings")
 
-        save.setObjectName("PrimaryButton")
+        save.setObjectName("Primary")
 
         save.setIcon(
             qta.icon(

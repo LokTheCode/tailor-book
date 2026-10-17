@@ -76,16 +76,6 @@ class InventoryPage(QWidget):
             "InventoryPage"
         )
 
-        self.setStyleSheet("""
-        QWidget {
-            background: #111827;
-        }
-
-        QScrollArea {
-            border: none;
-            background: #111827;
-        }
-        """)
 
         main_layout = QVBoxLayout(
             self
@@ -157,9 +147,6 @@ class InventoryPage(QWidget):
 
         container = QWidget()
 
-        container.setStyleSheet(
-            "background:#111827;"
-        )
 
         root = QVBoxLayout(
             container

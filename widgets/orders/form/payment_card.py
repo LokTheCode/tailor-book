@@ -18,6 +18,8 @@ from PySide6.QtCore import (
 
 import qtawesome as qta
 
+from utils.theme import repolish
+
 
 class PaymentCard(QFrame):
 
@@ -32,84 +34,8 @@ class PaymentCard(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("PaymentCard")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#PaymentCard{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:15px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel{
-
-            color:#D1D5DB;
-
-            font-size:13px;
-
-        }
-
-        QDoubleSpinBox,
-        QComboBox,
-        QLineEdit,
-        QTextEdit{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:8px;
-
-            padding:8px;
-
-            min-height:38px;
-
-        }
-
-        QTextEdit{
-
-            min-height:80px;
-
-        }
-
-        QPushButton{
-
-            background:#2563EB;
-
-            color:white;
-
-            border:none;
-
-            border-radius:8px;
-
-            padding:8px 16px;
-
-        }
-
-        QPushButton:hover{
-
-            background:#1D4ED8;
-
-        }
-
-        """)
 
         root = QVBoxLayout(self)
 
@@ -125,7 +51,7 @@ class PaymentCard(QFrame):
 
         title = QLabel("Payment Information")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         header.addWidget(title)
 
@@ -356,31 +282,8 @@ class PaymentCard(QFrame):
 
         summaryFrame = QFrame()
 
-        summaryFrame.setObjectName("SummaryFrame")
+        summaryFrame.setObjectName("InnerPanel")
 
-        summaryFrame.setStyleSheet("""
-
-        QFrame#SummaryFrame{
-
-            background:#111827;
-
-            border:1px solid #374151;
-
-            border-radius:10px;
-
-        }
-
-        QLabel#Amount{
-
-            color:#10B981;
-
-            font-size:22px;
-
-            font-weight:bold;
-
-        }
-
-        """)
 
         summaryLayout = QGridLayout(summaryFrame)
 
@@ -422,7 +325,7 @@ class PaymentCard(QFrame):
 
         self.paymentStatus = QLabel("Pending")
 
-        self.paymentStatus.setObjectName("Amount")
+        self.paymentStatus.setObjectName("StatusText")
 
         summaryLayout.addWidget(
             self.paymentStatus,
@@ -534,12 +437,16 @@ class PaymentCard(QFrame):
         )
 
         self.btn25 = QPushButton("25%")
+        self.btn25.setObjectName("ChipButton")
 
         self.btn50 = QPushButton("50%")
+        self.btn50.setObjectName("ChipButton")
 
         self.btn75 = QPushButton("75%")
+        self.btn75.setObjectName("ChipButton")
 
         self.btn100 = QPushButton("100%")
+        self.btn100.setObjectName("ChipButton")
 
         quickLayout.addWidget(self.btn25)
 
@@ -649,29 +556,20 @@ class PaymentCard(QFrame):
 
             status = "Pending"
 
-            color = "#EF4444"
-
         elif balance <= 0:
 
             status = "Paid"
-
-            color = "#10B981"
 
         else:
 
             status = "Partial"
 
-            color = "#F59E0B"
-
         self.paymentStatus.setText(status)
 
-        self.paymentStatus.setStyleSheet(f"""
-            QLabel{{
-                color:{color};
-                font-size:20px;
-                font-weight:bold;
-            }}
-        """)
+        # Colour comes from theme.qss: QLabel#StatusText[status="..."]
+        self.paymentStatus.setProperty("status", status.lower())
+
+        repolish(self.paymentStatus)
 
         self.paymentChanged.emit()
 

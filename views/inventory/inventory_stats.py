@@ -19,8 +19,12 @@ class InventoryStatCard(QFrame):
 
         super().__init__(parent)
 
+        # object_name is kept as an attribute; the shared
+        # theme styles every stat card the same way
+        self.card_id = object_name
+
         self.setObjectName(
-            object_name
+            "StatCard"
         )
 
         layout = QVBoxLayout(self)
@@ -32,7 +36,7 @@ class InventoryStatCard(QFrame):
         title_label = QLabel(title)
 
         title_label.setObjectName(
-            "InventoryStatTitle"
+            "StatTitle"
         )
 
         self.value_label = QLabel(
@@ -40,7 +44,7 @@ class InventoryStatCard(QFrame):
         )
 
         self.value_label.setObjectName(
-            "InventoryStatValue"
+            "StatValue"
         )
 
         description_label = QLabel(
@@ -48,7 +52,7 @@ class InventoryStatCard(QFrame):
         )
 
         description_label.setObjectName(
-            "InventoryStatDescription"
+            "StatDescription"
         )
 
         layout.addWidget(title_label)

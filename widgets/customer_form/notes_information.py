@@ -17,63 +17,8 @@ class NotesInformation(QFrame):
 
     def build_ui(self):
 
-        self.setObjectName("NotesInformation")
+        self.setObjectName("Card")
 
-        self.setStyleSheet("""
-
-        QFrame#NotesInformation{
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:18px;
-
-        }
-
-        QLabel#Title{
-
-            color:white;
-
-            font-size:18px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel{
-
-            color:#E5E7EB;
-
-            font-size:13px;
-
-            font-weight:600;
-
-        }
-
-        QTextEdit{
-
-            background:#111827;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:10px;
-
-            padding:12px;
-
-            min-height:120px;
-
-        }
-
-        QTextEdit:focus{
-
-            border:2px solid #3B82F6;
-
-        }
-
-        """)
 
         layout = QGridLayout(self)
 
@@ -87,7 +32,7 @@ class NotesInformation(QFrame):
 
         title = QLabel("Customer Notes")
 
-        title.setObjectName("Title")
+        title.setObjectName("CardTitle")
 
         layout.addWidget(title,0,0,1,2)
 

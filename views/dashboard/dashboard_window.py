@@ -44,12 +44,6 @@ class DashboardWindow(QMainWindow):
 
         self.setCentralWidget(central)
 
-        central.setStyleSheet("""
-        QWidget{
-            background-color:#111827;
-            color:white;
-        }
-        """)
 
         root = QHBoxLayout(central)
 

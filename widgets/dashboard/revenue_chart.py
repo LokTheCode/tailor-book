@@ -6,26 +6,22 @@ from PySide6.QtCore import Qt, QMargins
 class RevenueChart(QFrame):
     def __init__(self):
         super().__init__()
-        self.setObjectName("RevenueChart")
+        self.setObjectName("Card")
         self.build_ui()
 
     def build_ui(self):
         self.setMinimumHeight(340)
-        self.setStyleSheet("""
-        QFrame { background:#1B2333; border-radius:18px; }
-        QLabel { color:white; }
-        """)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(15)
 
         title = QLabel("Monthly Revenue")
-        title.setFont(QFont("Segoe UI", 15, QFont.Bold))
+        title.setObjectName("CardTitle")
         layout.addWidget(title)
 
         self.total = QLabel("₹ 0")
-        self.total.setStyleSheet("font-size:26px; font-weight:bold; color:#22C55E;")
+        self.total.setObjectName("AmountText")
         layout.addWidget(self.total)
 
         self.series = QLineSeries()
@@ -59,7 +55,6 @@ class RevenueChart(QFrame):
 
         view = QChartView(self.chart)
         view.setRenderHint(QPainter.Antialiasing)
-        view.setStyleSheet("background:transparent; border:none;")
         layout.addWidget(view)
 
     def update_data(self, values: list, total_text: str = None):

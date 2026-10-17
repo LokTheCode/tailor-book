@@ -25,6 +25,9 @@ class InventoryActionButtons(QWidget):
 
         super().__init__(parent)
 
+        self.setObjectName("TableActions")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+
         self.item = item
 
         layout = QHBoxLayout(self)
@@ -43,10 +46,6 @@ class InventoryActionButtons(QWidget):
             "Stock"
         )
 
-        stock_btn.setObjectName(
-            "InventoryStockButton"
-        )
-
         stock_btn.clicked.connect(
             lambda checked=False, item=item:
                 self.stockClicked.emit(item)
@@ -58,10 +57,6 @@ class InventoryActionButtons(QWidget):
 
         edit_btn = QPushButton(
             "Edit"
-        )
-
-        edit_btn.setObjectName(
-            "InventoryEditButton"
         )
 
         edit_btn.clicked.connect(
@@ -78,7 +73,7 @@ class InventoryActionButtons(QWidget):
         )
 
         delete_btn.setObjectName(
-            "InventoryDeleteButton"
+            "IconDanger"
         )
 
         delete_btn.clicked.connect(
@@ -108,10 +103,13 @@ class InventoryTable(QWidget):
 
     def build_ui(self):
 
+        self.setObjectName("Card")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+
         layout = QVBoxLayout(self)
 
         layout.setContentsMargins(
-            0, 0, 0, 0
+            12, 12, 12, 12
         )
 
         self.table = QTableWidget()

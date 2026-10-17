@@ -37,78 +37,9 @@ class MeasurementTable(QFrame):
     def build_ui(self):
 
         self.setObjectName(
-            "MeasurementTable"
+            "Card"
         )
 
-        self.setStyleSheet("""
-        
-        QFrame#MeasurementTable {
-
-            background:#1F2937;
-
-            border:1px solid #374151;
-
-            border-radius:16px;
-
-        }
-
-        QTableWidget {
-
-            background:#1F2937;
-
-            color:white;
-
-            border:none;
-
-            gridline-color:#374151;
-
-            alternate-background-color:#111827;
-
-            selection-background-color:#2563EB;
-
-            font-size:13px;
-
-        }
-
-        QHeaderView::section {
-
-            background:#111827;
-
-            color:white;
-
-            border:none;
-
-            padding:12px;
-
-            font-weight:bold;
-
-        }
-
-        QPushButton {
-
-            background:#263244;
-
-            color:white;
-
-            border:1px solid #374151;
-
-            border-radius:7px;
-
-            min-width:32px;
-
-            min-height:30px;
-
-        }
-
-        QPushButton:hover {
-
-            background:#2563EB;
-
-            border-color:#3B82F6;
-
-        }
-
-        """)
 
         layout = QVBoxLayout(self)
 
@@ -268,6 +199,8 @@ class MeasurementTable(QFrame):
 
             action_widget = QWidget()
 
+            action_widget.setObjectName("TableActions")
+
             action_layout = QHBoxLayout(
                 action_widget
             )
@@ -297,6 +230,8 @@ class MeasurementTable(QFrame):
             )
 
             delete_btn = QPushButton()
+
+            delete_btn.setObjectName("IconDanger")
 
             delete_btn.setIcon(
                 qta.icon(

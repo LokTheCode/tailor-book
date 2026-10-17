@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 from PySide6.QtWidgets import QApplication
 
@@ -8,6 +7,7 @@ from database.seed import seed_initial_data
 
 from views.login.login_window import LoginWindow
 from views.dashboard.dashboard_window import DashboardWindow
+from utils.theme import apply_theme
 
 
 # ==========================================================
@@ -54,16 +54,6 @@ class AppManager:
         self.dashboard_window.show()
 
 
-def apply_stylesheet(app: QApplication, relative_path: str = "assets/styles/style.qss"):
-    """Loads and sets the central QSS stylesheet for the application."""
-    style_file = Path(__file__).parent / relative_path
-    if style_file.exists():
-        with open(style_file, "r", encoding="utf-8") as f:
-            app.setStyleSheet(f.read())
-    else:
-        print(f"Warning: Stylesheet file not found at {style_file}")
-
-
 def main():
 
     # ======================================================
@@ -79,8 +69,8 @@ def main():
 
     app = QApplication(sys.argv)
 
-    # Apply central style globally to all windows and widgets
-    apply_stylesheet(app, "assets/styles/style.qss")
+    # One shared theme (assets/styles/theme.qss) for every window
+    apply_theme(app)
 
     manager = AppManager()
 

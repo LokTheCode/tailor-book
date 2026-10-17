@@ -46,19 +46,7 @@ class StatCard(QFrame):
         trend
     ):
 
-        self.setStyleSheet(f"""
-
-        QFrame{{
-
-            background:#1B2333;
-
-            border:2px solid transparent;
-
-            border-radius:18px;
-
-        }}
-
-        """)
+        self.setObjectName("StatCard")
 
         shadow = QGraphicsDropShadowEffect()
 
@@ -104,12 +92,15 @@ class StatCard(QFrame):
 
         top.addStretch()
 
-        badge = QLabel("●")
+        # Accent colour is passed in per card, so draw the dot as an icon
+        badge = QLabel()
 
-        badge.setStyleSheet(f"""
-            color:{self.color};
-            font-size:16px;
-        """)
+        badge.setPixmap(
+            qta.icon(
+                "fa5s.circle",
+                color=self.color
+            ).pixmap(12,12)
+        )
 
         top.addWidget(badge)
 
@@ -121,15 +112,8 @@ class StatCard(QFrame):
 
         title_lbl = QLabel(title)
 
-        title_lbl.setStyleSheet("""
+        title_lbl.setObjectName("StatTitle")
 
-            color:#9CA3AF;
-
-            font-size:14px;
-
-            font-weight:600;
-
-        """)
 
         root.addWidget(title_lbl)
 
@@ -139,19 +123,8 @@ class StatCard(QFrame):
 
         value_lbl = QLabel(value)
 
-        value_lbl.setFont(
-            QFont(
-                "Segoe UI",
-                26,
-                QFont.Bold
-            )
-        )
+        value_lbl.setObjectName("StatValue")
 
-        value_lbl.setStyleSheet("""
-
-            color:white;
-
-        """)
 
         root.addWidget(value_lbl)
 
@@ -178,15 +151,8 @@ class StatCard(QFrame):
 
         trend_lbl = QLabel(trend)
 
-        trend_lbl.setStyleSheet("""
+        trend_lbl.setObjectName("TrendText")
 
-            color:#22C55E;
-
-            font-size:13px;
-
-            font-weight:600;
-
-        """)
 
         trend_layout.addWidget(trend_lbl)
 

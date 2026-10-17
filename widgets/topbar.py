@@ -19,6 +19,8 @@ class TopBar(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.setObjectName("TopBar")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.setFixedHeight(75)
 
         self.build_ui()
@@ -27,88 +29,6 @@ class TopBar(QWidget):
 
     def build_ui(self):
 
-        self.setStyleSheet("""
-
-       
-
-        QLabel#Title{
-
-            color:#ffffff;
-
-            font-size:24px;
-
-            font-weight:bold;
-
-        }
-
-        QLabel#Date{
-
-            color:#ffffff;
-
-            font-size:16px;
-
-        }
-
-        
-
-        QLineEdit#Search{
-            border-bottom:1px solid #D1D5DB;
-            border-radius:10px;
-            padding-left:10px;
-            font-size:14px;
-            color:#FFFFFF;
-        }
-
-        QLineEdit:focus{
-
-            border:2px solid #3B82F6;
-
-        }
-
-        QPushButton{
-
-            background:qlineargradient(
-                x1:0,y1:0,
-                x2:1,y2:0,
-                stop:0 #3B82F6,
-                stop:1 #8B5CF6
-            );
-
-            border:none;
-
-            border-radius:8px;
-
-            padding:8px;
-
-        }
-
-        QPushButton:hover{
-
-            background:#F3F4F6;
-
-        }
-
-        QPushButton#Profile{
-
-            background:#2563EB;
-
-            color:white;
-
-            font-weight:bold;
-
-            padding:10px 18px;
-
-            border-radius:10px;
-
-        }
-
-        QPushButton#Profile:hover{
-
-            background:#1D4ED8;
-
-        }
-
-        """)
 
         layout = QHBoxLayout(self)
 
@@ -122,7 +42,7 @@ class TopBar(QWidget):
 
         # self.title = QLabel("Dashboard")
 
-        # self.title.setObjectName("Title")
+        # self.title.setObjectName("TopBarTitle")
 
         # self.title.setFont(QFont("Segoe UI", 18, QFont.Bold))
 
@@ -136,7 +56,7 @@ class TopBar(QWidget):
 
         self.search = QLineEdit()
 
-        self.search.setObjectName("Search")
+        self.search.setObjectName("TopBarSearch")
 
         self.search.setPlaceholderText(
             "Search Customer / Measurement / Order..."
@@ -168,7 +88,7 @@ class TopBar(QWidget):
 
         self.dateLabel = QLabel(today)
 
-        self.dateLabel.setObjectName("Date")
+        self.dateLabel.setObjectName("TopBarDate")
 
         layout.addWidget(self.dateLabel)
 
@@ -187,6 +107,7 @@ class TopBar(QWidget):
 
         )
 
+        self.notificationBtn.setObjectName("IconButton")
         self.notificationBtn.setFixedSize(42,42)
 
         layout.addWidget(self.notificationBtn)
@@ -198,7 +119,7 @@ class TopBar(QWidget):
         self.profileBtn = QPushButton("Admin")
         
 
-        self.profileBtn.setObjectName("Profile")
+        self.profileBtn.setObjectName("Primary")
 
         self.profileBtn.setIcon(
 

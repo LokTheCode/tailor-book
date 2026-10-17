@@ -69,25 +69,6 @@ class MeasurementPage(QWidget):
             "MeasurementPage"
         )
 
-        self.setStyleSheet("""
-        
-        QWidget#MeasurementPage {
-
-            background:#111827;
-
-            color:white;
-
-        }
-
-        QScrollArea {
-
-            background:#111827;
-
-            border:none;
-
-        }
-
-        """)
 
         main = QVBoxLayout(self)
 
