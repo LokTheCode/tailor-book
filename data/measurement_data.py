@@ -1,10 +1,37 @@
-from datetime import datetime
+"""Measurement list (search, filter, paging) and statistics."""
 
-from sqlalchemy import func, or_
+from datetime import date, datetime, time, timedelta, timezone
 
+from sqlalchemy import and_, func, or_
+
+from data.measurement_crud import _measurement_to_dict, guess_garment
 from database.database import SessionLocal
 from models.customer import Customer
 from models.measurement import CustomerMeasurement
+from services import settings_service
+
+
+# ==========================================================
+# HELPERS
+# ==========================================================
+
+def _utc_range(day: date):
+    """Start/end of a local calendar day, in UTC (how created_at is stored)."""
+    start_local = datetime.combine(day, time.min).astimezone()
+    end_local = start_local + timedelta(days=1)
+    to_utc = lambda value: value.astimezone(timezone.utc).replace(tzinfo=None)  # noqa: E731
+    return to_utc(start_local), to_utc(end_local)
+
+
+def _garment_filter(garment: str):
+    """Match the saved garment, or (for older rows) a name starting with it."""
+    return or_(
+        func.lower(CustomerMeasurement.garment) == garment.lower(),
+        and_(
+            or_(CustomerMeasurement.garment.is_(None), CustomerMeasurement.garment == ""),
+            CustomerMeasurement.measurement_name.ilike(f"{garment}%"),
+        ),
+    )
 
 
 # ==========================================================
@@ -18,158 +45,66 @@ def get_measurement_list(
     page: int = 1,
     page_size: int = 10,
 ):
+    """date_value: None for all dates, or a date / QDate for one local day."""
 
     db = SessionLocal()
-
     try:
-
         query = (
-            db.query(
-                CustomerMeasurement,
-                Customer,
-            )
-            .join(
-                Customer,
-                Customer.id
-                == CustomerMeasurement.customer_id,
-            )
+            db.query(CustomerMeasurement, Customer)
+            .join(Customer, Customer.id == CustomerMeasurement.customer_id)
         )
-
-        # --------------------------------------------------
-        # SEARCH
-        # --------------------------------------------------
 
         search = (search or "").strip()
-
         if search:
-
-            search_value = f"%{search}%"
-
+            like = f"%{search}%"
             query = query.filter(
                 or_(
-                    Customer.name.ilike(
-                        search_value
-                    ),
-
-                    Customer.mobile.ilike(
-                        search_value
-                    ),
-
-                    CustomerMeasurement.measurement_name.ilike(
-                        search_value
-                    ),
+                    Customer.name.ilike(like),
+                    Customer.mobile.ilike(like),
+                    CustomerMeasurement.measurement_name.ilike(like),
+                    CustomerMeasurement.garment.ilike(like),
                 )
             )
-
-        # --------------------------------------------------
-        # GARMENT
-        # --------------------------------------------------
 
         if garment and garment != "All Garments":
+            query = query.filter(_garment_filter(garment))
 
-            query = query.filter(
-                CustomerMeasurement.measurement_name.ilike(
-                    f"{garment}%"
-                )
-            )
-
-        # --------------------------------------------------
-        # DATE
-        # --------------------------------------------------
-
-        if date_value:
-
+        if date_value is not None:
             if hasattr(date_value, "toPython"):
-
                 date_value = date_value.toPython()
-
+            start, end = _utc_range(date_value)
             query = query.filter(
-                func.date(
-                    CustomerMeasurement.created_at
-                ) == date_value
+                CustomerMeasurement.updated_at >= start,
+                CustomerMeasurement.updated_at < end,
             )
-
-        # --------------------------------------------------
-        # TOTAL
-        # --------------------------------------------------
 
         total_records = query.count()
-
-        total_pages = max(
-            1,
-            (
-                total_records + page_size - 1
-            ) // page_size
-        )
-
-        page = max(
-            1,
-            min(page, total_pages)
-        )
-
-        offset = (
-            page - 1
-        ) * page_size
+        total_pages = max(1, (total_records + page_size - 1) // page_size)
+        page = max(1, min(page, total_pages))
 
         rows = (
             query
-            .order_by(
-                CustomerMeasurement.id.desc()
-            )
-            .offset(offset)
+            .order_by(CustomerMeasurement.updated_at.desc(), CustomerMeasurement.id.desc())
+            .offset((page - 1) * page_size)
             .limit(page_size)
             .all()
         )
 
-        data = []
-
+        garments = settings_service.get_list("garment_types")
+        items = []
         for measurement, customer in rows:
-
-            data.append({
-
-                "id": measurement.id,
-
-                "customer_id":
-                    measurement.customer_id,
-
-                "customer_name":
-                    customer.name or "",
-
-                "mobile":
-                    customer.mobile or "",
-
-                "measurement_name":
-                    measurement.measurement_name or "",
-
-                "created_at":
-                    measurement.created_at,
-
-                "updated_at":
-                    measurement.updated_at,
-
-                "notes":
-                    measurement.notes or "",
-
-                "upper_measurements":
-                    measurement.upper_measurements or {},
-
-                "lower_measurements":
-                    measurement.lower_measurements or {},
-
-                "extra_measurements":
-                    measurement.extra_measurements or {},
-
-            })
+            item = _measurement_to_dict(measurement, customer)
+            if not item["garment"]:
+                item["garment"] = guess_garment(item["measurement_name"], garments)
+            items.append(item)
 
         return {
-            "items": data,
+            "items": items,
             "total_records": total_records,
             "total_pages": total_pages,
             "current_page": page,
         }
-
     finally:
-
         db.close()
 
 
@@ -178,128 +113,38 @@ def get_measurement_list(
 # ==========================================================
 
 def get_measurement_stats():
-
     db = SessionLocal()
-
     try:
+        count = func.count(CustomerMeasurement.id)
 
-        total = (
-            db.query(
-                func.count(
-                    CustomerMeasurement.id
-                )
-            )
-            .scalar()
-            or 0
-        )
+        total = db.query(count).scalar() or 0
 
-        today = datetime.now().date()
-
+        start, end = _utc_range(date.today())
         today_count = (
-            db.query(
-                func.count(
-                    CustomerMeasurement.id
-                )
-            )
-            .filter(
-                func.date(
-                    CustomerMeasurement.created_at
-                ) == today
-            )
-            .scalar()
-            or 0
+            db.query(count)
+            .filter(CustomerMeasurement.created_at >= start, CustomerMeasurement.created_at < end)
+            .scalar() or 0
         )
-
         updated_today = (
-            db.query(
-                func.count(
-                    CustomerMeasurement.id
-                )
-            )
-            .filter(
-                func.date(
-                    CustomerMeasurement.updated_at
-                ) == today
-            )
-            .scalar()
-            or 0
+            db.query(count)
+            .filter(CustomerMeasurement.updated_at >= start, CustomerMeasurement.updated_at < end)
+            .scalar() or 0
         )
-
         customers = (
-            db.query(
-                func.count(
-                    func.distinct(
-                        CustomerMeasurement.customer_id
-                    )
-                )
-            )
-            .scalar()
-            or 0
+            db.query(func.count(func.distinct(CustomerMeasurement.customer_id))).scalar() or 0
         )
 
-        shirts = (
-            db.query(
-                func.count(
-                    CustomerMeasurement.id
-                )
-            )
-            .filter(
-                CustomerMeasurement.measurement_name.ilike(
-                    "Shirt%"
-                )
-            )
-            .scalar()
-            or 0
-        )
-
-        pants = (
-            db.query(
-                func.count(
-                    CustomerMeasurement.id
-                )
-            )
-            .filter(
-                CustomerMeasurement.measurement_name.ilike(
-                    "Pant%"
-                )
-            )
-            .scalar()
-            or 0
-        )
-
-        suits = (
-            db.query(
-                func.count(
-                    CustomerMeasurement.id
-                )
-            )
-            .filter(
-                CustomerMeasurement.measurement_name.ilike(
-                    "Suit%"
-                )
-            )
-            .scalar()
-            or 0
-        )
+        def by_garment(name):
+            return db.query(count).filter(_garment_filter(name)).scalar() or 0
 
         return {
-
             "total": total,
-
-            "shirts": shirts,
-
-            "pants": pants,
-
-            "suits": suits,
-
+            "shirts": by_garment("Shirt"),
+            "pants": by_garment("Pant"),
+            "suits": by_garment("Suit"),
             "today": today_count,
-
             "updated_today": updated_today,
-
             "customers": customers,
-
         }
-
     finally:
-
         db.close()

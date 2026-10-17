@@ -96,6 +96,11 @@ class MeasurementTable(QFrame):
             False
         )
 
+        # Double-click a row to edit it
+        self.table.doubleClicked.connect(
+            lambda index: self.editClicked.emit(self.current_data[index.row()])
+        )
+
         layout.addWidget(
             self.table
         )
@@ -149,43 +154,36 @@ class MeasurementTable(QFrame):
                 ),
             )
 
-            upper = item.get(
-                "upper_measurements",
-                {},
-            )
-
-            lower = item.get(
-                "lower_measurements",
-                {},
-            )
-
             self._set_item(
                 row,
                 4,
-                f"{len(upper)} fields",
+                item.get("garment") or "-",
             )
+
+            # How many values were filled in each section
+            counts = []
+            for label, key in (
+                ("Upper", "upper_measurements"),
+                ("Lower", "lower_measurements"),
+                ("Extra", "extra_measurements"),
+            ):
+                filled = len(item.get(key) or {})
+                if filled:
+                    counts.append(f"{label} {filled}")
 
             self._set_item(
                 row,
                 5,
-                f"{len(lower)} fields",
+                " · ".join(counts) or "-",
             )
 
-            updated = item.get(
-                "updated_at"
+            updated = item.get("updated_at")
+
+            updated_text = (
+                updated.strftime("%d %b %Y, %I:%M %p")
+                if updated
+                else "-"
             )
-
-            if updated:
-
-                updated_text = (
-                    updated.strftime(
-                        "%d %b %Y"
-                    )
-                )
-
-            else:
-
-                updated_text = "-"
 
             self._set_item(
                 row,
@@ -200,6 +198,7 @@ class MeasurementTable(QFrame):
             action_widget = QWidget()
 
             action_widget.setObjectName("TableActions")
+            action_widget.setAttribute(Qt.WA_StyledBackground, True)
 
             action_layout = QHBoxLayout(
                 action_widget

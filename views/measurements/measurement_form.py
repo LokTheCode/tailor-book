@@ -26,7 +26,9 @@ from data.measurement_crud import (
     get_measurements_by_customer,
     update_measurement,
     delete_measurement,
+    MeasurementError,
 )
+from services import settings_service
 
 from widgets.measurement.measurement_fields import (
     MEASUREMENT_FIELDS,
@@ -37,9 +39,15 @@ from widgets.measurement.dynamic_measurement_section import (
 )
 
 
+def unit_label():
+    """'inches' or 'cm', from Settings > Measurements."""
+    return "cm" if settings_service.get("measurement_unit") == "cm" else "inches"
+
+
 class MeasurementForm(QWidget):
 
     measurementSaved = Signal(dict)
+    measurementDeleted = Signal()
 
     # Back to measurement list
     backRequested = Signal()
@@ -508,14 +516,9 @@ class MeasurementForm(QWidget):
 
         self.garment_combo = QComboBox()
 
-        self.garment_combo.addItems([
-            "Shirt",
-            "Pant",
-            "Suit",
-            "Blazer",
-            "Kurta",
-            "Sherwani",
-        ])
+        self.garment_combo.addItems(
+            settings_service.get_list("garment_types")
+        )
 
         self.garment_combo.setMinimumHeight(
             42
@@ -562,7 +565,7 @@ class MeasurementForm(QWidget):
 
         self.upper_section = (
             DynamicMeasurementSection(
-                "Upper Body",
+                f"Upper Body ({unit_label()})",
                 MEASUREMENT_FIELDS["upper"],
             )
         )
@@ -577,7 +580,7 @@ class MeasurementForm(QWidget):
 
         self.lower_section = (
             DynamicMeasurementSection(
-                "Lower Body",
+                f"Lower Body ({unit_label()})",
                 MEASUREMENT_FIELDS["lower"],
             )
         )
@@ -707,7 +710,7 @@ class MeasurementForm(QWidget):
         )
 
         self.clear_button.clicked.connect(
-            self.clear_form
+            self.clear_measurement_fields
         )
 
         button_layout.addWidget(
@@ -817,538 +820,307 @@ class MeasurementForm(QWidget):
     # ======================================================
 
     def on_back_clicked(self):
-    
+
         self.backRequested.emit()
 
     # ======================================================
-    # CUSTOMER
+    # CUSTOMERS
     # ======================================================
 
-    def load_customers(self):
+    def load_customers(self, select_id=None):
+        """Fill the customer list (active customers only).
+
+        Called every time the form opens, so customers added since the
+        app started are listed too.
+        """
+
+        if select_id is None and self.current_customer:
+            select_id = self.current_customer.get("id")
 
         self.customers = get_all_customers()
 
-        self.customer_combo.blockSignals(
-            True
-        )
-
+        self.customer_combo.blockSignals(True)
         self.customer_combo.clear()
 
+        self.customer_combo.addItem("Select a customer...", None)
+
         for customer in self.customers:
-
-            name = customer.get(
-                "name",
-                "Unknown",
-            )
-
-            mobile = customer.get(
-                "mobile",
-                "",
-            )
-
             self.customer_combo.addItem(
-                f"{name} - {mobile}",
+                f"{customer.get('name', 'Unknown')} - {customer.get('mobile', '')}",
                 customer,
             )
 
-        self.customer_combo.blockSignals(
-            False
-        )
+        self.customer_combo.setCurrentIndex(0)
+        self.customer_combo.blockSignals(False)
 
-    # ======================================================
-    # CUSTOMER CHANGED
-    # ======================================================
+        self.current_customer = None
+        self.customer_info.setText("No customer selected")
+        self.previous_list.clear()
 
-    def customer_changed(
-        self,
-        index,
-    ):
+        if select_id:
+            self.select_customer(select_id)
 
-        if index < 0:
-            return
+    def select_customer(self, customer_id, customer_fallback=None):
+        """Select a customer in the list (adds them if inactive)."""
 
-        customer = (
-            self.customer_combo.itemData(
-                index
+        for index in range(1, self.customer_combo.count()):
+            data = self.customer_combo.itemData(index)
+            if data and data.get("id") == customer_id:
+                self.customer_combo.setCurrentIndex(index)
+                return
+
+        # Inactive customers aren't listed, but their old measurements
+        # can still be opened and edited
+        if customer_fallback:
+            self.customer_combo.addItem(
+                f"{customer_fallback.get('name', '')} - {customer_fallback.get('mobile', '')} (inactive)",
+                customer_fallback,
             )
-        )
+            self.customer_combo.setCurrentIndex(self.customer_combo.count() - 1)
 
-        if not customer:
-            return
+    def customer_changed(self, index):
+
+        customer = self.customer_combo.itemData(index) if index >= 0 else None
 
         self.current_customer = customer
 
-        name = customer.get(
-            "name",
-            "",
-        )
-
-        mobile = customer.get(
-            "mobile",
-            "",
-        )
-
-        email = customer.get(
-            "email",
-            "",
-        )
-
-        customer_id = customer.get(
-            "id",
-            "",
-        )
+        if not customer:
+            self.customer_info.setText("No customer selected")
+            self.previous_list.clear()
+            return
 
         self.customer_info.setText(
             f"""
-            <b style="font-size:15px;">{name}</b><br>
+            <b style="font-size:15px;">{customer.get('name', '')}</b><br>
             <span style="color:#94A3B8;">
-            Customer ID: {customer_id}<br>
-            Mobile: {mobile}<br>
-            Email: {email}
+            Customer ID: {customer.get('id', '')}<br>
+            Mobile: {customer.get('mobile', '')}<br>
+            Email: {customer.get('email', '') or '-'}
             </span>
             """
         )
 
-        self.load_previous_measurements(
-            refresh_only=True
-        )
+        self.load_previous_measurements()
 
-        self.clear_measurement_fields(
-            keep_customer=True
-        )
+        if not self._loading:
+            self.clear_measurement_fields()
 
     # ======================================================
     # PREVIOUS MEASUREMENTS
     # ======================================================
 
-    def load_previous_measurements(
-        self,
-        refresh_only=False,
-    ):
+    def load_previous_measurements(self, refresh_only=False):
 
         self.previous_list.clear()
 
         if not self.current_customer:
             return
 
-        customer_id = (
-            self.current_customer.get(
-                "id"
-            )
-        )
+        for measurement in get_measurements_by_customer(self.current_customer.get("id")):
 
-        measurements = (
-            get_measurements_by_customer(
-                customer_id
-            )
-        )
+            text = measurement.get("measurement_name") or "Measurement"
+            if measurement.get("garment"):
+                text = f"{text}  •  {measurement['garment']}"
+            if measurement.get("updated_at"):
+                text = f"{text}  •  {measurement['updated_at'].strftime('%d %b %Y')}"
 
-        for measurement in measurements:
+            item = QListWidgetItem(text)
+            item.setData(Qt.UserRole, measurement)
+            self.previous_list.addItem(item)
 
-            measurement_name = (
-                measurement.get(
-                    "measurement_name",
-                    "Measurement",
-                )
-            )
+    def load_previous_measurement(self, item):
+        """Click an old measurement to edit it."""
 
-            garment = (
-                measurement.get(
-                    "garment",
-                    "",
-                )
-            )
-
-            display_name = measurement_name
-
-            if garment:
-                display_name = (
-                    f"{measurement_name}  •  {garment}"
-                )
-
-            item = QListWidgetItem(
-                display_name
-            )
-
-            item.setData(
-                Qt.UserRole,
-                measurement
-            )
-
-            self.previous_list.addItem(
-                item
-            )
+        measurement = item.data(Qt.UserRole)
+        if measurement:
+            self.fill_fields(measurement)
 
     # ======================================================
-    # LOAD PREVIOUS
+    # OPEN FOR NEW / EDIT (called by the measurement page)
     # ======================================================
 
-    def load_previous_measurement(
-        self,
-        item,
-    ):
+    def open_new(self):
+        """Blank form, with a fresh customer list."""
 
-        measurement = item.data(
-            Qt.UserRole
-        )
+        self.load_customers(select_id=None)
+        self.clear_measurement_fields()
+        self.customer_combo.setFocus()
 
-        if not measurement:
-            return
+    def load_measurement(self, measurement):
+        """Open an existing measurement for editing."""
 
-        self.current_measurement = (
-            measurement
-        )
-
-        self.measurement_name.setText(
-            measurement.get(
-                "measurement_name",
-                "",
+        self._loading = True
+        try:
+            self.load_customers(select_id=None)
+            self.select_customer(
+                measurement.get("customer_id"),
+                customer_fallback={
+                    "id": measurement.get("customer_id"),
+                    "name": measurement.get("customer_name", ""),
+                    "mobile": measurement.get("mobile", ""),
+                },
             )
-        )
+        finally:
+            self._loading = False
 
-        garment = measurement.get(
-            "garment",
-            "",
-        )
+        self.fill_fields(measurement)
 
+    def fill_fields(self, measurement):
+
+        self.current_measurement = measurement
+
+        self.measurement_name.setText(measurement.get("measurement_name", ""))
+
+        garment = measurement.get("garment") or ""
         if garment:
+            index = self.garment_combo.findText(garment)
+            if index < 0:
+                self.garment_combo.addItem(garment)
+                index = self.garment_combo.count() - 1
+            self.garment_combo.blockSignals(True)
+            self.garment_combo.setCurrentIndex(index)
+            self.garment_combo.blockSignals(False)
 
-            garment_index = (
-                self.garment_combo.findText(
-                    garment
-                )
-            )
+        self.upper_section.set_data(measurement.get("upper_measurements", {}))
+        self.lower_section.set_data(measurement.get("lower_measurements", {}))
+        self.extra_section.set_data(measurement.get("extra_measurements", {}))
+        self.notes.setPlainText(measurement.get("notes", ""))
 
-            if garment_index >= 0:
-
-                self.garment_combo.setCurrentIndex(
-                    garment_index
-                )
-
-        self.upper_section.set_data(
-            measurement.get(
-                "upper_measurements",
-                {},
-            )
-        )
-
-        self.lower_section.set_data(
-            measurement.get(
-                "lower_measurements",
-                {},
-            )
-        )
-
-        self.extra_section.set_data(
-            measurement.get(
-                "extra_measurements",
-                {},
-            )
-        )
-
-        self.notes.setPlainText(
-            measurement.get(
-                "notes",
-                "",
-            )
-        )
-
-        self.title_label.setText(
-            f"Edit Measurement #{measurement.get('id')}"
-        )
-
-        self.subtitle_label.setText(
-            "Update the selected customer measurement"
-        )
-
-        self.update_button.setEnabled(
-            True
-        )
-
-        self.delete_button.setEnabled(
-            True
-        )
-
-        self.save_button.setEnabled(
-            False
-        )
+        self.set_edit_mode()
 
     # ======================================================
     # GARMENT
     # ======================================================
 
-    def garment_changed(
-        self,
-        garment,
-    ):
+    def garment_changed(self, garment):
 
-        if not self.measurement_name.text().strip():
-
-            self.measurement_name.setText(
-                f"{garment} Regular Fit"
-            )
+        # Suggest a name only while it's empty or still a suggestion
+        current = self.measurement_name.text().strip()
+        if not current or current.endswith(" Regular Fit"):
+            self.measurement_name.setText(f"{garment} Regular Fit")
 
     # ======================================================
-    # GET FORM DATA
+    # FORM DATA
     # ======================================================
 
     def get_form_data(self):
 
-        if not self.current_customer:
-
-            raise ValueError(
-                "Please select a customer."
-            )
-
-        measurement_name = (
-            self.measurement_name.text().strip()
-        )
-
-        if not measurement_name:
-
-            raise ValueError(
-                "Please enter measurement name."
-            )
-
         return {
-
-            "customer_id":
-                self.current_customer["id"],
-
-            "measurement_name":
-                measurement_name,
-
-            "upper_measurements":
-                self.upper_section.get_data(),
-
-            "lower_measurements":
-                self.lower_section.get_data(),
-
-            "extra_measurements":
-                self.extra_section.get_data(),
-
-            "notes":
-                self.notes.toPlainText().strip(),
+            "customer_id": (self.current_customer or {}).get("id"),
+            "measurement_name": self.measurement_name.text().strip(),
+            "garment": self.garment_combo.currentText(),
+            "upper_measurements": self.upper_section.get_data(),
+            "lower_measurements": self.lower_section.get_data(),
+            "extra_measurements": self.extra_section.get_data(),
+            "notes": self.notes.toPlainText().strip(),
         }
 
     # ======================================================
-    # SAVE
+    # SAVE (new)
     # ======================================================
 
     def save_measurement(self):
 
         try:
+            measurement = create_measurement(self.get_form_data())
+        except MeasurementError as error:
+            QMessageBox.warning(self, "Please check", str(error))
+            return
+        except Exception as error:
+            QMessageBox.critical(self, "Error", f"Unable to save measurement:\n\n{error}")
+            return
 
-            data = self.get_form_data()
-
-            measurement = create_measurement(
-                data
-            )
-
-            self.current_measurement = (
-                measurement
-            )
-
-            QMessageBox.information(
-                self,
-                "Success",
-                "Measurement saved successfully.",
-            )
-
-            self.load_previous_measurements()
-
-            self.measurementSaved.emit(
-                measurement
-            )
-
-            self.set_edit_mode()
-
-        except ValueError as e:
-
-            QMessageBox.warning(
-                self,
-                "Validation",
-                str(e),
-            )
-
-        except Exception as e:
-
-            QMessageBox.critical(
-                self,
-                "Error",
-                f"Unable to save measurement:\n\n{e}",
-            )
+        QMessageBox.information(self, "Saved", "Measurement saved.")
+        self.measurementSaved.emit(measurement)
 
     # ======================================================
     # UPDATE
     # ======================================================
 
-    def update_current_measurement(
-        self,
-    ):
+    def update_current_measurement(self):
 
         if not self.current_measurement:
-
-            QMessageBox.warning(
-                self,
-                "Update",
-                "Please select a measurement first.",
-            )
-
+            QMessageBox.warning(self, "Update", "Select a measurement first.")
             return
 
         try:
+            measurement = update_measurement(self.current_measurement["id"], self.get_form_data())
+        except MeasurementError as error:
+            QMessageBox.warning(self, "Please check", str(error))
+            return
+        except Exception as error:
+            QMessageBox.critical(self, "Error", f"Unable to update measurement:\n\n{error}")
+            return
 
-            data = self.get_form_data()
+        if not measurement:
+            QMessageBox.warning(self, "Update", "This measurement no longer exists.")
+            return
 
-            measurement = update_measurement(
-                self.current_measurement["id"],
-                data,
-            )
-
-            if not measurement:
-
-                QMessageBox.warning(
-                    self,
-                    "Update",
-                    "Measurement not found.",
-                )
-
-                return
-
-            self.current_measurement = (
-                measurement
-            )
-
-            QMessageBox.information(
-                self,
-                "Success",
-                "Measurement updated successfully.",
-            )
-
-            self.load_previous_measurements()
-
-            self.measurementSaved.emit(
-                measurement
-            )
-
-        except Exception as e:
-
-            QMessageBox.critical(
-                self,
-                "Error",
-                f"Unable to update measurement:\n\n{e}",
-            )
+        QMessageBox.information(self, "Updated", "Measurement updated.")
+        self.measurementSaved.emit(measurement)
 
     # ======================================================
     # DELETE
     # ======================================================
 
-    def delete_current_measurement(
-        self,
-    ):
+    def delete_current_measurement(self):
 
         if not self.current_measurement:
-
-            QMessageBox.warning(
-                self,
-                "Delete",
-                "Please select a measurement first.",
-            )
-
+            QMessageBox.warning(self, "Delete", "Select a measurement first.")
             return
+
+        name = self.current_measurement.get("measurement_name", "this measurement")
 
         result = QMessageBox.question(
             self,
             "Delete Measurement",
-            "Are you sure you want to delete this measurement?",
-            QMessageBox.Yes
-            | QMessageBox.No,
+            f"Delete '{name}'? This can't be undone.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
         )
-
         if result != QMessageBox.Yes:
             return
 
         try:
+            delete_measurement(self.current_measurement["id"])
+        except Exception as error:
+            QMessageBox.critical(self, "Error", f"Unable to delete measurement:\n\n{error}")
+            return
 
-            success = delete_measurement(
-                self.current_measurement["id"]
-            )
-
-            if success:
-
-                QMessageBox.information(
-                    self,
-                    "Deleted",
-                    "Measurement deleted successfully.",
-                )
-
-                self.clear_measurement_fields()
-
-                self.load_previous_measurements()
-
-        except Exception as e:
-
-            QMessageBox.critical(
-                self,
-                "Error",
-                f"Unable to delete measurement:\n\n{e}",
-            )
+        QMessageBox.information(self, "Deleted", "Measurement deleted.")
+        self.measurementDeleted.emit()
 
     # ======================================================
-    # CLEAR MEASUREMENT FIELDS
+    # CLEAR
     # ======================================================
 
-    def clear_measurement_fields(
-        self,
-        keep_customer=True,
-    ):
+    def clear_measurement_fields(self, keep_customer=True):
 
         self.current_measurement = None
 
         self.measurement_name.clear()
-
         self.upper_section.clear()
-
         self.lower_section.clear()
-
         self.extra_section.clear()
-
         self.notes.clear()
 
-        self.title_label.setText(
-            "Add New Measurement"
-        )
+        if self.garment_combo.count():
+            self.garment_combo.blockSignals(True)
+            self.garment_combo.setCurrentIndex(0)
+            self.garment_combo.blockSignals(False)
+            self.measurement_name.setText(f"{self.garment_combo.currentText()} Regular Fit")
 
-        self.subtitle_label.setText(
-            "Create and manage customer measurements"
-        )
+        self.title_label.setText("Add New Measurement")
+        self.subtitle_label.setText("Create and manage customer measurements")
 
-        self.save_button.setEnabled(
-            True
-        )
-
-        self.update_button.setEnabled(
-            False
-        )
-
-        self.delete_button.setEnabled(
-            False
-        )
-
-    # ======================================================
-    # CLEAR FORM
-    # ======================================================
+        self.save_button.setText("Save Measurement")
+        self.save_button.setEnabled(True)
+        self.update_button.setEnabled(False)
+        self.delete_button.setEnabled(False)
 
     def clear_form(self):
-
-        self.clear_measurement_fields()
-
-        self.previous_list.clear()
-
-        if self.current_customer:
-
-            self.load_previous_measurements()
+        """Kept for older callers: same as opening a new form."""
+        self.open_new()
 
     # ======================================================
     # EDIT MODE
@@ -1361,20 +1133,12 @@ class MeasurementForm(QWidget):
             if self.current_measurement
             else "Edit Measurement"
         )
-
         self.subtitle_label.setText(
-            "Update the selected customer measurement"
+            "Update this measurement, or Save as New to keep both versions"
         )
 
-        self.save_button.setEnabled(
-            True
-        )
-
-        self.update_button.setEnabled(
-            True
-        )
-
-        self.delete_button.setEnabled(
-            True
-        )
-
+        # Save stays enabled: it saves the values as a new measurement
+        self.save_button.setText("Save as New")
+        self.save_button.setEnabled(True)
+        self.update_button.setEnabled(True)
+        self.delete_button.setEnabled(True)

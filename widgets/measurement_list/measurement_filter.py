@@ -14,6 +14,8 @@ from PySide6.QtCore import (
 
 import qtawesome as qta
 
+from services import settings_service
+
 
 class MeasurementFilter(QFrame):
 
@@ -88,23 +90,9 @@ class MeasurementFilter(QFrame):
 
         self.garment = QComboBox()
 
-        self.garment.addItems([
-
-            "All Garments",
-
-            "Shirt",
-
-            "Pant",
-
-            "Suit",
-
-            "Kurta",
-
-            "Blazer",
-
-            "Sherwani",
-
-        ])
+        self.garment.addItems(
+            ["All Garments"] + settings_service.get_list("garment_types")
+        )
 
         self.garment.currentTextChanged.connect(
             self.garmentChanged.emit
@@ -125,9 +113,11 @@ class MeasurementFilter(QFrame):
             True
         )
 
-        self.date.setDate(
-            QDate.currentDate()
-        )
+        # The minimum date is shown as "All dates" (no date filter)
+        self.date.setMinimumDate(QDate(2000, 1, 1))
+        self.date.setSpecialValueText("All dates")
+        self.date.setDisplayFormat("dd MMM yyyy")
+        self.date.setDate(self.date.minimumDate())
 
         root.addWidget(
             self.date
@@ -190,31 +180,22 @@ class MeasurementFilter(QFrame):
             date
         )
 
-    # ======================================================
-    # CLEAR DATE
-    # ======================================================
-
     def clear_date_filter(self):
 
-        self.dateChanged.emit(
-            None
+        # Setting the minimum date shows "All dates" and emits dateChanged
+        self.date.setDate(
+            self.date.minimumDate()
         )
-
-    # ======================================================
-    # GET FILTERS
-    # ======================================================
 
     def get_filters(self):
 
-        return {
+        date = self.date.date()
 
+        return {
             "search":
                 self.search.text().strip(),
-
             "garment":
                 self.garment.currentText(),
-
             "date":
-                self.date.date(),
-
+                None if date == self.date.minimumDate() else date,
         }
