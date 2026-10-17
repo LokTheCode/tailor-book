@@ -60,13 +60,14 @@ PAGES = {
     "orders": "Orders",
     "inventory": "Inventory",
     "reports": "Reports",
+    "marketing": "Marketing",
     "settings": "Settings",
     "users": "Users",
 }
 
 # Ticked by default when a new user is created
 DEFAULT_ACCESS = {
-    ADMIN: ["dashboard", "customers", "measurements", "orders", "inventory", "reports", "settings"],
+    ADMIN: ["dashboard", "customers", "measurements", "orders", "inventory", "reports", "marketing", "settings"],
     SUB_ADMIN: ["dashboard", "customers", "measurements", "orders"],
 }
 

@@ -20,6 +20,7 @@ from views.customers.customer_form import CustomerForm
 
 from data.customer_data import CustomerDataService
 import data.customer_crud as db
+from services import settings_service
 from data.customer_crud import CustomerHasOrders
 
 
@@ -29,7 +30,7 @@ class CustomerPage(QWidget):
         super().__init__()
 
         self.current_page_num = 1
-        self.page_size = 10
+        self.page_size = settings_service.get_int("rows_per_page", 10)
 
         self.build_ui()
         self.refresh_all_data()
@@ -148,6 +149,11 @@ class CustomerPage(QWidget):
         # ------------------------------------------------------
 
         self.pagination = CustomerPagination()
+
+        # Rows per page from Settings > General
+        self.pagination.page_size.blockSignals(True)
+        self.pagination.page_size.setCurrentText(str(self.page_size))
+        self.pagination.page_size.blockSignals(False)
 
         root.addWidget(
             self.pagination

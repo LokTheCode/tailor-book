@@ -1,6 +1,7 @@
 # views/dashboard/dashboard_window.py
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
@@ -24,6 +25,7 @@ from views.inventory.inventory_page import InventoryPage
 from views.reports.report_page import ReportPage
 from views.settings.setting_page import SettingPage
 from views.users.user_page import UserPage
+from views.marketing.marketing_page import MarketingPage
 from views.users.change_password_dialog import ChangePasswordDialog
 
 
@@ -57,6 +59,7 @@ class DashboardWindow(QMainWindow):
             "orders": OrderPage,
             "inventory": InventoryPage,
             "reports": ReportPage,
+            "marketing": MarketingPage,
             "users": lambda: UserPage(self.user),
             "settings": SettingPage,
         }
@@ -133,6 +136,87 @@ class DashboardWindow(QMainWindow):
 
         if allowed:
             self.show_page(allowed[0])
+
+        self.allowed = allowed
+        self.setup_shortcuts()
+
+    # ----------------------------------------------------
+    # KEYBOARD SHORTCUTS (listed in utils/shortcuts.py)
+    # ----------------------------------------------------
+
+    # For each page: method names to try for New / Refresh, and the
+    # attribute path of its search box
+    PAGE_ACTIONS = {
+        "customers": ("open_add_customer", "refresh_all_data", "filter.searchName"),
+        "measurements": ("open_measurement_form", "load_data", "filter.search"),
+        "orders": ("open_new_order", "refresh", "filter.search"),
+        "inventory": ("open_add_inventory", "refresh_all_data", "filter.search"),
+        "users": ("add_user", "refresh", None),
+        "dashboard": (None, "refresh_dashboard", None),
+        "reports": (None, "load_report", None),
+        "marketing": (None, "shortcut_refresh", None),
+        "settings": (None, "load", None),
+    }
+
+    def setup_shortcuts(self):
+
+        def add(keys, handler):
+            shortcut = QShortcut(QKeySequence(keys), self)
+            shortcut.setContext(Qt.ApplicationShortcut)
+            shortcut.activated.connect(handler)
+
+        for number, key in enumerate(self.allowed[:9], start=1):
+            add(f"Ctrl+{number}", lambda page=key: self.show_page(page))
+
+        add("Ctrl+N", lambda: self.page_action(0))
+        add("F5", lambda: self.page_action(1))
+        add("Ctrl+F", self.focus_search)
+        add("Ctrl+B", self.quick_backup)
+        add("Ctrl+Shift+P", self.change_password)
+        add("Ctrl+Shift+L", self.logout)
+        add("F1", self.show_shortcuts)
+
+    def current_key(self):
+        page = self.stack.currentWidget()
+        for key, widget in self.pages.items():
+            if widget is page:
+                return key
+        return None
+
+    def page_action(self, index):
+        key = self.current_key()
+        name = self.PAGE_ACTIONS.get(key, (None, None, None))[index]
+        method = getattr(self.pages.get(key), name, None) if name else None
+        if callable(method):
+            method()
+
+    def focus_search(self):
+        key = self.current_key()
+        path = self.PAGE_ACTIONS.get(key, (None, None, None))[2]
+        target = self.pages.get(key)
+        for part in (path or "").split("."):
+            target = getattr(target, part, None) if part else None
+        if target is not None and hasattr(target, "setFocus"):
+            target.setFocus()
+            if hasattr(target, "selectAll"):
+                target.selectAll()
+
+    def quick_backup(self):
+        from services import backup_service
+        try:
+            path = backup_service.backup_now()
+        except Exception as error:
+            QMessageBox.critical(self, "Backup failed", str(error))
+            return
+        QMessageBox.information(self, "Backup", f"Backup saved:\n{path}")
+
+    def show_shortcuts(self):
+        from utils.shortcuts import SHORTCUTS
+        rows = "".join(
+            f"<tr><td style='padding:4px 18px 4px 0'><b>{keys}</b></td><td>{text}</td></tr>"
+            for keys, text in SHORTCUTS
+        )
+        QMessageBox.information(self, "Keyboard shortcuts", f"<table>{rows}</table>")
 
     # ----------------------------------------------------
 

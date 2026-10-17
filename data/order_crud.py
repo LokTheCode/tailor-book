@@ -1,6 +1,7 @@
 from datetime import date
 
 from database.database import SessionLocal
+from services import settings_service
 
 from models.order import Order
 from models.order_item import OrderItem
@@ -10,6 +11,15 @@ from models.order_payment import OrderPayment
 # ==========================================================
 # ORDER NUMBER
 # ==========================================================
+
+def _notify(order_id, event):
+    """Send the order notification in the background (never raises)."""
+    try:
+        from services.notification_service import notify_order_event_async
+        notify_order_event_async(order_id, event)
+    except Exception as error:  # messaging must never break saving an order
+        print(f"Notification skipped: {error}")
+
 
 def generate_order_number(db):
 
@@ -24,7 +34,9 @@ def generate_order_number(db):
     else:
         next_number = last_order.id + 1
 
-    return f"ORD-{next_number:04d}"
+    prefix = settings_service.get("order_prefix") or "ORD-"
+
+    return f"{prefix}{next_number:04d}"
 
 
 # ==========================================================
@@ -213,6 +225,12 @@ def create_order(data):
 
         db.refresh(order)
 
+        # WhatsApp / email to the customer (Settings > Notifications).
+        # Runs in the background so saving never waits for the network.
+        _notify(order.id, "order_created")
+        if (order.status or "").lower() in ("ready", "delivered"):
+            _notify(order.id, f"order_{order.status.lower()}")
+
         return {
             "id": order.id,
             "order_number": order.order_number,
@@ -254,6 +272,8 @@ def update_order(
 
         if not order:
             return None
+
+        old_status = (order.status or "").lower()
 
         # --------------------------------------------------
         # Update Order
@@ -420,6 +440,11 @@ def update_order(
         db.commit()
 
         db.refresh(order)
+
+        # Notify when the status changes to ready or delivered
+        new_status = (order.status or "").lower()
+        if new_status != old_status and new_status in ("ready", "delivered"):
+            _notify(order.id, f"order_{new_status}")
 
         return {
             "id": order.id,

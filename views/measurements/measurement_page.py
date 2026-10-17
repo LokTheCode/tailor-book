@@ -187,6 +187,11 @@ class MeasurementPage(QWidget):
             MeasurementPagination()
         )
 
+        # Rows per page from Settings > General
+        self.pagination.page_size.blockSignals(True)
+        self.pagination.page_size.setCurrentText(str(self.page_size))
+        self.pagination.page_size.blockSignals(False)
+
         root.addWidget(
             self.pagination
         )

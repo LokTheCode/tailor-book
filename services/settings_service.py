@@ -12,9 +12,7 @@ from models.setting import Setting
 DEFAULTS = {
     # ---------------- General ----------------
     "currency_symbol": ("₹", "Currency symbol shown before amounts"),
-    "date_format": ("%d %b %Y", "How dates are shown"),
     "rows_per_page": ("10", "Default rows per page in lists"),
-    "low_stock_threshold": ("5", "Inventory quantity that counts as low stock"),
 
     # ---------------- Shop details ----------------
     "shop_name": ("Dev Tailors", "Name of the tailoring shop"),
@@ -28,7 +26,7 @@ DEFAULTS = {
     # ---------------- Invoice ----------------
     "invoice_prefix": ("INV-", "Prefix for invoice numbers"),
     "order_prefix": ("ORD-", "Prefix for order numbers"),
-    "default_gst_percent": ("0", "Default GST % on new orders"),
+    "default_gst_percent": ("18", "Default GST % on new garments in an order"),
     "invoice_paper": ("A4", "A4 or Thermal 80mm"),
     "invoice_show_logo": ("1", "Show logo on invoices"),
     "invoice_terms": ("Goods once sold will not be taken back.", "Terms printed on invoices"),
