@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
 )
 
+from utils.table import fit_column, fit_to_contents, setup_table
 from PySide6.QtCore import (
     Qt,
     Signal,
@@ -55,46 +56,21 @@ class MeasurementTable(QFrame):
         self.table.setColumnCount(8)
 
         self.table.setHorizontalHeaderLabels([
-
             "ID",
-
             "Customer",
-
             "Mobile",
-
             "Measurement",
-
-            "Upper",
-
-            "Lower",
-
+            "Garment",
+            "Values",
             "Updated",
-
             "Actions",
-
         ])
 
-        self.table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Stretch
-        )
-
-        self.table.verticalHeader().hide()
-
-        self.table.setSelectionBehavior(
-            QTableWidget.SelectRows
-        )
-
-        self.table.setEditTriggers(
-            QTableWidget.NoEditTriggers
-        )
-
-        self.table.setAlternatingRowColors(
-            True
-        )
-
-        self.table.setSortingEnabled(
-            False
-        )
+        # Shared look: 10 rows of space, full-height rows (utils/table.py)
+        setup_table(self.table)
+        fit_column(self.table, 0, 80)
+        fit_column(self.table, 7, 120)
+        fit_to_contents(self.table, 6)
 
         # Double-click a row to edit it
         self.table.doubleClicked.connect(

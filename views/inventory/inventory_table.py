@@ -1,4 +1,6 @@
 from PySide6.QtCore import Qt, Signal
+
+from utils.table import setup_table
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -148,6 +150,9 @@ class InventoryTable(QWidget):
             False
         )
 
+        # Shared look: 10 rows of space, full-height rows (utils/table.py)
+        setup_table(self.table, stretch=False)
+
         header = self.table.horizontalHeader()
 
         header.setSectionResizeMode(
@@ -295,10 +300,6 @@ class InventoryTable(QWidget):
                 actions
             )
 
-            self.table.setRowHeight(
-                row,
-                55
-            )
 
     def set_item(
         self,

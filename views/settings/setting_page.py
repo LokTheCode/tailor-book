@@ -475,7 +475,8 @@ class SettingPage(QWidget):
         folder_row.addWidget(folder, 1)
         folder_row.addWidget(browse)
         form.addRow(self._label("Backup folder"), folder_row)
-        self._check(form, "backup_on_exit", "Back up automatically when the app closes")
+        self._check(form, "backup_daily", "Back up automatically once a day (when the app starts or while it's open)")
+        self._check(form, "backup_on_exit", "Also back up when the app closes")
         self._spin(form, "backup_keep", "Keep automatic backups", 1, 100, " latest")
         form.addRow("", self._hint("Tip: choose a folder in Google Drive, OneDrive or a USB drive "
                                    "so you have a copy if this PC fails."))

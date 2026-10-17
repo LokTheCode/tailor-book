@@ -26,6 +26,7 @@ import qtawesome as qta
 from data.customer_crud import CUSTOMER_TYPES
 from services import notification_service as notify
 from services import settings_service
+from utils.table import setup_table
 
 
 class SendWorker(QThread):
@@ -234,12 +235,8 @@ class MarketingPage(QWidget):
 
         self.logs = QTableWidget(0, 6)
         self.logs.setHorizontalHeaderLabels(["Time", "Customer", "Type", "Channel", "To", "Status"])
-        self.logs.verticalHeader().setVisible(False)
-        self.logs.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.logs.setSelectionBehavior(QTableWidget.SelectRows)
-        self.logs.setAlternatingRowColors(True)
-        self.logs.setMinimumHeight(320)
-        self.logs.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # Shared look: 10 rows of space (utils/table.py)
+        setup_table(self.logs)
         history_layout.addWidget(self.logs)
 
         root.addWidget(history)

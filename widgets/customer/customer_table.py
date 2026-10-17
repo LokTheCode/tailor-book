@@ -13,6 +13,7 @@ from PySide6.QtGui import QColor
 import qtawesome as qta
 from typing import List
 from data.customer_data import CustomerRowData
+from utils.table import fit_column, setup_table
 
 class CustomerTable(QFrame):
     editCustomerRequested = Signal(int)
@@ -34,11 +35,10 @@ class CustomerTable(QFrame):
             "ID", "Name", "Mobile", "Orders", "Pending", "Last Visit", "Status", "Measurements", "Action"
         ])
 
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table.verticalHeader().hide()
-        self.table.setAlternatingRowColors(True)
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        # Shared look: 10 rows of space, full-height rows (utils/table.py)
+        setup_table(self.table)
+        fit_column(self.table, 0, 70)
+        fit_column(self.table, 8, 110)
         # Double-click a row to edit that customer
         self.table.doubleClicked.connect(
             lambda index: self.editCustomerRequested.emit(int(self.table.item(index.row(), 0).text()))

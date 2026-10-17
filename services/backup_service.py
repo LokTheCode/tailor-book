@@ -70,6 +70,24 @@ def backup_now(auto: bool = False) -> Path:
     return target
 
 
+def daily_backup_if_due() -> Path | None:
+    """Make today's automatic backup if it hasn't been made yet.
+
+    Called when the app starts and every 30 minutes while it's open,
+    so a shop that keeps the app open all day still gets one backup a day.
+    """
+    if not settings_service.get_bool("backup_daily"):
+        return None
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    if settings_service.get("last_auto_backup_date") == today:
+        return None
+
+    path = backup_now(auto=True)
+    settings_service.set("last_auto_backup_date", today)
+    return path
+
+
 def _prune_auto_backups(folder: Path) -> None:
     keep = max(1, settings_service.get_int("backup_keep", 10))
     autos = sorted(folder.glob(f"{AUTO_PREFIX}TailorBackup_*.zip"), reverse=True)

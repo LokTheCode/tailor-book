@@ -1,4 +1,6 @@
 import csv
+import sqlite3
+from datetime import datetime
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -8,7 +10,8 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QStackedWidget,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QUrl
+from PySide6.QtGui import QDesktopServices
 
 from widgets.customer.customer_header import CustomerHeader
 from widgets.customer.customer_stats import CustomerStats
@@ -21,6 +24,8 @@ from views.customers.customer_form import CustomerForm
 from data.customer_data import CustomerDataService
 import data.customer_crud as db
 from services import settings_service
+from utils import excel_export
+from utils.excel_export import Column, Sheet
 from data.customer_crud import CustomerHasOrders
 
 
@@ -502,74 +507,79 @@ class CustomerPage(QWidget):
 
     def export_customers(self):
 
-        file_path, _ = (
-            QFileDialog.getSaveFileName(
-                self,
-                "Export Customers to CSV",
-                "customers.csv",
-                "CSV Files (*.csv)"
-            )
+        excel = excel_export.is_available()
+        stamp = datetime.now().strftime("%Y-%m-%d")
+
+        file_path, chosen = QFileDialog.getSaveFileName(
+            self,
+            "Export Customers",
+            f"customers_{stamp}.{'xlsx' if excel else 'csv'}",
+            "Excel Workbook (*.xlsx);;CSV (*.csv)" if excel else "CSV (*.csv)",
         )
 
         if not file_path:
             return
 
-        conn = (
-            CustomerDataService
-            .get_connection()
-        )
-
-        cursor = conn.cursor()
-
-        cursor.execute(
-            """
-            SELECT
-                id,
-                name,
-                mobile,
-                alternate_mobile,
-                email,
-                gender,
-                customer_type,
-                reference,
-                address,
-                CASE WHEN is_active = 1 THEN 'Active' ELSE 'Inactive' END,
-                created_at
-            FROM customers
-            ORDER BY id
-            """
-        )
-
-        rows = cursor.fetchall()
-
+        conn = CustomerDataService.get_connection()
+        conn.row_factory = sqlite3.Row
+        rows = [
+            dict(row) for row in conn.execute(
+                """
+                SELECT
+                    c.id, c.name, c.mobile, c.alternate_mobile, c.email, c.gender,
+                    c.customer_type, c.reference, c.address,
+                    CASE WHEN c.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS status,
+                    substr(c.created_at, 1, 10) AS created,
+                    (SELECT COUNT(*) FROM orders o WHERE o.customer_id = c.id) AS orders,
+                    (SELECT COALESCE(SUM(o.total_amount), 0) FROM orders o
+                      WHERE o.customer_id = c.id AND LOWER(o.status) != 'cancelled') AS spent,
+                    (SELECT COALESCE(SUM(o.remaining_amount), 0) FROM orders o
+                      WHERE o.customer_id = c.id AND LOWER(o.status) != 'cancelled') AS pending
+                FROM customers c
+                ORDER BY c.id
+                """
+            )
+        ]
         conn.close()
 
+        columns = [
+            Column("ID", "id", "int", width=7),
+            Column("Name", "name"),
+            Column("Mobile", "mobile"),
+            Column("Alt. Mobile", "alternate_mobile"),
+            Column("Email", "email"),
+            Column("Gender", "gender"),
+            Column("Type", "customer_type"),
+            Column("Reference", "reference"),
+            Column("Address", "address", width=34),
+            Column("Status", "status", "status"),
+            Column("Joined", "created"),
+            Column("Orders", "orders", "int", total=True),
+            Column("Total Spent", "spent", "money", total=True),
+            Column("Pending", "pending", "money", total=True),
+        ]
+
         try:
-            # utf-8-sig so Excel shows ₹ and Hindi names correctly
-            with open(
-                file_path,
-                mode="w",
-                newline="",
-                encoding="utf-8-sig"
-            ) as f:
-
-                writer = csv.writer(f)
-
-                writer.writerow([
-                    "ID",
-                    "Name",
-                    "Mobile",
-                    "Alternate Mobile",
-                    "Email",
-                    "Gender",
-                    "Customer Type",
-                    "Reference",
-                    "Address",
-                    "Status",
-                    "Created At"
-                ])
-
-                writer.writerows(rows)
+            if file_path.lower().endswith(".csv") or "CSV" in chosen:
+                # utf-8-sig so Excel shows ₹ and Hindi names correctly
+                with open(file_path, "w", newline="", encoding="utf-8-sig") as f:
+                    writer = csv.writer(f)
+                    writer.writerow([c.header for c in columns])
+                    for row in rows:
+                        writer.writerow([row.get(c.key, "") for c in columns])
+            else:
+                if not file_path.lower().endswith(".xlsx"):
+                    file_path += ".xlsx"
+                active = sum(1 for r in rows if r["status"] == "Active")
+                excel_export.export(
+                    file_path,
+                    "Customer List",
+                    [Sheet("Customers", "Customer List", columns, rows, summary=[
+                        ("Total customers", len(rows), "int"),
+                        ("Active", active, "int"),
+                        ("Inactive", len(rows) - active, "int"),
+                    ])],
+                )
 
         except OSError as error:
             QMessageBox.warning(
@@ -579,8 +589,12 @@ class CustomerPage(QWidget):
             )
             return
 
-        QMessageBox.information(
+        reply = QMessageBox.question(
             self,
             "Export Success",
-            f"Exported {len(rows)} customers to:\n{file_path}"
+            f"Exported {len(rows)} customers to:\n{file_path}\n\nOpen it now?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.Yes,
         )
+        if reply == QMessageBox.Yes:
+            QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))

@@ -1,4 +1,6 @@
 from PySide6.QtCore import Qt, Signal
+
+from utils.table import setup_table
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -138,6 +140,9 @@ class OrderTable(QWidget):
         self.table.setAlternatingRowColors(True)
 
         self.table.verticalHeader().setVisible(False)
+
+        # Shared look: 10 rows of space, full-height rows (utils/table.py)
+        setup_table(self.table, stretch=False)
 
         # ======================================================
         # HEADER
@@ -401,10 +406,6 @@ class OrderTable(QWidget):
                 actions
             )
 
-            self.table.setRowHeight(
-                row_index,
-                58
-            )
 
         # ======================================================
         # EMPTY STATE
@@ -435,10 +436,6 @@ class OrderTable(QWidget):
                 10
             )
 
-            self.table.setRowHeight(
-                0,
-                80
-            )
 
     # ==========================================================
     # SET ITEM

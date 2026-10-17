@@ -17,6 +17,7 @@ import qtawesome as qta
 
 from services.user_service import PAGES, UserError, UserService, manageable_roles
 from views.users.user_dialog import UserDialog
+from utils.table import setup_table
 
 
 class UserPage(QWidget):
@@ -98,17 +99,11 @@ class UserPage(QWidget):
 
         self.table = QTableWidget(0, len(self.COLUMNS))
         self.table.setHorizontalHeaderLabels(self.COLUMNS)
-        self.table.verticalHeader().setVisible(False)
-        self.table.verticalHeader().setDefaultSectionSize(48)
-        self.table.setAlternatingRowColors(True)
-        self.table.setShowGrid(False)
-        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.table.setSelectionMode(QTableWidget.SingleSelection)
+        # Shared look: 10 rows of space, full-height rows (utils/table.py)
+        setup_table(self.table)
         self.table.doubleClicked.connect(lambda index: self.edit_user(self.users[index.row()]))
 
         header_view = self.table.horizontalHeader()
-        header_view.setSectionResizeMode(QHeaderView.Stretch)
         header_view.setSectionResizeMode(4, QHeaderView.Stretch)
         for column in (2, 3, 5):
             header_view.setSectionResizeMode(column, QHeaderView.ResizeToContents)

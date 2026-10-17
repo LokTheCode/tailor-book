@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -20,7 +21,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import (
     Qt,
     QDate,
+    QUrl,
 )
+from PySide6.QtGui import QDesktopServices
 
 from data.report_data import (
     get_date_range,
@@ -30,6 +33,9 @@ from data.report_data import (
     get_inventory_report,
     get_inventory_report_summary,
 )
+from utils import excel_export
+from utils.table import setup_table
+from utils.excel_export import Column, Sheet
 
 
 # ==========================================================
@@ -533,7 +539,7 @@ class ReportPage(QWidget):
         # ======================================================
 
         download_button = QPushButton(
-            "↓  Download CSV"
+            "↓  Download Excel"
         )
 
         download_button.setObjectName(
@@ -884,6 +890,9 @@ class ReportPage(QWidget):
         table,
     ):
 
+        # Shared look (utils/table.py): 10 rows of space
+        setup_table(table)
+
         table.setEditTriggers(
             QTableWidget.NoEditTriggers
         )
@@ -908,9 +917,6 @@ class ReportPage(QWidget):
             QHeaderView.Stretch
         )
 
-        table.setMinimumHeight(
-            180
-        )
 
     # ==========================================================
     # GET SELECTED DATE RANGE
@@ -1691,728 +1697,168 @@ class ReportPage(QWidget):
         )
 
     # ==========================================================
-    # EXPORT REPORT
+    # EXPORT REPORT (Excel, with CSV as a fallback)
     # ==========================================================
+
+    ORDER_COLUMNS = [
+        Column("Order No", "order_number"),
+        Column("Customer", "customer_name"),
+        Column("Mobile", "customer_mobile"),
+        Column("Order Date", "order_date"),
+        Column("Delivery", "delivery_date"),
+        Column("Status", "status", "status"),
+        Column("Subtotal", "subtotal", "money", total=True),
+        Column("Discount", "discount", "money", total=True),
+        Column("Tax", "tax", "money", total=True),
+        Column("Total", "total_amount", "money", total=True),
+        Column("Advance", "advance_amount", "money", total=True),
+        Column("Balance", "remaining_amount", "money", total=True),
+        Column("Notes", "description", width=30),
+    ]
+
+    CUSTOMER_COLUMNS = [
+        Column("ID", "customer_id", "int", width=8),
+        Column("Customer", "customer_name"),
+        Column("Mobile", "mobile"),
+        Column("Email", "email"),
+        Column("Type", "customer_type"),
+        Column("Reference", "reference"),
+        Column("Orders", "orders", "int", total=True),
+        Column("Revenue", "revenue", "money", total=True),
+        Column("Last Order", "last_order"),
+    ]
+
+    INVENTORY_COLUMNS = [
+        Column("Txn ID", "transaction_id", "int", width=9),
+        Column("Item", "item_name"),
+        Column("SKU", "sku"),
+        Column("Category", "category"),
+        Column("Type", "transaction_type", "status"),
+        Column("Quantity", "quantity", "number", total=True),
+        Column("Unit", "unit"),
+        Column("Reference", "reference_type"),
+        Column("Ref ID", "reference_id"),
+        Column("Notes", "notes", width=30),
+        Column("Date", "created_at"),
+    ]
 
     def export_report(
         self,
     ):
 
-        file_path, _ = (
-            QFileDialog.getSaveFileName(
-                self,
-                "Download Report",
-                "tailor_report.csv",
-                "CSV Files (*.csv)",
-            )
+        report_type = self.report_type.currentText()
+
+        stamp = datetime.now().strftime("%Y-%m-%d")
+        name = report_type.lower().replace(" ", "_")
+        excel = excel_export.is_available()
+
+        file_path, chosen = QFileDialog.getSaveFileName(
+            self,
+            "Download Report",
+            f"{name}_{stamp}.{'xlsx' if excel else 'csv'}",
+            "Excel Workbook (*.xlsx);;CSV (*.csv)" if excel else "CSV (*.csv)",
         )
 
         if not file_path:
             return
 
+        as_csv = file_path.lower().endswith(".csv") or "CSV" in chosen
+        if not as_csv and not file_path.lower().endswith(".xlsx"):
+            file_path += ".xlsx"
+
         try:
+            period, start_date, end_date = self.get_selected_date_range()
+            range_start, range_end = get_date_range(period, start_date, end_date)
+            period_text = f"{range_start.strftime('%d %b %Y')} to {range_end.strftime('%d %b %Y')}"
 
-            (
-                period,
-                start_date,
-                end_date,
-            ) = self.get_selected_date_range()
+            sheets = self.build_export_sheets(report_type, period, start_date, end_date)
 
-            range_start, range_end = (
-                get_date_range(
-                    period,
-                    start_date,
-                    end_date,
-                )
-            )
-
-            report_type = (
-                self.report_type.currentText()
-            )
-
-            # ==================================================
-            # ORDER
-            # ==================================================
-
-            if report_type == "Order Report":
-
-                data = get_order_report(
-                    period,
-                    start_date,
-                    end_date,
-                )
-
-                self.export_order_csv(
-                    file_path,
-                    data.get(
-                        "items",
-                        [],
-                    ),
-                    range_start,
-                    range_end,
-                )
-
-            # ==================================================
-            # CUSTOMER
-            # ==================================================
-
-            elif report_type == "Customer Report":
-
-                data = get_customer_report(
-                    period,
-                    start_date,
-                    end_date,
-                )
-
-                self.export_customer_csv(
-                    file_path,
-                    data.get(
-                        "items",
-                        [],
-                    ),
-                    range_start,
-                    range_end,
-                )
-
-            # ==================================================
-            # INVENTORY
-            # ==================================================
-
-            elif report_type == "Inventory Report":
-
-                data = get_inventory_report(
-                    period,
-                    start_date,
-                    end_date,
-                )
-
-                self.export_inventory_csv(
-                    file_path,
-                    data.get(
-                        "items",
-                        [],
-                    ),
-                    range_start,
-                    range_end,
-                )
-
-            # ==================================================
-            # OVERALL
-            # ==================================================
-
+            if as_csv:
+                self.write_csv(file_path, sheets, report_type, period_text)
             else:
+                excel_export.export(file_path, report_type, sheets, period_text)
 
-                order_data = (
-                    get_order_report(
-                        period,
-                        start_date,
-                        end_date,
-                    )
-                )
-
-                customer_data = (
-                    get_customer_report(
-                        period,
-                        start_date,
-                        end_date,
-                    )
-                )
-
-                inventory_data = (
-                    get_inventory_report(
-                        period,
-                        start_date,
-                        end_date,
-                    )
-                )
-
-                self.export_overall_csv(
-                    file_path,
-                    order_data.get(
-                        "items",
-                        [],
-                    ),
-                    customer_data.get(
-                        "items",
-                        [],
-                    ),
-                    inventory_data.get(
-                        "items",
-                        [],
-                    ),
-                    range_start,
-                    range_end,
-                )
-
-            # ==================================================
-            # SUCCESS
-            # ==================================================
-
-            QMessageBox.information(
-                self,
-                "Download Successful",
-                (
-                    "Report downloaded successfully.\n\n"
-                    f"Report: {report_type}\n"
-                    f"Period: "
-                    f"{range_start.strftime('%d/%m/%Y')}"
-                    " - "
-                    f"{range_end.strftime('%d/%m/%Y')}"
-                ),
-            )
-
-        except Exception as e:
-
-            QMessageBox.critical(
+        except PermissionError:
+            QMessageBox.warning(
                 self,
                 "Download Error",
-                str(e),
+                "Couldn't save the file. If it's open in Excel, close it and try again.",
+            )
+            return
+
+        except Exception as e:
+            QMessageBox.critical(self, "Download Error", str(e))
+            return
+
+        reply = QMessageBox.question(
+            self,
+            "Download Successful",
+            f"{report_type} saved:\n{file_path}\n\nOpen it now?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.Yes,
+        )
+
+        if reply == QMessageBox.Yes:
+            QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
+
+    def build_export_sheets(self, report_type, period, start_date, end_date):
+        """Return the sheets (tables) for the chosen report."""
+
+        sheets = []
+
+        def orders_sheet():
+            items = get_order_report(period, start_date, end_date).get("items", [])
+            summary = get_order_summary(period, start_date, end_date)
+            return Sheet(
+                "Orders", "Order Report", self.ORDER_COLUMNS, items,
+                summary=[
+                    ("Total orders", summary.get("total_orders", 0), "int"),
+                    ("Revenue", summary.get("revenue", 0), "money"),
+                    ("Advance received", summary.get("advance", 0), "money"),
+                    ("Balance due", summary.get("remaining", 0), "money"),
+                    ("Delivered", summary.get("delivered", 0), "int"),
+                    ("Pending", summary.get("pending", 0), "int"),
+                ],
             )
 
-    # ==========================================================
-    # EXPORT ORDER CSV
-    # ==========================================================
-
-    def export_order_csv(
-        self,
-        file_path,
-        orders,
-        start_date,
-        end_date,
-    ):
-
-        with open(
-            file_path,
-            "w",
-            newline="",
-            encoding="utf-8-sig",
-        ) as file:
-
-            writer = csv.writer(
-                file
-            )
-
-            writer.writerow([
-                "Order Number",
-                "Customer",
-                "Mobile",
-                "Order Date",
-                "Delivery Date",
-                "Status",
-                "Subtotal",
-                "Discount",
-                "Tax",
-                "Total Amount",
-                "Advance Amount",
-                "Remaining Amount",
-                "Description",
-            ])
-
-            for order in orders:
-
-                writer.writerow([
-                    order.get(
-                        "order_number",
-                        "",
-                    ),
-
-                    order.get(
-                        "customer_name",
-                        "",
-                    ),
-
-                    order.get(
-                        "customer_mobile",
-                        "",
-                    ),
-
-                    order.get(
-                        "order_date",
-                        "",
-                    ),
-
-                    order.get(
-                        "delivery_date",
-                        "",
-                    ),
-
-                    order.get(
-                        "status",
-                        "",
-                    ),
-
-                    order.get(
-                        "subtotal",
-                        0,
-                    ),
-
-                    order.get(
-                        "discount",
-                        0,
-                    ),
-
-                    order.get(
-                        "tax",
-                        0,
-                    ),
-
-                    order.get(
-                        "total_amount",
-                        0,
-                    ),
-
-                    order.get(
-                        "advance_amount",
-                        0,
-                    ),
-
-                    order.get(
-                        "remaining_amount",
-                        0,
-                    ),
-
-                    order.get(
-                        "description",
-                        "",
-                    ),
-                ])
-
-    # ==========================================================
-    # EXPORT CUSTOMER CSV
-    # ==========================================================
-
-    def export_customer_csv(
-        self,
-        file_path,
-        customers,
-        start_date,
-        end_date,
-    ):
-
-        with open(
-            file_path,
-            "w",
-            newline="",
-            encoding="utf-8-sig",
-        ) as file:
-
-            writer = csv.writer(
-                file
-            )
-
-            writer.writerow([
-                "Customer ID",
-                "Customer Name",
-                "Mobile",
-                "Email",
-                "Customer Type",
-                "Reference",
-                "Orders",
-                "Revenue",
-                "Last Order",
-            ])
-
-            for customer in customers:
-
-                writer.writerow([
-                    customer.get(
-                        "customer_id",
-                        "",
-                    ),
-
-                    customer.get(
-                        "customer_name",
-                        "",
-                    ),
-
-                    customer.get(
-                        "mobile",
-                        "",
-                    ),
-
-                    customer.get(
-                        "email",
-                        "",
-                    ),
-
-                    customer.get(
-                        "customer_type",
-                        "",
-                    ),
-
-                    customer.get(
-                        "reference",
-                        "",
-                    ),
-
-                    customer.get(
-                        "orders",
-                        0,
-                    ),
-
-                    customer.get(
-                        "revenue",
-                        0,
-                    ),
-
-                    customer.get(
-                        "last_order",
-                        "",
-                    ),
-                ])
-
-    # ==========================================================
-    # EXPORT INVENTORY CSV
-    # ==========================================================
-
-    def export_inventory_csv(
-        self,
-        file_path,
-        transactions,
-        start_date,
-        end_date,
-    ):
-
-        with open(
-            file_path,
-            "w",
-            newline="",
-            encoding="utf-8-sig",
-        ) as file:
-
-            writer = csv.writer(
-                file
-            )
-
-            writer.writerow([
-                "Transaction ID",
-                "Item",
-                "SKU",
-                "Category",
-                "Transaction Type",
-                "Quantity",
-                "Unit",
-                "Reference Type",
-                "Reference ID",
-                "Notes",
-                "Date",
-            ])
-
-            for transaction in transactions:
-
-                writer.writerow([
-                    transaction.get(
-                        "transaction_id",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "item_name",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "sku",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "category",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "transaction_type",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "quantity",
-                        0,
-                    ),
-
-                    transaction.get(
-                        "unit",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "reference_type",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "reference_id",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "notes",
-                        "",
-                    ),
-
-                    transaction.get(
-                        "created_at",
-                        "",
-                    ),
-                ])
-
-    # ==========================================================
-    # EXPORT OVERALL CSV
-    # ==========================================================
-
-    def export_overall_csv(
-        self,
-        file_path,
-        orders,
-        customers,
-        inventory,
-        start_date,
-        end_date,
-    ):
-
-        with open(
-            file_path,
-            "w",
-            newline="",
-            encoding="utf-8-sig",
-        ) as file:
-
-            writer = csv.writer(
-                file
-            )
-
-            # ==================================================
-            # HEADER
-            # ==================================================
-
-            writer.writerow([
-                "TAILOR SHOP REPORT"
-            ])
-
-            writer.writerow([
-                "From",
-                start_date.strftime(
-                    "%d/%m/%Y"
-                ),
-                "To",
-                end_date.strftime(
-                    "%d/%m/%Y"
-                ),
-            ])
-
-            writer.writerow([])
-
-            # ==================================================
-            # ORDERS
-            # ==================================================
-
-            writer.writerow([
-                "ORDERS"
-            ])
-
-            writer.writerow([
-                "Order Number",
-                "Customer",
-                "Mobile",
-                "Order Date",
-                "Delivery Date",
-                "Status",
-                "Subtotal",
-                "Discount",
-                "Tax",
-                "Total",
-                "Advance",
-                "Remaining",
-            ])
-
-            for order in orders:
-
-                writer.writerow([
-                    order.get(
-                        "order_number",
-                        "",
-                    ),
-
-                    order.get(
-                        "customer_name",
-                        "",
-                    ),
-
-                    order.get(
-                        "customer_mobile",
-                        "",
-                    ),
-
-                    order.get(
-                        "order_date",
-                        "",
-                    ),
-
-                    order.get(
-                        "delivery_date",
-                        "",
-                    ),
-
-                    order.get(
-                        "status",
-                        "",
-                    ),
-
-                    order.get(
-                        "subtotal",
-                        0,
-                    ),
-
-                    order.get(
-                        "discount",
-                        0,
-                    ),
-
-                    order.get(
-                        "tax",
-                        0,
-                    ),
-
-                    order.get(
-                        "total_amount",
-                        0,
-                    ),
-
-                    order.get(
-                        "advance_amount",
-                        0,
-                    ),
-
-                    order.get(
-                        "remaining_amount",
-                        0,
-                    ),
-                ])
-
-            writer.writerow([])
-
-            # ==================================================
-            # CUSTOMERS
-            # ==================================================
-
-            writer.writerow([
-                "CUSTOMERS"
-            ])
-
-            writer.writerow([
-                "Customer",
-                "Mobile",
-                "Email",
-                "Type",
-                "Orders",
-                "Revenue",
-                "Last Order",
-            ])
-
-            for customer in customers:
-
-                writer.writerow([
-                    customer.get(
-                        "customer_name",
-                        "",
-                    ),
-
-                    customer.get(
-                        "mobile",
-                        "",
-                    ),
-
-                    customer.get(
-                        "email",
-                        "",
-                    ),
-
-                    customer.get(
-                        "customer_type",
-                        "",
-                    ),
-
-                    customer.get(
-                        "orders",
-                        0,
-                    ),
-
-                    customer.get(
-                        "revenue",
-                        0,
-                    ),
-
-                    customer.get(
-                        "last_order",
-                        "",
-                    ),
-                ])
-
-            writer.writerow([])
-
-            # ==================================================
-            # INVENTORY
-            # ==================================================
-
-            writer.writerow([
-                "INVENTORY TRANSACTIONS"
-            ])
-
-            writer.writerow([
-                "Item",
-                "SKU",
-                "Category",
-                "Transaction",
-                "Quantity",
-                "Unit",
-                "Reference",
-                "Date",
-            ])
-
-            for item in inventory:
-
-                writer.writerow([
-                    item.get(
-                        "item_name",
-                        "",
-                    ),
-
-                    item.get(
-                        "sku",
-                        "",
-                    ),
-
-                    item.get(
-                        "category",
-                        "",
-                    ),
-
-                    item.get(
-                        "transaction_type",
-                        "",
-                    ),
-
-                    item.get(
-                        "quantity",
-                        0,
-                    ),
-
-                    item.get(
-                        "unit",
-                        "",
-                    ),
-
-                    item.get(
-                        "reference_type",
-                        "",
-                    ),
-
-                    item.get(
-                        "created_at",
-                        "",
-                    ),
-                ])
+        def customers_sheet():
+            items = get_customer_report(period, start_date, end_date).get("items", [])
+            return Sheet("Customers", "Customer Report", self.CUSTOMER_COLUMNS, items)
+
+        def inventory_sheet():
+            items = get_inventory_report(period, start_date, end_date).get("items", [])
+            return Sheet("Inventory", "Inventory Movement Report", self.INVENTORY_COLUMNS, items)
+
+        if report_type == "Order Report":
+            sheets.append(orders_sheet())
+        elif report_type == "Customer Report":
+            sheets.append(customers_sheet())
+        elif report_type == "Inventory Report":
+            sheets.append(inventory_sheet())
+        else:
+            orders = orders_sheet()
+            orders.name = "Summary & Orders"
+            orders.title = "Business Overview"
+            sheets.extend([orders, customers_sheet(), inventory_sheet()])
+
+        return sheets
+
+    @staticmethod
+    def write_csv(file_path, sheets, report_type, period_text):
+        """Plain CSV (no colours) for programs that can't open .xlsx."""
+
+        with open(file_path, "w", newline="", encoding="utf-8-sig") as file:
+            writer = csv.writer(file)
+            writer.writerow([report_type])
+            writer.writerow([f"Period: {period_text}"])
+            for sheet in sheets:
+                writer.writerow([])
+                writer.writerow([sheet.title.upper()])
+                for label, value, _kind in sheet.summary:
+                    writer.writerow([label, value])
+                writer.writerow([c.header for c in sheet.columns])
+                for item in sheet.rows:
+                    writer.writerow([item.get(c.key, "") for c in sheet.columns])
 
     # ==========================================================
     # NUMBER HELPER
