@@ -47,10 +47,10 @@ class PhotoCard(QFrame):
         self.cid_label.setAlignment(Qt.AlignCenter)
         root.addWidget(self.cid_label)
 
-        joined = QLabel("Joined : Today")
-        joined.setObjectName("MutedText")
-        joined.setAlignment(Qt.AlignCenter)
-        root.addWidget(joined)
+        self.joined_label = QLabel("Joined : New customer")
+        self.joined_label.setObjectName("MutedText")
+        self.joined_label.setAlignment(Qt.AlignCenter)
+        root.addWidget(self.joined_label)
 
         root.addStretch()
 
@@ -89,6 +89,7 @@ class PhotoCard(QFrame):
     def clear(self):
         self.remove_photo()
         self.cid_label.setText("Customer ID : AUTO")
+        self.joined_label.setText("Joined : New customer")
 
     def get_data(self):
         return {"photo_path": self.photo_path}
@@ -99,5 +100,7 @@ class PhotoCard(QFrame):
             self.set_photo(self.photo_path)
         else:
             self.remove_photo()
-        if "id" in data:
+        if data.get("id"):
             self.cid_label.setText(f"Customer ID : {data['id']}")
+        if data.get("created_at"):
+            self.joined_label.setText(f"Joined : {data['created_at']}")

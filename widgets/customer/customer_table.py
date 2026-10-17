@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QColor
 import qtawesome as qta
 from typing import List
 from data.customer_data import CustomerRowData
@@ -38,6 +39,10 @@ class CustomerTable(QFrame):
         self.table.setAlternatingRowColors(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        # Double-click a row to edit that customer
+        self.table.doubleClicked.connect(
+            lambda index: self.editCustomerRequested.emit(int(self.table.item(index.row(), 0).text()))
+        )
 
         layout.addWidget(self.table)
 
@@ -69,7 +74,7 @@ class CustomerTable(QFrame):
             item_pending = QTableWidgetItem(f"₹{c.pending_amount:,.2f}")
             item_pending.setTextAlignment(Qt.AlignCenter)
             if c.pending_amount > 0:
-                item_pending.setForeground(Qt.GlobalColor.red)
+                item_pending.setForeground(QColor("#F87171"))
             self.table.setItem(row, 4, item_pending)
 
             # Last Visit
@@ -81,9 +86,9 @@ class CustomerTable(QFrame):
             item_status = QTableWidgetItem(c.status)
             item_status.setTextAlignment(Qt.AlignCenter)
             if c.status.lower() == "active":
-                item_status.setForeground(Qt.GlobalColor.green)
+                item_status.setForeground(QColor("#10B981"))
             else:
-                item_status.setForeground(Qt.GlobalColor.gray)
+                item_status.setForeground(QColor("#9CA3AF"))
             self.table.setItem(row, 6, item_status)
 
             # Measurements
@@ -94,6 +99,7 @@ class CustomerTable(QFrame):
             # Action Buttons Widget (Edit / Delete)
             action_widget = QWidget()
             action_widget.setObjectName("TableActions")
+            action_widget.setAttribute(Qt.WA_StyledBackground, True)
             action_layout = QHBoxLayout(action_widget)
             action_layout.setContentsMargins(4, 2, 4, 2)
             action_layout.setSpacing(6)
