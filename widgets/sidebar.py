@@ -77,22 +77,31 @@ class HoverButton(QPushButton):
 
 class Sidebar(QWidget):
 
-    dashboardClicked = Signal()
-    customerClicked = Signal()
-    measurementClicked = Signal()
-    orderClicked = Signal()
-    inventoryClicked = Signal()
-    reportClicked = Signal()
-    settingClicked = Signal()
+    # Emits the page key, e.g. "customers" (see services/user_service.PAGES)
+    pageClicked = Signal(str)
     logoutClicked = Signal()
 
-    def __init__(self):
+    # page key -> (label, icon), in display order
+    MENU = [
+        ("dashboard", "Dashboard", "fa5s.home"),
+        ("customers", "Customers", "fa5s.users"),
+        ("measurements", "Measurements", "fa5s.ruler"),
+        ("orders", "Orders", "fa5s.clipboard-list"),
+        ("inventory", "Inventory", "fa5s.boxes"),
+        ("reports", "Reports", "fa5s.chart-line"),
+        ("users", "Users", "fa5s.user-shield"),
+        ("settings", "Settings", "fa5s.cog"),
+    ]
+
+    def __init__(self, allowed_pages=None):
+        """allowed_pages: page keys to show. None shows every page."""
         super().__init__()
 
         self.setObjectName("Sidebar")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setFixedWidth(250)
 
+        self.allowed_pages = allowed_pages
         self.buttons = {}
 
         self.build_ui()
@@ -100,7 +109,6 @@ class Sidebar(QWidget):
     # ------------------------------------------------------
 
     def build_ui(self):
-
 
         layout = QVBoxLayout(self)
 
@@ -120,59 +128,41 @@ class Sidebar(QWidget):
 
         layout.addSpacing(20)
 
-        self.add_menu(layout,"Dashboard","fa5s.home",self.dashboardClicked)
-
-        self.add_menu(layout,"Customers","fa5s.users",self.customerClicked)
-
-        self.add_menu(layout,"Measurements","fa5s.ruler",self.measurementClicked)
-
-        self.add_menu(layout,"Orders","fa5s.clipboard-list",self.orderClicked)
-
-        self.add_menu(layout,"Inventory","fa5s.boxes",self.inventoryClicked)
-
-        self.add_menu(layout,"Reports","fa5s.chart-line",self.reportClicked)
-
-        self.add_menu(layout,"Settings","fa5s.cog",self.settingClicked)
+        for key, label, icon in self.MENU:
+            if self.allowed_pages is None or key in self.allowed_pages:
+                self.add_menu(layout, key, label, icon)
 
         layout.addStretch()
 
-        self.add_menu(layout,"Logout","fa5s.sign-out-alt",self.logoutClicked)
-
-        self.set_active("Dashboard")
+        logout = HoverButton("Logout", "fa5s.sign-out-alt")
+        logout.clicked.connect(self.logoutClicked.emit)
+        layout.addWidget(logout)
 
     # ------------------------------------------------------
 
-    def add_menu(self, layout, text, icon_name, signal):
+    def add_menu(self, layout, key, text, icon_name):
 
         btn = HoverButton(text, icon_name)
 
-        btn.clicked.connect(signal.emit)
-
         btn.clicked.connect(
-            lambda _, name=text: self.set_active(name)
+            lambda _=False, page=key: self.pageClicked.emit(page)
         )
 
         layout.addWidget(btn)
 
-        self.buttons[text] = btn
+        self.buttons[key] = btn
 
     # ------------------------------------------------------
 
-    def set_active(self, menu_name):
+    def set_active(self, page_key):
 
-        for name, button in self.buttons.items():
+        for key, button in self.buttons.items():
 
-            if name == menu_name:
+            active = key == page_key
 
-                button.setProperty("active", True)
+            button.setProperty("active", active)
 
-                button.setActive(True)
-
-            else:
-
-                button.setProperty("active", False)
-
-                button.setActive(False)
+            button.setActive(active)
 
             button.style().unpolish(button)
             button.style().polish(button)

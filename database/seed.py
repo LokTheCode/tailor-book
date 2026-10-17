@@ -1,22 +1,13 @@
 from database.database import SessionLocal
 from models import Admin, Setting, Customer, CustomerMeasurement, Order
-from services.auth_service import AuthService
+from services.user_service import UserService
 
 def seed_initial_data():
+    # 1. The super admin account must always exist
+    UserService.ensure_super_admin()
+
     db = SessionLocal()
     try:
-        # 1. Seed Default Admin if none exists
-        if db.query(Admin).count() == 0:
-            default_admin = Admin(
-                name="System Admin",
-                email="admin@devtailor.com",
-                phone="9876543210",
-                password_hash=AuthService.hash_password("admin123"),
-                role="admin",
-                is_active=True
-            )
-            db.add(default_admin)
-
         # 2. Seed Default Settings if empty
         if db.query(Setting).count() == 0:
             default_settings = [

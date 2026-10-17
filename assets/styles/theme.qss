@@ -799,6 +799,49 @@ QPushButton#SocialButton[brand="website"]:hover {
 
 
 /* ==========================================================
+   Menus (profile menu, context menus)
+========================================================== */
+
+QMenu {
+    background: #1F2937;
+    color: #F9FAFB;
+    border: 1px solid #374151;
+    border-radius: 10px;
+    padding: 6px;
+}
+
+QMenu::item {
+    padding: 8px 24px 8px 12px;
+    border-radius: 6px;
+}
+
+QMenu::item:selected {
+    background: #2563EB;
+    color: #FFFFFF;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #374151;
+    margin: 6px 4px;
+}
+
+QMenu::icon {
+    padding-left: 8px;
+}
+
+QPushButton::menu-indicator {
+    subcontrol-position: right center;
+    subcontrol-origin: padding;
+    right: 8px;
+}
+
+QPushButton#Primary[hasMenu="true"] {
+    padding-right: 28px;
+}
+
+
+/* ==========================================================
    Charts
 ========================================================== */
 

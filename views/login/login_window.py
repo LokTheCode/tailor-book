@@ -24,7 +24,7 @@ from PySide6.QtCore import Qt, Signal
 
 import qtawesome as qta
 
-from services.auth_service import AuthService
+from services.user_service import UserService
 
 
 class LoginWindow(QWidget):
@@ -230,7 +230,8 @@ class LoginWindow(QWidget):
             return
 
         # Query backend database
-        admin = AuthService.authenticate_user(email_str, password_str)
+        # Returns a user dict (id, name, email, role, permissions) or None
+        admin = UserService.authenticate(email_str, password_str)
 
         if admin:
             # Broadcast successful authentication signal

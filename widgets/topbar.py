@@ -4,10 +4,11 @@ from PySide6.QtWidgets import (
     QPushButton,
     QHBoxLayout,
     QLineEdit,
+    QMenu,
     QSizePolicy
 )
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 
 import qtawesome as qta
@@ -15,6 +16,9 @@ from datetime import datetime
 
 
 class TopBar(QWidget):
+
+    changePasswordClicked = Signal()
+    logoutClicked = Signal()
 
     def __init__(self):
         super().__init__()
@@ -132,6 +136,28 @@ class TopBar(QWidget):
 
         self.profileBtn.setFixedHeight(42)
 
+        self.profileBtn.setCursor(Qt.PointingHandCursor)
+
+        # Profile menu: change password / logout
+        menu = QMenu(self.profileBtn)
+
+        change_password = menu.addAction(
+            qta.icon("fa5s.key", color="#D1D5DB"),
+            "Change Password"
+        )
+        change_password.triggered.connect(self.changePasswordClicked.emit)
+
+        menu.addSeparator()
+
+        logout = menu.addAction(
+            qta.icon("fa5s.sign-out-alt", color="#F87171"),
+            "Logout"
+        )
+        logout.triggered.connect(self.logoutClicked.emit)
+
+        self.profileBtn.setMenu(menu)
+        self.profileBtn.setProperty("hasMenu", True)
+
         layout.addWidget(self.profileBtn)
 
     # ----------------------------------------------------
@@ -139,3 +165,12 @@ class TopBar(QWidget):
     # def setTitle(self, title):
 
     #     self.title.setText(title)
+
+    # ----------------------------------------------------
+
+    def set_user(self, user):
+        """Show the logged-in user's name and role on the profile button."""
+        name = user.get("name") or "User"
+        role = user.get("role_label", "")
+        self.profileBtn.setText(f" {name}")
+        self.profileBtn.setToolTip(f"{user.get('email', '')}\n{role}".strip())
