@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
 import sqlite3
+
+from database.database import DB_PATH
 import math
 
 
@@ -37,7 +39,8 @@ class CustomerQueryResult:
 class CustomerDataService:
     @staticmethod
     def get_connection():
-        return sqlite3.connect("tailor.db")
+        # Same database file that init_db() creates
+        return sqlite3.connect(DB_PATH)
 
     @classmethod
     def fetch_stats(cls) -> CustomerStatsData:

@@ -3,14 +3,16 @@ from typing import List, Tuple
 from pathlib import Path
 import sqlite3
 
+from database.database import DB_PATH as APP_DB_PATH
+
 
 # ==========================================================
 # DATABASE PATH
 # ==========================================================
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DB_PATH = BASE_DIR / "tailor.db"
+# Use the same database file that init_db() creates
+# (%LOCALAPPDATA%\TailorManagement\tailor.db on Windows)
+DB_PATH = Path(APP_DB_PATH)
 
 
 # ==========================================================
