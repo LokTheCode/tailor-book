@@ -126,7 +126,19 @@ def main():
     # EVENT LOOP
     # ======================================================
 
-    sys.exit(app.exec())
+    exit_code = app.exec()
+
+    # Settings > Backup: "Back up automatically when the app closes"
+    # (skipped right after a restore, which closes the app on purpose)
+    if not app.property("skipExitBackup"):
+        try:
+            from services import backup_service, settings_service
+            if settings_service.get_bool("backup_on_exit"):
+                backup_service.backup_now(auto=True)
+        except Exception as error:
+            print(f"Automatic backup failed: {error}")
+
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

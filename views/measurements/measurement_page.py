@@ -38,6 +38,7 @@ from data.measurement_data import (
     get_measurement_stats,
 )
 
+from services import settings_service
 from data.measurement_crud import (
     delete_measurement,
 )
@@ -51,7 +52,7 @@ class MeasurementPage(QWidget):
 
         self.current_page = 1
 
-        self.page_size = 10
+        self.page_size = settings_service.get_int("rows_per_page", 10)
 
         self.build_ui()
 
@@ -186,6 +187,11 @@ class MeasurementPage(QWidget):
             MeasurementPagination()
         )
 
+        # Rows per page from Settings > General
+        self.pagination.page_size.blockSignals(True)
+        self.pagination.page_size.setCurrentText(str(self.page_size))
+        self.pagination.page_size.blockSignals(False)
+
         root.addWidget(
             self.pagination
         )
@@ -303,14 +309,18 @@ class MeasurementPage(QWidget):
         # FORM
         # -----------------------------------------------
 
-        if hasattr(
-            self.form,
-            "measurementSaved",
-        ):
+        # Form: Back, Save, Update and Delete all return to the list
+        self.form.backRequested.connect(
+            self.show_list
+        )
 
-            self.form.measurementSaved.connect(
-                self.measurement_saved
-            )
+        self.form.measurementSaved.connect(
+            self.measurement_saved
+        )
+
+        self.form.measurementDeleted.connect(
+            self.show_list
+        )
 
     # ======================================================
     # LOAD DATA
@@ -418,95 +428,32 @@ class MeasurementPage(QWidget):
 
     def open_measurement_form(self):
 
-        self.form.clear_form()
+        self.form.open_new()
 
         self.stack.setCurrentWidget(
             self.form_page
         )
-
-    # ======================================================
-    # EDIT
-    # ======================================================
 
     def edit_measurement(
         self,
         measurement,
     ):
 
-        self.form.current_customer = {
-
-            "id":
-                measurement[
-                    "customer_id"
-                ],
-
-            "name":
-                measurement[
-                    "customer_name"
-                ],
-
-            "mobile":
-                measurement[
-                    "mobile"
-                ],
-
-        }
-
-        if hasattr(
-            self.form,
-            "load_measurement_data",
-        ):
-
-            self.form.load_measurement_data(
-                measurement
-            )
-
-        else:
-
-            # fallback for current form
-
-            self.form.current_measurement = (
-                measurement
-            )
-
-            self.form.measurement_name.setText(
-                measurement[
-                    "measurement_name"
-                ]
-            )
-
-            self.form.upper_section.set_data(
-                measurement[
-                    "upper_measurements"
-                ]
-            )
-
-            self.form.lower_section.set_data(
-                measurement[
-                    "lower_measurements"
-                ]
-            )
-
-            self.form.extra_section.set_data(
-                measurement[
-                    "extra_measurements"
-                ]
-            )
-
-            self.form.notes.setPlainText(
-                measurement.get(
-                    "notes",
-                    "",
-                )
-            )
+        self.form.load_measurement(
+            measurement
+        )
 
         self.stack.setCurrentWidget(
             self.form_page
         )
 
-    # ======================================================
-    # DELETE
-    # ======================================================
+    def show_list(self, *_):
+
+        self.stack.setCurrentWidget(
+            self.list_page
+        )
+
+        self.load_data()
 
     def delete_measurement(
         self,

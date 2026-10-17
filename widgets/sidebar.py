@@ -89,6 +89,7 @@ class Sidebar(QWidget):
         ("orders", "Orders", "fa5s.clipboard-list"),
         ("inventory", "Inventory", "fa5s.boxes"),
         ("reports", "Reports", "fa5s.chart-line"),
+        ("marketing", "Marketing", "fa5s.bullhorn"),
         ("users", "Users", "fa5s.user-shield"),
         ("settings", "Settings", "fa5s.cog"),
     ]

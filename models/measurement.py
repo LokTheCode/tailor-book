@@ -9,6 +9,7 @@ class CustomerMeasurement(Base, TimestampMixin):
     id = Column(Integer, primary_key=True, index=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
     measurement_name = Column(String(100), nullable=False)  # e.g., "Regular Fit", "Suit 2026"
+    garment = Column(String(30), nullable=True)  # Shirt, Pant, Suit ... (Settings > Measurements)
     
     # Store structured JSON objects directly
     upper_measurements = Column(JSON, nullable=True)  # {"shoulder": 18, "chest": 40, ...}

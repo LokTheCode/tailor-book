@@ -22,6 +22,8 @@ from PySide6.QtCore import (
 
 import qtawesome as qta
 
+from services import settings_service
+
 
 class GarmentCard(QFrame):
 
@@ -747,7 +749,8 @@ class GarmentCard(QFrame):
             100
         )
 
-        self.gst.setValue(18)
+        # Default GST % comes from Settings > Invoice
+        self.gst.setValue(settings_service.get_float("default_gst_percent", 18))
 
         self.gst.setSuffix(" %")
 
@@ -1082,7 +1085,8 @@ class GarmentCard(QFrame):
 
         self.discount.setValue(0)
 
-        self.gst.setValue(18)
+        # Default GST % comes from Settings > Invoice
+        self.gst.setValue(settings_service.get_float("default_gst_percent", 18))
 
         self.notes.clear()
 

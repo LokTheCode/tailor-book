@@ -8,6 +8,7 @@ from models.order_payment import OrderPayment
 # Add to models/__init__.py
 from models.inventory import InventoryItem
 from models.inventory_transaction import InventoryTransaction
+from models.message_log import MessageLog
 
 __all__ = [
     "Admin",
@@ -18,5 +19,6 @@ __all__ = [
     "OrderItem",
     "OrderPayment",
     "InventoryItem",
-    "InventoryTransaction"
+    "InventoryTransaction",
+    "MessageLog",
 ]
