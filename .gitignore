@@ -34,3 +34,9 @@ config.local.*
 .vscode/
 .DS_Store
 Thumbs.db
+# Website: secrets and server data never go to GitHub
+website/private/config.php
+website/private/data/*
+website/private/keys/*
+website/private/releases/*
+!website/private/**/.gitkeep

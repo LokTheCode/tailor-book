@@ -6,6 +6,9 @@ REM    2. installer_output\TailorBook_Setup_v<version>.exe   (via Inno Setup 6)
 REM  Run from the project folder:  build.bat
 REM =========================================================
 
+echo Checking settings...
+python tools\prebuild_check.py || goto :error
+
 echo Installing build tools...
 pip install -r requirements.txt pyinstaller || goto :error
 
