@@ -17,10 +17,10 @@ admin_header('Dashboard', 'dashboard');
 ?>
 <?php if ($s['to_check']): ?>
   <p class="alert alert-info"><strong><?= (int)$s['to_check'] ?> payment<?= $s['to_check'] > 1 ? 's' : '' ?> to check.</strong>
-    Match the transaction ID in your bank / UPI app, then approve. <a href="/admin/orders.php?status=payment_submitted">Check payments</a></p>
+    Match the transaction ID in your bank / UPI app, then approve. <a href="<?= BASE ?>/admin/orders.php?status=payment_submitted">Check payments</a></p>
 <?php endif; ?>
 <?php if (!$release): ?>
-  <p class="alert alert-error">No installer uploaded yet, so customers can't download. <a href="/admin/releases.php">Upload one</a></p>
+  <p class="alert alert-error">No installer uploaded yet, so customers can't download. <a href="<?= BASE ?>/admin/releases.php">Upload one</a></p>
 <?php endif; ?>
 
 <div class="stats">
@@ -40,7 +40,7 @@ admin_header('Dashboard', 'dashboard');
   <tr><th>Order</th><th>Customer</th><th>Phone</th><th>Amount</th><th>Status</th><th>Date</th></tr>
   <?php foreach ($recent as $o): ?>
     <tr>
-      <td><a href="/admin/order.php?id=<?= (int)$o['id'] ?>"><?= e($o['order_no']) ?></a></td>
+      <td><a href="<?= BASE ?>/admin/order.php?id=<?= (int)$o['id'] ?>"><?= e($o['order_no']) ?></a></td>
       <td><?= e($o['name']) ?><br><span class="muted small"><?= e($o['shop_name']) ?></span></td>
       <td><?= e($o['phone']) ?></td>
       <td><?= e(money((int)$o['amount'])) ?></td>

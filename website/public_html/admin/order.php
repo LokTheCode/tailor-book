@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $license = order_license($id);
 admin_header('Order ' . $order['order_no'], 'orders');
 ?>
-<p><a href="/admin/orders.php">&larr; All orders</a></p>
+<p><a href="<?= BASE ?>/admin/orders.php">&larr; All orders</a></p>
 <div class="card">
   <p><span class="status status-<?= e($order['status']) ?>"><?= e(order_status_label($order['status'])) ?></span></p>
   <table class="data">
@@ -73,7 +73,7 @@ admin_header('Order ' . $order['order_no'], 'orders');
     · <?= $license['machine_id'] ? 'Activated on ' . e($license['machine_name'] ?: 'a computer') . ' (' . e(nice_date($license['activated_at'])) . ')' : 'Not activated yet' ?></p>
   <div class="actions">
     <form method="post" class="inline-form"><?= csrf_field() ?><input type="hidden" name="action" value="resend"><button class="btn btn-ghost btn-sm">Email the key again</button></form>
-    <a class="btn btn-ghost btn-sm" href="/admin/licenses.php?q=<?= e(urlencode($license['license_key'])) ?>">Manage license</a>
+    <a class="btn btn-ghost btn-sm" href="<?= BASE ?>/admin/licenses.php?q=<?= e(urlencode($license['license_key'])) ?>">Manage license</a>
   </div>
 </div>
 <?php elseif (in_array($order['status'], ['payment_submitted', 'awaiting_payment', 'rejected'], true)): ?>

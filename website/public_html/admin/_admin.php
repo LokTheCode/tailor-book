@@ -38,9 +38,9 @@ function admin_header(string $title, string $active): void {
     echo '<section class="page-hero" style="padding-bottom:0"><div class="wrap"><h1>' . e($title) . '</h1>';
     echo '<nav class="admin-nav" aria-label="Admin">';
     foreach ($items as $key => [$href, $label]) {
-        echo '<a href="' . e($href) . '"' . ($key === $active ? ' aria-current="page"' : '') . '>' . e($label) . '</a>';
+        echo '<a href="' . e(url($href)) . '"' . ($key === $active ? ' aria-current="page"' : '') . '>' . e($label) . '</a>';
     }
-    echo '<a href="/admin/logout.php">Log out</a></nav></div></section>';
+    echo '<a href="' . e(url('admin/logout.php')) . '">Log out</a></nav></div></section>';
     echo '<section class="section" style="padding-top:8px"><div class="wrap">';
 }
 
@@ -51,5 +51,6 @@ function admin_footer(): void {
 
 function back(string $fallback = '/admin/'): void {
     $to = $_POST['back'] ?? $fallback;
+    if (is_string($to) && BASE !== '' && str_starts_with($to, BASE . '/')) $to = substr($to, strlen(BASE));
     redirect(is_string($to) && str_starts_with($to, '/admin/') ? $to : $fallback);
 }

@@ -13,7 +13,7 @@ policy_page('Refund & Cancellation Policy', "{$p} is a digital product. All sale
 
 <h2>Before you buy</h2>
 <p>Please make sure <?= e($p) ?> suits your shop before you pay. Look at the features, screenshots and video on our website, check the
-system requirements (Windows 10 or 11, 64-bit, 4 GB RAM), and <a href="/contact.php">ask us any questions</a>. We are happy to help.</p>
+system requirements (Windows 10 or 11, 64-bit, 4 GB RAM), and <a href="<?= BASE ?>/contact.php">ask us any questions</a>. We are happy to help.</p>
 
 <h2>Cancelling an order</h2>
 <ul>
@@ -35,7 +35,7 @@ system requirements (Windows 10 or 11, 64-bit, 4 GB RAM), and <a href="/contact.
   <li>Changing your mind, or no longer needing the software.</li>
   <li>Not using the software, or using it for less time than expected.</li>
   <li>Problems with your computer, Windows, printer or internet, or with third-party services such as AiSensy or your email provider.</li>
-  <li>Wanting a feature that <?= e($p) ?> does not have. New features are quoted separately; see the <a href="/support-policy.php">Support Policy</a>.</li>
+  <li>Wanting a feature that <?= e($p) ?> does not have. New features are quoted separately; see the <a href="<?= BASE ?>/support-policy.php">Support Policy</a>.</li>
   <li>Problems we can fix: if something does not work as described, contact us during your support period and we will fix it.</li>
 </ul>
 

@@ -18,12 +18,32 @@ foreach ($privateCandidates as $candidate) {
 }
 if ($PRIVATE === null || !is_file($PRIVATE . '/config.php')) {
     http_response_code(500);
-    exit('Website not configured: copy private/config.sample.php to private/config.php and fill it in.');
+    header('Content-Type: text/plain; charset=utf-8');
+    exit("Website not configured yet.\n\n"
+        . ($PRIVATE === null
+            ? "The 'private' folder was not found. Put it next to this site's public_html folder:\n  " . dirname(__DIR__, 2) . "/private\n"
+            : "In the folder {$PRIVATE}\ncopy config.sample.php to config.php and fill in your details.\n"));
 }
 define('PRIVATE_DIR', $PRIVATE);
 
 $CONFIG = require PRIVATE_DIR . '/config.php';
 date_default_timezone_set($CONFIG['timezone'] ?? 'Asia/Kolkata');
+
+// Web path of this site, e.g. "" at the domain root or "/tailor-project/public_html"
+// in a sub-folder. Every link and redirect starts with it.
+define('BASE', (function (): string {
+    $docRoot = realpath((string)($_SERVER['DOCUMENT_ROOT'] ?? ''));
+    $site = realpath(dirname(__DIR__));
+    if ($docRoot && $site && str_starts_with($site, $docRoot)) {
+        return rtrim(str_replace('\\', '/', substr($site, strlen($docRoot))), '/');
+    }
+    return rtrim((string)(parse_url((string)($GLOBALS['CONFIG']['site_url'] ?? ''), PHP_URL_PATH) ?? ''), '/');
+})());
+
+/** Link to a page of this site: url('buy.php') -> /tailor-project/public_html/buy.php */
+function url(string $path = ''): string {
+    return BASE . '/' . ltrim($path, '/');
+}
 
 function config(string $key, $default = null) {
     global $CONFIG;
@@ -146,7 +166,7 @@ function start_session(): void {
     session_name('tbsid');
     session_set_cookie_params([
         'lifetime' => 0,
-        'path' => '/',
+        'path' => BASE . '/',
         'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
         'httponly' => true,
         'samesite' => 'Lax',
@@ -195,6 +215,9 @@ function rate_limit(string $kind, int $max, int $seconds): bool {
 }
 
 function redirect(string $path): void {
+    if (str_starts_with($path, '/') && !str_starts_with($path, '//') && !str_starts_with($path, BASE . '/')) {
+        $path = BASE . $path;
+    }
     header('Location: ' . $path);
     exit;
 }

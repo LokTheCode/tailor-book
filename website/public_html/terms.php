@@ -46,7 +46,7 @@ New features, modules or changes made for your shop are not included in the pric
 charged separately.</p>
 
 <h2>5. Support</h2>
-<p>Free support for <?= $months ?> months, and what it covers, is described in our <a href="/support-policy.php">Support Policy</a>.</p>
+<p>Free support for <?= $months ?> months, and what it covers, is described in our <a href="<?= BASE ?>/support-policy.php">Support Policy</a>.</p>
 
 <h2>6. Your data and backups</h2>
 <p>Your shop's data is stored on your computer, not with us. You are responsible for it, for keeping backups (<?= e($p) ?> can make them
@@ -62,7 +62,7 @@ availability are between you and them. We are not responsible for them.</p>
 future buyers; this does not affect licenses already bought.</p>
 
 <h2>9. Refunds</h2>
-<p>All sales are final. Please read our <a href="/refund.php">Refund &amp; Cancellation Policy</a> before you buy.</p>
+<p>All sales are final. Please read our <a href="<?= BASE ?>/refund.php">Refund &amp; Cancellation Policy</a> before you buy.</p>
 
 <h2>10. Warranty and liability</h2>
 <p>We build <?= e($p) ?> with care and fix problems reported during the support period, but we cannot promise it will be free of all errors

@@ -89,14 +89,14 @@ page_header('Buy ' . $product, "Buy a {$product} license: one-time payment of " 
         <div class="notice small">
           We use these details only to process your order, send your license key, give you support and tell you about updates
           to <?= e($product) ?>. We do not sell or share them for marketing. You can ask us to see, correct or delete them at any time.
-          See our <a href="/privacy.php" target="_blank">Privacy Policy</a>.
+          See our <a href="<?= BASE ?>/privacy.php" target="_blank">Privacy Policy</a>.
         </div>
 
         <label class="check"><input type="checkbox" name="agree_terms" value="1"<?= !empty($_POST['agree_terms']) ? ' checked' : '' ?>>
-          <span>I agree to the <a href="/terms.php" target="_blank">Terms of Service</a> and <a href="/privacy.php" target="_blank">Privacy Policy</a>, and I consent to my details being used as described above.</span></label>
+          <span>I agree to the <a href="<?= BASE ?>/terms.php" target="_blank">Terms of Service</a> and <a href="<?= BASE ?>/privacy.php" target="_blank">Privacy Policy</a>, and I consent to my details being used as described above.</span></label>
         <?= field_error($errors, 'agree_terms') ?>
         <label class="check"><input type="checkbox" name="agree_refund" value="1"<?= !empty($_POST['agree_refund']) ? ' checked' : '' ?>>
-          <span>I understand that this is a digital product and <strong>all sales are final with no refunds</strong> (see the <a href="/refund.php" target="_blank">Refund Policy</a>).</span></label>
+          <span>I understand that this is a digital product and <strong>all sales are final with no refunds</strong> (see the <a href="<?= BASE ?>/refund.php" target="_blank">Refund Policy</a>).</span></label>
         <?= field_error($errors, 'agree_refund') ?>
 
         <button class="btn btn-primary" type="submit">Place order for <?= e(money($price)) ?></button>
