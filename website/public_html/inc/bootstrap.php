@@ -304,19 +304,114 @@ function new_order_no(): string {
 // ---------------------------------------------------------------
 // Email (PHP mail(); on Hostinger send from a mailbox on your domain)
 // ---------------------------------------------------------------
-function send_mail(string $to, string $subject, string $body): bool {
+/**
+ * Send a plain-text email. Uses your mailbox over SMTP when smtp_password is
+ * set in config.php (recommended: lands in the inbox, not spam), otherwise
+ * PHP mail(). Failures are written to private/data/php-errors.log.
+ */
+function send_mail(string $to, string $subject, string $body, ?string &$error = null): bool {
+    $error = null;
+    try {
+        if ((string)config('smtp_password') !== '') {
+            smtp_send($to, $subject, $body);
+            return true;
+        }
+        $fromAddress = (string)config('mail_from');
+        $headers = mail_headers($to, $subject, false);
+        unset($headers['To'], $headers['Subject']);
+        if (!@mail($to, mb_encode_mimeheader($subject, 'UTF-8'), $body, $headers, '-f' . $fromAddress)) {
+            throw new RuntimeException('PHP mail() could not send. Set the smtp_ settings in config.php.');
+        }
+        return true;
+    } catch (Throwable $e) {
+        $error = $e->getMessage();
+        error_log("Email to {$to} failed ({$subject}): {$error}");
+        return false;
+    }
+}
+
+function mail_headers(string $to, string $subject, bool $full = true): array {
     $fromAddress = (string)config('mail_from');
     $fromName = (string)config('mail_from_name', config('product_name'));
-    $headers = [
+    $domain = substr(strrchr($fromAddress, '@') ?: '@localhost', 1);
+    return [
+        'Date' => date('r'),
         'From' => mb_encode_mimeheader($fromName, 'UTF-8') . " <{$fromAddress}>",
+        'To' => $to,
+        'Subject' => mb_encode_mimeheader($subject, 'UTF-8'),
         'Reply-To' => (string)config('business_email', $fromAddress),
+        'Message-ID' => '<' . bin2hex(random_bytes(12)) . '@' . $domain . '>',
         'MIME-Version' => '1.0',
         'Content-Type' => 'text/plain; charset=UTF-8',
+        'Content-Transfer-Encoding' => '8bit',
         'X-Mailer' => 'TailorBook',
     ];
-    $ok = @mail($to, mb_encode_mimeheader($subject, 'UTF-8'), $body, $headers, '-f' . $fromAddress);
-    if (!$ok) error_log("mail() failed to {$to}: {$subject}");
-    return $ok;
+}
+
+/** Minimal SMTP client: SSL (port 465) or STARTTLS (587), AUTH LOGIN. */
+function smtp_send(string $to, string $subject, string $body): void {
+    $host = (string)config('smtp_host', 'smtp.hostinger.com');
+    $port = (int)config('smtp_port', 465);
+    $secure = (string)config('smtp_secure', $port === 465 ? 'ssl' : 'tls');   // ssl | tls | none
+    $user = (string)config('smtp_user', config('mail_from'));
+    $pass = (string)config('smtp_password');
+    $from = (string)config('mail_from');
+
+    $context = stream_context_create(['ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
+    $socket = @stream_socket_client(($secure === 'ssl' ? 'ssl://' : 'tcp://') . "{$host}:{$port}",
+        $errno, $errstr, 20, STREAM_CLIENT_CONNECT, $context);
+    if (!$socket) throw new RuntimeException("Could not connect to {$host}:{$port} ({$errstr})");
+    stream_set_timeout($socket, 20);
+
+    $read = function () use ($socket): string {
+        $reply = '';
+        while (($line = fgets($socket, 1024)) !== false) {
+            $reply .= $line;
+            if (strlen($line) < 4 || $line[3] !== '-') break;
+        }
+        return $reply;
+    };
+    $send = function (string $command, array $expect, bool $secret = false) use ($socket, $read): string {
+        if ($command !== '') fwrite($socket, $command . "\r\n");
+        $reply = $read();
+        if (!in_array((int)substr($reply, 0, 3), $expect, true)) {
+            $shown = $secret ? 'login' : strtok($command, "\r\n");
+            throw new RuntimeException('SMTP server said: ' . trim($reply ?: 'no reply') . " (after {$shown})");
+        }
+        return $reply;
+    };
+
+    try {
+        $helo = parse_url((string)config('site_url'), PHP_URL_HOST) ?: 'localhost';
+        $send('', [220]);
+        $send("EHLO {$helo}", [250]);
+        if ($secure === 'tls') {
+            $send('STARTTLS', [220]);
+            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                throw new RuntimeException('Could not start TLS encryption.');
+            }
+            $send("EHLO {$helo}", [250]);
+        }
+        $send('AUTH LOGIN', [334]);
+        $send(base64_encode($user), [334], true);
+        try {
+            $send(base64_encode($pass), [235], true);
+        } catch (RuntimeException $e) {
+            throw new RuntimeException('Email login failed: check smtp_user and smtp_password in config.php.');
+        }
+        $send("MAIL FROM:<{$from}>", [250]);
+        $send("RCPT TO:<{$to}>", [250, 251]);
+        $send('DATA', [354]);
+
+        $message = '';
+        foreach (mail_headers($to, $subject) as $name => $value) $message .= "{$name}: {$value}\r\n";
+        $text = preg_replace("/\r\n|\r|\n/", "\r\n", $body);
+        $text = preg_replace('/^\./m', '..', $text);          // dot-stuffing
+        $send($message . "\r\n" . $text . "\r\n.", [250], true);
+        $send('QUIT', [221]);
+    } finally {
+        fclose($socket);
+    }
 }
 
 // ---------------------------------------------------------------

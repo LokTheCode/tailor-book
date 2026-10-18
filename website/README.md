@@ -17,8 +17,12 @@ website/
    Under *PHP options*, set `upload_max_filesize` and `post_max_size` to `256M` if you
    want to upload installers through the admin page.
 2. **hPanel → Security → SSL**: install the free SSL certificate (the site forces HTTPS).
-3. **hPanel → Emails**: create a mailbox such as `no-reply@yourdomain.in`; licenses are
-   emailed from it. Also create `support@` / `privacy@` if you use them.
+3. **hPanel → Emails**: create a mailbox such as `no-reply@yourdomain.in` and note its
+   password. Put the address in `mail_from` and `smtp_user`, and the password in
+   `smtp_password` in `config.php`. Emails are then sent through `smtp.hostinger.com`
+   and reach the inbox. Test it in **Admin → Account → Send test email**.
+   There is no database to create: the site keeps its data in one SQLite file,
+   `private/data/tailorbook.sqlite`, made automatically.
 4. **Fill in your details:** copy `private/config.sample.php` to `private/config.php`
    and edit every line marked `FILL IN`: business name and address, email, phone, UPI ID,
    bank details, price, grievance officer, jurisdiction city, `site_url`

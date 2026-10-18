@@ -4,6 +4,18 @@ require __DIR__ . '/_admin.php';
 $admin = current_admin();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
+    if (post('action') === 'test_mail') {
+        $to = post('to');
+        if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            flash('Enter a valid email address.', 'error');
+        } elseif (send_mail($to, 'Test email from ' . config('product_name'),
+            "This is a test email from your website.\n\nIf you can read this, license and order emails will arrive too.\n\n" . site_url(), $mailError)) {
+            flash("Test email sent to {$to}. Check the inbox (and spam folder).");
+        } else {
+            flash('Email not sent: ' . $mailError, 'error');
+        }
+        redirect('/admin/account.php');
+    }
     $q = db()->prepare('SELECT password_hash FROM admins WHERE id = ?');
     $q->execute([$admin['id']]);
     if (!password_verify(post('current'), (string)$q->fetchColumn())) {
@@ -33,6 +45,18 @@ admin_header('Account', 'account');
       <label>Confirm new password <input type="password" name="confirm" required minlength="10" autocomplete="new-password"></label>
     </div>
     <button class="btn btn-primary">Change password</button>
+  </form>
+</div>
+<div class="card">
+  <h2>Email</h2>
+  <p class="muted">Sending from <?= e((string)config('mail_from')) ?>
+    <?= config('smtp_password') ? 'through ' . e((string)config('smtp_host', 'smtp.hostinger.com')) . ' (SMTP)' : 'with PHP mail(). Add smtp_password in config.php so emails don&rsquo;t go to spam.' ?></p>
+  <form method="post" class="form">
+    <?= csrf_field() ?><input type="hidden" name="action" value="test_mail">
+    <div class="form-grid">
+      <label>Send a test email to <input type="email" name="to" required value="<?= e((string)config('admin_notify_email')) ?>"></label>
+    </div>
+    <button class="btn btn-ghost">Send test email</button>
   </form>
 </div>
 <h2>Activity</h2>
