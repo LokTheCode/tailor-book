@@ -52,7 +52,7 @@ if ($orderNo && can_view_order($orderNo)) {
     $order = find_order($orderNo);
 }
 $license = $order ? order_license((int)$order['id']) : null;
-$qr = is_file(__DIR__ . '/assets/img/upi-qr.png') ? '/assets/img/upi-qr.png' : null;
+$qr = is_file(__DIR__ . '/assets/img/upi-qr.png') ? url('assets/img/upi-qr.png') : null;
 
 page_header('Order status', 'Check your order and get your license key.', 'order');
 ?>
@@ -96,7 +96,7 @@ page_header('Order status', 'Check your order and get your license key.', 'order
         <button class="btn btn-ghost" type="button" data-copy="license-key">Copy</button>
       </div>
       <p class="muted small">We have also emailed it to <?= e($order['email']) ?>. It activates on one computer.</p>
-      <form method="post" action="/download.php" class="form" style="margin-top:16px">
+      <form method="post" action="<?= BASE ?>/download.php" class="form" style="margin-top:16px">
         <?= csrf_field() ?>
         <input type="hidden" name="email" value="<?= e($order['email']) ?>">
         <input type="hidden" name="license_key" value="<?= e($license['license_key']) ?>">
@@ -113,7 +113,7 @@ page_header('Order status', 'Check your order and get your license key.', 'order
   <?php else: ?>
     <?php if ($order['status'] === 'rejected'): ?>
       <p class="alert alert-error">We could not find this payment.<?= $order['admin_note'] ? ' ' . e($order['admin_note']) : '' ?>
-        <br>Please check the transaction ID below or <a href="/contact.php">contact us</a>.</p>
+        <br>Please check the transaction ID below or <a href="<?= BASE ?>/contact.php">contact us</a>.</p>
     <?php endif; ?>
     <div class="card">
       <h2><?= $order['status'] === 'payment_submitted' ? 'We are checking your payment' : 'Pay ' . e(money((int)$order['amount'])) ?></h2>

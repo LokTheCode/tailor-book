@@ -1,3 +1,8 @@
+; Build the app first with build.bat (it runs PyInstaller, then this script).
+#if !FileExists(SourcePath + "dist\TailorBook\TailorBook.exe")
+  #error The app is not built yet. Close Inno Setup and double-click build.bat in the project folder instead.
+#endif
+
 ; =========================================================
 ; INNO SETUP SCRIPT - TAILOR BOOK
 ; =========================================================

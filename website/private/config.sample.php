@@ -49,9 +49,14 @@ return [
     'bank_details'  => "Bank: \nAccount name: \nAccount no: \nIFSC: ",   // optional, FILL IN or ''
 
     // ---------------- Email ----------------
-    // Hostinger: create this mailbox in hPanel > Emails, so mail() can send from it
-    'mail_from'      => 'no-reply@yourdomain.in',        // FILL IN
+    // Create this mailbox in hPanel > Emails first. Emails are sent from it
+    // through Hostinger's mail server, so they reach the inbox, not spam.
+    'mail_from'      => 'no-reply@yourdomain.in',        // FILL IN: the mailbox address
     'mail_from_name' => 'Tailor Book',
+    'smtp_host'      => 'smtp.hostinger.com',
+    'smtp_port'      => 465,                             // 465 (SSL) or 587 (TLS)
+    'smtp_user'      => 'no-reply@yourdomain.in',        // FILL IN: same as mail_from
+    'smtp_password'  => '',                              // FILL IN: that mailbox's password
     'admin_notify_email' => 'you@yourdomain.in',         // FILL IN: new orders/messages are sent here
 
     // ---------------- Licensing ----------------

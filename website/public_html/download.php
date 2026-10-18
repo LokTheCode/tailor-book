@@ -81,7 +81,7 @@ page_header('Download', "Download {$product} with your license key.", 'download'
 <section class="page-hero">
   <div class="wrap narrow">
     <h1>Download <?= e($product) ?></h1>
-    <p class="lead">Enter the email you bought with and your license key. Don't have a key yet? <a href="/buy.php">Buy a license</a>.</p>
+    <p class="lead">Enter the email you bought with and your license key. Don't have a key yet? <a href="<?= BASE ?>/buy.php">Buy a license</a>.</p>
   </div>
 </section>
 <section class="section" style="padding-top:24px">

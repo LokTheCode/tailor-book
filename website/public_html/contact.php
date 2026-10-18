@@ -61,7 +61,7 @@ page_header('Contact', 'Questions about ' . config('product_name') . '? Contact 
           <label>Mobile <span class="hint">Optional</span><input name="phone" value="<?= e($v['phone']) ?>" autocomplete="tel"></label>
         </div>
         <label>Message <textarea name="message" rows="5" required><?= e($v['message']) ?></textarea></label>
-        <label class="check"><input type="checkbox" name="consent" value="1"><span>I agree to my details being used to reply to this message, as described in the <a href="/privacy.php" target="_blank">Privacy Policy</a>.</span></label>
+        <label class="check"><input type="checkbox" name="consent" value="1"><span>I agree to my details being used to reply to this message, as described in the <a href="<?= BASE ?>/privacy.php" target="_blank">Privacy Policy</a>.</span></label>
         <button class="btn btn-primary" type="submit">Send message</button>
       </form>
     </div>

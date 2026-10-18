@@ -61,7 +61,7 @@ admin_header('Orders', 'orders');
   <tr><th>Order</th><th>Customer</th><th>Contact</th><th>Amount</th><th>Transaction ID</th><th>Status</th><th>Date</th></tr>
   <?php foreach ($orders as $o): ?>
     <tr>
-      <td><a href="/admin/order.php?id=<?= (int)$o['id'] ?>"><?= e($o['order_no']) ?></a></td>
+      <td><a href="<?= BASE ?>/admin/order.php?id=<?= (int)$o['id'] ?>"><?= e($o['order_no']) ?></a></td>
       <td><?= e($o['name']) ?><br><span class="muted small"><?= e($o['shop_name']) ?>, <?= e($o['city']) ?></span></td>
       <td><?= e($o['phone']) ?><br><span class="muted small"><?= e($o['email']) ?></span></td>
       <td><?= e(money((int)$o['amount'])) ?></td>

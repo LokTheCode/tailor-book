@@ -52,7 +52,7 @@ page_header('Setup');
 <?php if ($publicKey): ?>
   <div class="card">
     <h2>Setup complete</h2>
-    <p>Your admin login is ready: <a href="/admin/">open the admin panel</a>.</p>
+    <p>Your admin login is ready: <a href="<?= BASE ?>/admin/">open the admin panel</a>.</p>
     <h3>One more step: connect the desktop app</h3>
     <p>Copy this public key into <code>config.py</code> of the desktop app as
        <code>LICENSE_PUBLIC_KEY</code>, set <code>LICENSE_SERVER_URL</code> to
@@ -61,7 +61,7 @@ page_header('Setup');
     <p class="muted small">You can see this key again any time in Admin &gt; Releases.</p>
   </div>
 <?php elseif (is_installed()): ?>
-  <div class="card"><h2>Already set up</h2><p>Go to the <a href="/admin/">admin panel</a>.</p></div>
+  <div class="card"><h2>Already set up</h2><p>Go to the <a href="<?= BASE ?>/admin/">admin panel</a>.</p></div>
 <?php else: ?>
   <div class="card">
     <h2>Server check</h2>

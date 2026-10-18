@@ -11,7 +11,7 @@ $shots = [];
 foreach (glob(__DIR__ . '/assets/screenshots/*.{png,jpg,jpeg,webp}', GLOB_BRACE) ?: [] as $path) {
     $file = basename($path);
     $caption = ucfirst(trim(str_replace(['-', '_'], ' ', preg_replace('/^\d+[-_ ]*|\.\w+$/', '', $file))));
-    $shots[] = ['src' => '/assets/screenshots/' . rawurlencode($file), 'caption' => $caption];
+    $shots[] = ['src' => url('assets/screenshots/') . rawurlencode($file), 'caption' => $caption];
 }
 sort($shots);
 
@@ -68,7 +68,7 @@ page_header($product, 'Tailor shop software for Windows: customers, measurements
       <h1>The order book for your tailoring shop.</h1>
       <p class="lead">Customers, measurements, orders and payments in one Windows app. Pay once and use it for as long as you like. No monthly fee.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="/buy.php">Buy for <?= e(money($price)) ?></a>
+        <a class="btn btn-primary" href="<?= BASE ?>/buy.php">Buy for <?= e(money($price)) ?></a>
         <a class="btn btn-ghost" href="#features">See what it does</a>
       </div>
       <p class="hero-note">One-time payment<?= config('price_includes_gst') ? ', GST included' : '' ?>. <?= (int)$supportMonths ?> months of free support.</p>
@@ -78,7 +78,7 @@ page_header($product, 'Tailor shop software for Windows: customers, measurements
       <div class="app-titlebar"><i></i><i></i><i></i></div>
       <div class="app-body">
         <div class="app-side">
-          <div class="shop"><img src="/assets/img/icon.png" alt="">Sharma Tailors</div>
+          <div class="shop"><img src="<?= BASE ?>/assets/img/icon.png" alt="">Sharma Tailors</div>
           <div class="item">Dashboard</div>
           <div class="item">Customers</div>
           <div class="item on">Measurements</div>
@@ -135,7 +135,7 @@ page_header($product, 'Tailor shop software for Windows: customers, measurements
     <div class="video-box">
       <?php if ($hasVideoFile): ?>
         <video controls preload="metadata" poster="/assets/img/logo.png">
-          <source src="/assets/video/<?= e(rawurlencode(basename($videoFile))) ?>" type="video/mp4">
+          <source src="<?= BASE ?>/assets/video/<?= e(rawurlencode(basename($videoFile))) ?>" type="video/mp4">
         </video>
       <?php else: ?>
         <button class="video-play" data-youtube="<?= e($youtube) ?>" aria-label="Play the demo video">
@@ -173,7 +173,7 @@ page_header($product, 'Tailor shop software for Windows: customers, measurements
       <p class="lead">Pick one of six themes and any accent colour you like. Your shop name stays at the top of the menu.</p>
     </div>
     <div class="media-frame">
-      <img src="/assets/img/themes.png" alt="The six colour themes: Midnight, Classic Light, Ocean, Royal Purple, Sunrise and Mint" loading="lazy" width="1656" height="788">
+      <img src="<?= BASE ?>/assets/img/themes.png" alt="The six colour themes: Midnight, Classic Light, Ocean, Royal Purple, Sunrise and Mint" loading="lazy" width="1656" height="788">
     </div>
   </div>
 </section>
@@ -200,8 +200,8 @@ page_header($product, 'Tailor shop software for Windows: customers, measurements
         <div><?= e($product) ?> license</div>
         <div class="amount"><?= e(money($price)) ?></div>
         <div class="muted">One-time payment<?= config('price_includes_gst') ? ', inclusive of GST' : '' ?>. For one computer.</div>
-        <a class="btn btn-primary" href="/buy.php">Buy now</a>
-        <p class="muted small" style="margin-top:14px">All sales are final. See the <a href="/refund.php" style="color:#C7D2FE">refund policy</a>.</p>
+        <a class="btn btn-primary" href="<?= BASE ?>/buy.php">Buy now</a>
+        <p class="muted small" style="margin-top:14px">All sales are final. See the <a href="<?= BASE ?>/refund.php" style="color:#C7D2FE">refund policy</a>.</p>
       </div>
       <ul class="price-list">
         <li>Every feature on this page</li>
@@ -230,9 +230,9 @@ page_header($product, 'Tailor shop software for Windows: customers, measurements
     <div class="cta-band">
       <div>
         <h2>Ready to close the paper register?</h2>
-        <p>Questions first? Call <?= e(config('business_phone')) ?> or <a href="/contact.php" style="color:#C7D2FE">send us a message</a>.</p>
+        <p>Questions first? Call <?= e(config('business_phone')) ?> or <a href="<?= BASE ?>/contact.php" style="color:#C7D2FE">send us a message</a>.</p>
       </div>
-      <a class="btn btn-primary" href="/buy.php">Buy <?= e($product) ?></a>
+      <a class="btn btn-primary" href="<?= BASE ?>/buy.php">Buy <?= e($product) ?></a>
     </div>
   </div>
 </section>
