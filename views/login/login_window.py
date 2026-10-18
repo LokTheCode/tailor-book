@@ -25,6 +25,7 @@ from PySide6.QtCore import Qt, Signal
 import qtawesome as qta
 
 from services.user_service import UserService
+from utils.screen import fit_to_screen
 
 
 class LoginWindow(QWidget):
@@ -36,7 +37,8 @@ class LoginWindow(QWidget):
         super().__init__()
 
         self.setWindowTitle("Dev Tailor ERP")
-        self.resize(1600, 850)
+        # Fits any screen; AppManager then opens it maximised
+        fit_to_screen(self, min_width=760, min_height=700)
 
 
         self.build_ui()

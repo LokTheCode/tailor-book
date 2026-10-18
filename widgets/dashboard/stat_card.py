@@ -28,7 +28,7 @@ class StatCard(QFrame):
         self.color = color
 
         self.setMinimumHeight(170)
-        self.setMinimumWidth(230)
+        self.setMinimumWidth(170)
 
         self.build_ui(
             title,
