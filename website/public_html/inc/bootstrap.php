@@ -32,11 +32,23 @@ date_default_timezone_set($CONFIG['timezone'] ?? 'Asia/Kolkata');
 // Web path of this site, e.g. "" at the domain root or "/tailor-project/public_html"
 // in a sub-folder. Every link and redirect starts with it.
 define('BASE', (function (): string {
-    $docRoot = realpath((string)($_SERVER['DOCUMENT_ROOT'] ?? ''));
+    // 1. From the running script: SCRIPT_NAME "/tailor-project/public_html/admin/index.php"
+    //    minus its path inside the site "admin/index.php" -> "/tailor-project/public_html"
     $site = realpath(dirname(__DIR__));
+    $file = realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? ''));
+    $name = str_replace('\\', '/', (string)($_SERVER['SCRIPT_NAME'] ?? ''));
+    if ($site && $file && str_starts_with($file, $site . DIRECTORY_SEPARATOR)) {
+        $inside = '/' . str_replace('\\', '/', substr($file, strlen($site) + 1));
+        if ($name !== '' && str_ends_with($name, $inside)) {
+            return rtrim(substr($name, 0, -strlen($inside)), '/');
+        }
+    }
+    // 2. From the document root
+    $docRoot = realpath((string)($_SERVER['DOCUMENT_ROOT'] ?? ''));
     if ($docRoot && $site && str_starts_with($site, $docRoot)) {
         return rtrim(str_replace('\\', '/', substr($site, strlen($docRoot))), '/');
     }
+    // 3. From site_url in config.php
     return rtrim((string)(parse_url((string)($GLOBALS['CONFIG']['site_url'] ?? ''), PHP_URL_PATH) ?? ''), '/');
 })());
 
