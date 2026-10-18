@@ -34,6 +34,10 @@ class DashboardWindow(QMainWindow):
     # Emitted when the user confirms logout; AppManager shows the login screen
     logoutRequested = Signal()
 
+    # Emitted after Settings > Appearance is saved; AppManager rebuilds
+    # the window so every icon and chart uses the new theme
+    appearanceChanged = Signal()
+
     def __init__(self, user):
         super().__init__()
 
@@ -133,6 +137,9 @@ class DashboardWindow(QMainWindow):
         self.sidebar.logoutClicked.connect(self.logout)
         self.topbar.logoutClicked.connect(self.logout)
         self.topbar.changePasswordClicked.connect(self.change_password)
+
+        if "settings" in self.pages:
+            self.pages["settings"].appearanceChanged.connect(self.appearanceChanged.emit)
 
         if allowed:
             self.show_page(allowed[0])

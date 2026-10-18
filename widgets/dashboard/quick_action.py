@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
 
 from PySide6.QtCore import Qt
 import qtawesome as qta
+from utils.theme import theme_color
 
 
 class QuickAction(QFrame):
@@ -73,7 +74,7 @@ class QuickAction(QFrame):
             btn.setIcon(
                 qta.icon(
                     icon,
-                    color="white"
+                    color=theme_color("text")
                 )
             )
 

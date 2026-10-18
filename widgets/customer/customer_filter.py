@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 
 import qtawesome as qta
+from utils.theme import theme_color
 
 from data.customer_crud import CUSTOMER_TYPES
 
@@ -130,7 +131,7 @@ class CustomerFilter(QWidget):
         reset.setIcon(
             qta.icon(
                 "fa5s.undo-alt",
-                color="white"
+                color=theme_color("text")
             )
         )
 

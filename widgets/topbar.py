@@ -12,6 +12,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 
 import qtawesome as qta
+from utils.theme import theme_color
 from datetime import datetime
 
 
@@ -106,7 +107,7 @@ class TopBar(QWidget):
 
             qta.icon(
                 "fa5s.bell",
-                color="#ffffff"
+                color=theme_color("text")
             )
 
         )
@@ -142,7 +143,7 @@ class TopBar(QWidget):
         menu = QMenu(self.profileBtn)
 
         change_password = menu.addAction(
-            qta.icon("fa5s.key", color="#D1D5DB"),
+            qta.icon("fa5s.key", color=theme_color("text_label")),
             "Change Password"
         )
         change_password.triggered.connect(self.changePasswordClicked.emit)

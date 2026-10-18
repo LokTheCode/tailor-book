@@ -2,6 +2,7 @@ from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout
 from PySide6.QtGui import QColor, QPainter, QPen, QFont
 from PySide6.QtCore import Qt, QMargins
+from utils.theme import theme_color
 
 class RevenueChart(QFrame):
     def __init__(self):
@@ -39,14 +40,14 @@ class RevenueChart(QFrame):
         self.axisX = QValueAxis()
         self.axisX.setRange(0, 11)
         self.axisX.setTickCount(12)
-        self.axisX.setLabelsColor(QColor("white"))
+        self.axisX.setLabelsColor(QColor(theme_color("muted")))
         self.axisX.setGridLineVisible(False)
 
         self.axisY = QValueAxis()
         self.axisY.setRange(0, 150)
         self.axisY.setTickCount(7)
-        self.axisY.setLabelsColor(QColor("white"))
-        self.axisY.setGridLineColor(QColor("#374151"))
+        self.axisY.setLabelsColor(QColor(theme_color("muted")))
+        self.axisY.setGridLineColor(QColor(theme_color("border")))
 
         self.chart.addAxis(self.axisX, Qt.AlignBottom)
         self.chart.addAxis(self.axisY, Qt.AlignLeft)

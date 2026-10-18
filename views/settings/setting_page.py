@@ -5,11 +5,13 @@ import sys
 import time
 from pathlib import Path
 
-from PySide6.QtCore import QUrl, Qt, Signal
-from PySide6.QtGui import QDesktopServices, QPixmap
+from PySide6.QtCore import QSize, QUrl, Qt, Signal
+from PySide6.QtGui import QColor, QDesktopServices, QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
+    QButtonGroup,
     QCheckBox,
+    QColorDialog,
     QComboBox,
     QDoubleSpinBox,
     QFileDialog,
@@ -24,11 +26,13 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QScrollArea,
+    QSizePolicy,
     QSpinBox,
     QStackedWidget,
     QTableWidget,
     QTableWidgetItem,
     QTextEdit,
+    QToolButton,
     QVBoxLayout,
     QWidget,
 )
@@ -39,7 +43,18 @@ from config import APP_NAME, APP_VERSION
 from database.database import DB_PATH
 from services import backup_service, notification_service, settings_service
 from utils.shortcuts import SHORTCUTS
-from utils.theme import ACCENTS, FONT_SCALES, apply_theme
+from utils.theme import (
+    ACCENTS,
+    CUSTOM_ACCENT,
+    DEFAULT_THEME,
+    FONT_SCALES,
+    THEME_DEFAULT_ACCENT,
+    THEMES,
+    accent_from_colour,
+    apply_theme,
+    theme_color,
+)
+from utils.theme_preview import accent_swatch, theme_preview
 
 DATA_DIR = Path(DB_PATH).parent
 LOGO_DIR = DATA_DIR / "branding"
@@ -62,6 +77,7 @@ SECTIONS = [
 class SettingPage(QWidget):
 
     settingsSaved = Signal()
+    appearanceChanged = Signal()
 
     def __init__(self):
         super().__init__()
@@ -99,7 +115,7 @@ class SettingPage(QWidget):
         self.menu = QListWidget()
         for name, icon in SECTIONS:
             self.menu.addItem(name)
-            self.menu.item(self.menu.count() - 1).setIcon(qta.icon(icon, color="#D1D5DB"))
+            self.menu.item(self.menu.count() - 1).setIcon(qta.icon(icon, color=theme_color("text_label")))
         left_layout.addWidget(self.menu)
         root.addWidget(left)
 
@@ -135,7 +151,7 @@ class SettingPage(QWidget):
         bottom.addWidget(self.saved_label, 1)
 
         reload_button = QPushButton(" Undo changes")
-        reload_button.setIcon(qta.icon("fa5s.undo-alt", color="white"))
+        reload_button.setIcon(qta.icon("fa5s.undo-alt", color=theme_color("text")))
         reload_button.clicked.connect(self.load)
         bottom.addWidget(reload_button)
 
@@ -287,10 +303,10 @@ class SettingPage(QWidget):
 
         buttons = QVBoxLayout()
         upload = QPushButton(" Choose Logo")
-        upload.setIcon(qta.icon("fa5s.upload", color="white"))
+        upload.setIcon(qta.icon("fa5s.upload", color=theme_color("text")))
         upload.clicked.connect(self.choose_logo)
         remove = QPushButton(" Remove")
-        remove.setIcon(qta.icon("fa5s.trash", color="white"))
+        remove.setIcon(qta.icon("fa5s.trash", color=theme_color("text")))
         remove.clicked.connect(lambda: self.set_logo(""))
         buttons.addWidget(upload)
         buttons.addWidget(remove)
@@ -366,7 +382,7 @@ class SettingPage(QWidget):
         for event, label in notification_service.EVENTS.items():
             self.wa_test_event.addItem(label, event)
         test = QPushButton(" Send Test")
-        test.setIcon(qta.icon("fa5b.whatsapp", color="white"))
+        test.setIcon(qta.icon("fa5b.whatsapp", color=theme_color("text")))
         test.clicked.connect(self.test_whatsapp)
         test_row.addWidget(self.wa_test_mobile, 2)
         test_row.addWidget(self.wa_test_event, 1)
@@ -407,7 +423,7 @@ class SettingPage(QWidget):
         self.email_test_to = QLineEdit()
         self.email_test_to.setPlaceholderText("Your email address")
         test = QPushButton(" Send Test Email")
-        test.setIcon(qta.icon("fa5s.paper-plane", color="white"))
+        test.setIcon(qta.icon("fa5s.paper-plane", color=theme_color("text")))
         test.clicked.connect(self.test_email)
         row.addWidget(self.email_test_to, 1)
         row.addWidget(test)
@@ -491,10 +507,10 @@ class SettingPage(QWidget):
         backup.setIcon(qta.icon("fa5s.download", color="white"))
         backup.clicked.connect(self.backup_now)
         restore = QPushButton(" Restore from Backup...")
-        restore.setIcon(qta.icon("fa5s.upload", color="white"))
+        restore.setIcon(qta.icon("fa5s.upload", color=theme_color("text")))
         restore.clicked.connect(self.restore_backup)
         open_folder = QPushButton(" Open Backup Folder")
-        open_folder.setIcon(qta.icon("fa5s.folder-open", color="white"))
+        open_folder.setIcon(qta.icon("fa5s.folder-open", color=theme_color("text")))
         open_folder.clicked.connect(lambda: self.open_folder(backup_service.backup_folder()))
         buttons.addWidget(backup)
         buttons.addWidget(restore)
@@ -518,12 +534,139 @@ class SettingPage(QWidget):
         return page
 
     def build_appearance(self):
-        page, layout = self._section("Appearance", "Colours and text size. Applied as soon as you save.")
-        form = self._card(layout)
-        self._combo(form, "accent_color", "Accent colour", list(ACCENTS))
+        page, layout = self._section(
+            "Appearance",
+            "Pick a theme and an accent colour. Click Save Settings to apply.",
+        )
+
+        self.selected_theme = DEFAULT_THEME
+        self.selected_accent = THEME_DEFAULT_ACCENT
+        self.custom_accent = "#2563EB"
+
+        # ---------------- Themes ----------------
+        card = QFrame()
+        card.setObjectName("Card")
+        card_layout = QVBoxLayout(card)
+        card_layout.setContentsMargins(24, 20, 24, 20)
+        card_layout.setSpacing(14)
+
+        title = QLabel("Theme")
+        title.setObjectName("CardTitle")
+        card_layout.addWidget(title)
+
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(14)
+        grid.setVerticalSpacing(14)
+
+        self.theme_group = QButtonGroup(self)
+        self.theme_group.setExclusive(True)
+        self.theme_tiles = {}
+
+        for index, (name, info) in enumerate(THEMES.items()):
+            tile = QToolButton()
+            tile.setObjectName("ThemeTile")
+            tile.setCheckable(True)
+            tile.setCursor(Qt.PointingHandCursor)
+            tile.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            tile.setIconSize(QSize(200, 120))
+            tile.setText(f"{name}\n{info['description']}")
+            tile.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            tile.clicked.connect(lambda _=False, n=name: self.pick_theme(n))
+            self.theme_group.addButton(tile)
+            self.theme_tiles[name] = tile
+            grid.addWidget(tile, index // 3, index % 3)
+
+        card_layout.addLayout(grid)
+        layout.addWidget(card)
+
+        # ---------------- Accent colour ----------------
+        card = QFrame()
+        card.setObjectName("Card")
+        card_layout = QVBoxLayout(card)
+        card_layout.setContentsMargins(24, 20, 24, 20)
+        card_layout.setSpacing(12)
+
+        title = QLabel("Accent colour")
+        title.setObjectName("CardTitle")
+        card_layout.addWidget(title)
+        card_layout.addWidget(self._hint("Used for main buttons, the selected menu item and highlights."))
+
+        row = QHBoxLayout()
+        row.setSpacing(6)
+
+        self.accent_group = QButtonGroup(self)
+        self.accent_group.setExclusive(True)
+        self.accent_buttons = {}
+
+        for name in [THEME_DEFAULT_ACCENT, *ACCENTS, CUSTOM_ACCENT]:
+            button = QToolButton()
+            button.setObjectName("AccentSwatch")
+            button.setCheckable(True)
+            button.setCursor(Qt.PointingHandCursor)
+            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            button.setIconSize(QSize(30, 30))
+            button.setText({THEME_DEFAULT_ACCENT: "Auto", CUSTOM_ACCENT: "Custom…"}.get(name, name))
+            button.setToolTip(
+                "Use the theme's own accent colour" if name == THEME_DEFAULT_ACCENT
+                else "Choose any colour" if name == CUSTOM_ACCENT
+                else name
+            )
+            button.clicked.connect(lambda _=False, n=name: self.pick_accent(n))
+            self.accent_group.addButton(button)
+            self.accent_buttons[name] = button
+            row.addWidget(button)
+
+        row.addStretch()
+        card_layout.addLayout(row)
+        layout.addWidget(card)
+
+        # ---------------- Text size ----------------
+        form = self._card(layout, "Text")
         self._combo(form, "font_size", "Text size", list(FONT_SCALES))
+
         layout.addStretch()
         return page
+
+    def pick_theme(self, name):
+        """Choosing a theme also switches the accent back to the theme's own."""
+        self.selected_theme = name
+        self.selected_accent = THEME_DEFAULT_ACCENT
+        self.refresh_appearance()
+
+    def pick_accent(self, name):
+        if name == CUSTOM_ACCENT:
+            colour = QColorDialog.getColor(QColor(self.custom_accent), self, "Choose accent colour")
+            if not colour.isValid():
+                self.refresh_appearance()  # keep the previous choice ticked
+                return
+            self.custom_accent = colour.name().upper()
+        self.selected_accent = name
+        self.refresh_appearance()
+
+    def refresh_appearance(self):
+        """Tick the chosen tile/swatch and redraw previews with the chosen accent."""
+        for name, tile in self.theme_tiles.items():
+            tile.setChecked(name == self.selected_theme)
+            accent = self.selected_accent if name == self.selected_theme else THEME_DEFAULT_ACCENT
+            tile.setIcon(QIcon(theme_preview(name, accent, self.custom_accent)))
+
+        theme_accent = THEMES[self.selected_theme]["accent"]
+        for name, button in self.accent_buttons.items():
+            button.setChecked(name == self.selected_accent)
+            if name == THEME_DEFAULT_ACCENT:
+                shades = ACCENTS[theme_accent]
+            elif name == CUSTOM_ACCENT:
+                shades = accent_from_colour(self.custom_accent)
+            else:
+                shades = ACCENTS[name]
+            button.setIcon(QIcon(accent_swatch(shades[0], shades[1])))
+
+    def open_section(self, name):
+        """Show a section by name, e.g. open_section("Appearance")."""
+        for row, (section, _icon) in enumerate(SECTIONS):
+            if section == name:
+                self.menu.setCurrentRow(row)
+                return
 
     def build_shortcuts(self):
         page, layout = self._section("Keyboard Shortcuts", "Work faster without the mouse. Press F1 anywhere to see these.")
@@ -602,6 +745,15 @@ class SettingPage(QWidget):
                 widget.setText(value)
 
         self.set_logo(values.get("shop_logo", ""), store=False)
+
+        self.selected_theme = values.get("theme") if values.get("theme") in THEMES else DEFAULT_THEME
+        accent = values.get("accent_color") or THEME_DEFAULT_ACCENT
+        self.selected_accent = (
+            accent if accent in ACCENTS or accent in (THEME_DEFAULT_ACCENT, CUSTOM_ACCENT)
+            else THEME_DEFAULT_ACCENT
+        )
+        self.custom_accent = values.get("custom_accent") or "#2563EB"
+        self.refresh_appearance()
         self.last_backup_label.setText(values.get("last_backup_at") or "Never")
         self.saved_label.setText("")
 
@@ -621,6 +773,9 @@ class SettingPage(QWidget):
             else:
                 values[key] = widget.text().strip()
         values["shop_logo"] = self.logo_path
+        values["theme"] = self.selected_theme
+        values["accent_color"] = self.selected_accent
+        values["custom_accent"] = self.custom_accent
         return values
 
     def validate(self, values):
@@ -642,15 +797,20 @@ class SettingPage(QWidget):
             QMessageBox.warning(self, "Please check", problem)
             return False
 
-        appearance_before = (settings_service.get("accent_color"), settings_service.get("font_size"))
+        keys = ("theme", "accent_color", "custom_accent", "font_size")
+        before = tuple(settings_service.get(key) for key in keys)
 
         settings_service.set_many(values)
 
-        if (values["accent_color"], values["font_size"]) != appearance_before:
-            apply_theme(QApplication.instance())
-
         self.saved_label.setText(f"Saved at {time.strftime('%I:%M %p')}")
         self.settingsSaved.emit()
+
+        if tuple(values[key] for key in keys) != before:
+            # New colours: restyle, then the main window rebuilds itself so
+            # every icon and chart picks up the new theme too
+            apply_theme(QApplication.instance())
+            self.appearanceChanged.emit()
+            return True
 
         if not silent:
             QMessageBox.information(self, "Settings", "Settings saved.")

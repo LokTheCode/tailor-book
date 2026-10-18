@@ -1,4 +1,5 @@
 import qtawesome as qta
+from utils.theme import theme_color
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QPainterPath, QPixmap
 from PySide6.QtWidgets import QFileDialog, QFrame, QLabel, QPushButton, QVBoxLayout
@@ -32,7 +33,7 @@ class PhotoCard(QFrame):
         root.addWidget(self.image, alignment=Qt.AlignCenter)
 
         upload = QPushButton(" Upload Photo")
-        upload.setIcon(qta.icon("fa5s.camera", color="white"))
+        upload.setIcon(qta.icon("fa5s.camera", color=theme_color("text")))
         upload.clicked.connect(self.select_photo)
         root.addWidget(upload)
 

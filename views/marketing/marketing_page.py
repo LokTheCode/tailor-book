@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
 )
 
 import qtawesome as qta
+from utils.theme import theme_color
 
 from data.customer_crud import CUSTOMER_TYPES
 from services import notification_service as notify
@@ -224,7 +225,7 @@ class MarketingPage(QWidget):
         history_header.addWidget(history_title)
         history_header.addStretch()
         refresh = QPushButton(" Refresh")
-        refresh.setIcon(qta.icon("fa5s.sync-alt", color="white"))
+        refresh.setIcon(qta.icon("fa5s.sync-alt", color=theme_color("text")))
         refresh.clicked.connect(self.refresh_logs)
         history_header.addWidget(refresh)
         history_layout.addLayout(history_header)
@@ -305,7 +306,7 @@ class MarketingPage(QWidget):
                 item = QTableWidgetItem(value)
                 item.setToolTip(log["detail"] or value)
                 if c == 5:
-                    item.setForeground(QColor("#10B981" if log["status"] == "sent" else "#F87171"))
+                    item.setForeground(QColor(theme_color("success_text" if log["status"] == "sent" else "danger_text")))
                 self.logs.setItem(r, c, item)
 
     # ======================================================

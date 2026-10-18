@@ -1,5 +1,6 @@
 import sys
 
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
 from database.database import init_db
@@ -55,11 +56,48 @@ class AppManager:
             user=user
         )
 
-        self.dashboard_window.logoutRequested.connect(
-            self.logout
-        )
+        self.connect_dashboard(self.dashboard_window)
 
         self.dashboard_window.show()
+
+    def connect_dashboard(self, window):
+        window.logoutRequested.connect(self.logout)
+        # Wait until Settings has finished saving before rebuilding
+        window.appearanceChanged.connect(
+            lambda: QTimer.singleShot(0, self.rebuild_dashboard)
+        )
+
+    # ======================================================
+    # THEME CHANGE
+    # ======================================================
+
+    def rebuild_dashboard(self):
+        """Re-create the main window in the new theme, back on Appearance."""
+
+        old = self.dashboard_window
+        if old is None:
+            return
+
+        user = UserService.get(old.user["id"]) or old.user
+
+        new = DashboardWindow(user=user)
+        self.connect_dashboard(new)
+
+        new.restoreGeometry(old.saveGeometry())
+        new.show_page("settings")
+        new.pages["settings"].open_section("Appearance")
+        new.pages["settings"].saved_label.setText("Theme applied")
+
+        if old.isMaximized():
+            new.showMaximized()
+        else:
+            new.show()
+
+        # Show the new window before closing the old one, so the app
+        # never has zero windows open
+        self.dashboard_window = new
+        old.close()
+        old.deleteLater()
 
     # ======================================================
     # LOGOUT

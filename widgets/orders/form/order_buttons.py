@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal
 
 import qtawesome as qta
+from utils.theme import theme_color
 
 
 class OrderButtons(QFrame):
@@ -46,7 +47,7 @@ class OrderButtons(QFrame):
         self.previewBtn = QPushButton(
             qta.icon(
                 "fa5s.eye",
-                color="white"
+                color=theme_color("text")
             ),
             " Preview"
         )
@@ -56,7 +57,7 @@ class OrderButtons(QFrame):
         self.invoiceBtn = QPushButton(
             qta.icon(
                 "fa5s.file-invoice",
-                color="white"
+                color=theme_color("text")
             ),
             " Invoice"
         )
