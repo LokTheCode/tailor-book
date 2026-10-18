@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal
 
 import qtawesome as qta
+from utils.theme import theme_color
 
 
 class OrderPagination(QFrame):
@@ -73,7 +74,7 @@ class OrderPagination(QFrame):
         self.first.setIcon(
             qta.icon(
                 "fa5s.angle-double-left",
-                color="white"
+                color=theme_color("text")
             )
         )
 
@@ -90,7 +91,7 @@ class OrderPagination(QFrame):
         self.previous.setIcon(
             qta.icon(
                 "fa5s.angle-left",
-                color="white"
+                color=theme_color("text")
             )
         )
 
@@ -115,7 +116,7 @@ class OrderPagination(QFrame):
         self.next.setIcon(
             qta.icon(
                 "fa5s.angle-right",
-                color="white"
+                color=theme_color("text")
             )
         )
 
@@ -132,7 +133,7 @@ class OrderPagination(QFrame):
         self.last.setIcon(
             qta.icon(
                 "fa5s.angle-double-right",
-                color="white"
+                color=theme_color("text")
             )
         )
 

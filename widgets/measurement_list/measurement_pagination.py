@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal
 
 import qtawesome as qta
+from utils.theme import theme_color
 
 
 class MeasurementPagination(QFrame):
@@ -73,7 +74,7 @@ class MeasurementPagination(QFrame):
         self.first_btn.setIcon(
             qta.icon(
                 "fa5s.angle-double-left",
-                color="white"
+                color=theme_color("text")
             )
         )
 
@@ -90,7 +91,7 @@ class MeasurementPagination(QFrame):
         self.prev_btn.setIcon(
             qta.icon(
                 "fa5s.angle-left",
-                color="white"
+                color=theme_color("text")
             )
         )
 
@@ -113,7 +114,7 @@ class MeasurementPagination(QFrame):
         self.next_btn.setIcon(
             qta.icon(
                 "fa5s.angle-right",
-                color="white"
+                color=theme_color("text")
             )
         )
 
@@ -130,7 +131,7 @@ class MeasurementPagination(QFrame):
         self.last_btn.setIcon(
             qta.icon(
                 "fa5s.angle-double-right",
-                color="white"
+                color=theme_color("text")
             )
         )
 

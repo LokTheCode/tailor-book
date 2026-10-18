@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 
 import qtawesome as qta
+from utils.theme import theme_color
 
 
 class CustomerHeader(QWidget):
@@ -68,7 +69,7 @@ class CustomerHeader(QWidget):
         refresh.setIcon(
             qta.icon(
                 "fa5s.sync-alt",
-                color="white"
+                color=theme_color("text")
             )
         )
 
@@ -87,7 +88,7 @@ class CustomerHeader(QWidget):
         export.setIcon(
             qta.icon(
                 "fa5s.file-export",
-                color="white"
+                color=theme_color("text")
             )
         )
 

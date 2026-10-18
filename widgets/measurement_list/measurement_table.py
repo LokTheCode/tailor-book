@@ -16,6 +16,7 @@ from PySide6.QtCore import (
 )
 
 import qtawesome as qta
+from utils.theme import theme_color
 
 
 class MeasurementTable(QFrame):
@@ -194,7 +195,7 @@ class MeasurementTable(QFrame):
             edit_btn.setIcon(
                 qta.icon(
                     "fa5s.edit",
-                    color="white",
+                    color=theme_color("text"),
                 )
             )
 
@@ -211,7 +212,7 @@ class MeasurementTable(QFrame):
             delete_btn.setIcon(
                 qta.icon(
                     "fa5s.trash",
-                    color="white",
+                    color=theme_color("text"),
                 )
             )
 

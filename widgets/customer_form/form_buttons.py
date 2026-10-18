@@ -1,4 +1,5 @@
 import qtawesome as qta
+from utils.theme import theme_color
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QPushButton
 
@@ -25,7 +26,7 @@ class FormButtons(QFrame):
         layout.addStretch()
 
         self.cancel = QPushButton(" Cancel")
-        self.cancel.setIcon(qta.icon("fa5s.times", color="white"))
+        self.cancel.setIcon(qta.icon("fa5s.times", color=theme_color("text")))
         self.cancel.clicked.connect(self.cancelClicked.emit)
         layout.addWidget(self.cancel)
 

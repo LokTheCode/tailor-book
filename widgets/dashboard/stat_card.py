@@ -10,6 +10,7 @@ from PySide6.QtGui import QColor, QFont
 from PySide6.QtCore import Qt
 
 import qtawesome as qta
+from utils.theme import is_dark
 
 
 class StatCard(QFrame):
@@ -55,7 +56,8 @@ class StatCard(QFrame):
         shadow.setOffset(0,8)
 
         shadow.setColor(
-            QColor(0,0,0,160)
+            # Softer shadow on light themes
+            QColor(0, 0, 0, 160 if is_dark() else 45)
         )
 
         self.setGraphicsEffect(shadow)

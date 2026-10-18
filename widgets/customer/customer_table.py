@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor
 import qtawesome as qta
+from utils.theme import theme_color
 from typing import List
 from data.customer_data import CustomerRowData
 from utils.table import fit_column, setup_table
@@ -74,7 +75,7 @@ class CustomerTable(QFrame):
             item_pending = QTableWidgetItem(f"₹{c.pending_amount:,.2f}")
             item_pending.setTextAlignment(Qt.AlignCenter)
             if c.pending_amount > 0:
-                item_pending.setForeground(QColor("#F87171"))
+                item_pending.setForeground(QColor(theme_color("danger_text")))
             self.table.setItem(row, 4, item_pending)
 
             # Last Visit
@@ -86,9 +87,9 @@ class CustomerTable(QFrame):
             item_status = QTableWidgetItem(c.status)
             item_status.setTextAlignment(Qt.AlignCenter)
             if c.status.lower() == "active":
-                item_status.setForeground(QColor("#10B981"))
+                item_status.setForeground(QColor(theme_color("success_text")))
             else:
-                item_status.setForeground(QColor("#9CA3AF"))
+                item_status.setForeground(QColor(theme_color("muted")))
             self.table.setItem(row, 6, item_status)
 
             # Measurements

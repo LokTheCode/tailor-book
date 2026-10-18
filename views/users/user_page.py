@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 import qtawesome as qta
+from utils.theme import theme_color
 
 from services.user_service import PAGES, UserError, UserService, manageable_roles
 from views.users.user_dialog import UserDialog
@@ -70,7 +71,7 @@ class UserPage(QWidget):
         header_layout.addStretch()
 
         refresh = QPushButton(" Refresh")
-        refresh.setIcon(qta.icon("fa5s.sync-alt", color="white"))
+        refresh.setIcon(qta.icon("fa5s.sync-alt", color=theme_color("text")))
         refresh.clicked.connect(self.refresh)
         header_layout.addWidget(refresh)
 
@@ -146,7 +147,7 @@ class UserPage(QWidget):
                 item = QTableWidgetItem(value)
                 item.setToolTip(value)
                 if column == 5:
-                    item.setForeground(QColor("#10B981" if user["is_active"] else "#9CA3AF"))
+                    item.setForeground(QColor(theme_color("success_text" if user["is_active"] else "muted")))
                 self.table.setItem(row, column, item)
 
             self.table.setCellWidget(row, 6, self._actions(user))

@@ -93,7 +93,9 @@ DEFAULTS = {
     "garment_types": ("Shirt, Pant, Suit, Blazer, Kurta, Sherwani", "Garment types"),
 
     # ---------------- Appearance ----------------
-    "accent_color": ("Blue", "Blue, Purple, Green, Orange or Pink"),
+    "theme": ("Midnight", "Colour theme (utils/theme.py THEMES)"),
+    "accent_color": ("Theme default", "Theme default, a named accent, or Custom"),
+    "custom_accent": ("#2563EB", "Colour used when the accent is Custom"),
     "font_size": ("Normal", "Small, Normal or Large"),
 }
 
