@@ -11,7 +11,7 @@ from database.database import DB_PATH as APP_DB_PATH
 # ==========================================================
 
 # Use the same database file that init_db() creates
-# (%LOCALAPPDATA%\TailorManagement\tailor.db on Windows)
+# (%LOCALAPPDATA%\TailorBook\tailor.db on Windows)
 DB_PATH = Path(APP_DB_PATH)
 
 

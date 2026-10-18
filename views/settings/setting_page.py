@@ -1,7 +1,6 @@
 """Settings: every section saves to the settings table (services/settings_service)."""
 
 import shutil
-import sys
 import time
 from pathlib import Path
 
@@ -39,7 +38,16 @@ from PySide6.QtWidgets import (
 
 import qtawesome as qta
 
-from config import APP_NAME, APP_VERSION
+from config import (
+    APP_NAME,
+    APP_PUBLISHER,
+    APP_TAGLINE,
+    APP_VERSION,
+    APP_WEBSITE,
+    SUPPORT_EMAIL,
+    SUPPORT_PHONE,
+)
+from utils.brand import logo_pixmap
 from database.database import DB_PATH
 from services import backup_service, notification_service, settings_service
 from utils.shortcuts import SHORTCUTS
@@ -296,7 +304,7 @@ class SettingPage(QWidget):
             "Used in WhatsApp/email messages ({shop_name}, {shop_phone}, {shop_address}) and on invoices.",
         )
         form = self._card(layout)
-        self._line(form, "shop_name", "Shop name", "Dev Tailors")
+        self._line(form, "shop_name", "Shop name", "e.g. Sharma Tailors")
         self._line(form, "shop_owner", "Owner name")
         self._line(form, "shop_phone", "Phone", "9876543210")
         self._line(form, "shop_email", "Email", "shop@example.com")
@@ -493,7 +501,7 @@ class SettingPage(QWidget):
         form = self._card(layout, "Backup settings")
         folder_row = QHBoxLayout()
         folder = QLineEdit()
-        folder.setPlaceholderText(str(Path.home() / "Documents" / "TailorBackups"))
+        folder.setPlaceholderText(str(backup_service.backup_folder()))
         self.bindings["backup_folder"] = folder
         browse = QPushButton("Browse")
         browse.clicked.connect(self.choose_backup_folder)
@@ -720,9 +728,37 @@ class SettingPage(QWidget):
 
     def build_about(self):
         page, layout = self._section("About", "")
-        form = self._card(layout, APP_NAME)
+
+        # Product header: logo, name, tagline
+        header = QFrame()
+        header.setObjectName("Card")
+        header_layout = QHBoxLayout(header)
+        header_layout.setContentsMargins(24, 20, 24, 20)
+        header_layout.setSpacing(18)
+        logo = QLabel()
+        logo.setPixmap(logo_pixmap(88))
+        header_layout.addWidget(logo)
+        names = QVBoxLayout()
+        name = QLabel(APP_NAME)
+        name.setObjectName("PageTitle")
+        tagline = QLabel(APP_TAGLINE)
+        tagline.setObjectName("PageSubtitle")
+        names.addStretch()
+        names.addWidget(name)
+        names.addWidget(tagline)
+        names.addStretch()
+        header_layout.addLayout(names, 1)
+        layout.addWidget(header)
+
+        form = self._card(layout, "Details")
         form.addRow(self._label("Version"), QLabel(APP_VERSION))
-        form.addRow(self._label("Python"), QLabel(sys.version.split()[0]))
+        form.addRow(self._label("Publisher"), QLabel(APP_PUBLISHER))
+        for label, value in (("Website", APP_WEBSITE), ("Support phone", SUPPORT_PHONE),
+                             ("Support email", SUPPORT_EMAIL)):
+            if value:
+                text = QLabel(value)
+                text.setTextInteractionFlags(Qt.TextSelectableByMouse)
+                form.addRow(self._label(label), text)
 
         data_row = QHBoxLayout()
         data_label = QLabel(str(DATA_DIR))

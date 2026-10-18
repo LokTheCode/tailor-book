@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 
 from services.user_service import PAGES, can_open
 from utils.screen import fit_to_screen
+from utils.brand import app_icon, shop_name, window_title
 from widgets.sidebar import Sidebar
 from widgets.topbar import TopBar
 
@@ -45,7 +46,8 @@ class DashboardWindow(QMainWindow):
         # Logged-in user dict from UserService (id, name, email, role, permissions)
         self.user = user
 
-        self.setWindowTitle("Dev Tailor ERP")
+        self.setWindowTitle(window_title())
+        self.setWindowIcon(app_icon())
         # Fits any screen; AppManager then opens it maximised
         fit_to_screen(self)
 
@@ -141,6 +143,8 @@ class DashboardWindow(QMainWindow):
 
         if "settings" in self.pages:
             self.pages["settings"].appearanceChanged.connect(self.appearanceChanged.emit)
+            # A new shop name shows straight away in the sidebar and title
+            self.pages["settings"].settingsSaved.connect(self.refresh_shop_name)
 
         if allowed:
             self.show_page(allowed[0])
@@ -252,6 +256,10 @@ class DashboardWindow(QMainWindow):
         QMessageBox.information(self, "Keyboard shortcuts", f"<table>{rows}</table>")
 
     # ----------------------------------------------------
+
+    def refresh_shop_name(self):
+        self.sidebar.set_shop_name(shop_name())
+        self.setWindowTitle(window_title())
 
     def show_page(self, key):
 

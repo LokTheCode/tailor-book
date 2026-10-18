@@ -2,11 +2,15 @@ from PySide6.QtWidgets import (
     QWidget,
     QPushButton,
     QLabel,
+    QHBoxLayout,
     QVBoxLayout
 )
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
+
+from config import APP_NAME
+from utils.brand import logo_pixmap, shop_name
 
 import qtawesome as qta
 
@@ -117,15 +121,32 @@ class Sidebar(QWidget):
 
         layout.setSpacing(10)
 
-        logo = QLabel("Dev Tailor ERP")
+        # Header: product icon, the customer's shop name, product caption
+        header = QHBoxLayout()
+        header.setSpacing(10)
+        header.setContentsMargins(6, 4, 0, 4)
 
-        logo.setObjectName("SidebarLogo")
+        icon = QLabel()
+        icon.setPixmap(logo_pixmap(40))
+        icon.setFixedSize(40, 40)
+        header.addWidget(icon, 0, Qt.AlignTop)
 
-        logo.setAlignment(Qt.AlignCenter)
+        names = QVBoxLayout()
+        names.setSpacing(0)
 
-        logo.setFont(QFont("Segoe UI",16,QFont.Bold))
+        self.shop_label = QLabel()
+        self.shop_label.setObjectName("SidebarLogo")
+        self.shop_label.setWordWrap(True)
+        names.addWidget(self.shop_label)
 
-        layout.addWidget(logo)
+        product = QLabel(APP_NAME)
+        product.setObjectName("SidebarProduct")
+        names.addWidget(product)
+
+        header.addLayout(names, 1)
+        layout.addLayout(header)
+
+        self.set_shop_name(shop_name())
 
         layout.addSpacing(20)
 
@@ -168,3 +189,10 @@ class Sidebar(QWidget):
             button.style().unpolish(button)
             button.style().polish(button)
             button.update()
+
+    # ------------------------------------------------------
+
+    def set_shop_name(self, name):
+        """Show the customer's shop name (Settings > Shop Details)."""
+        self.shop_label.setText(name)
+        self.shop_label.setToolTip(name)

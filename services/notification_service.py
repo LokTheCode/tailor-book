@@ -36,6 +36,7 @@ from database.database import SessionLocal
 from models.customer import Customer
 from models.message_log import MessageLog
 from models.order import Order
+from config import APP_NAME
 from services import settings_service
 
 EVENTS = {
@@ -162,7 +163,7 @@ def send_whatsapp(phone: str, user_name: str, campaign: str, params: list[str]):
         "destination": phone,
         "userName": user_name or "Customer",
         "templateParams": params,
-        "source": "Tailor ERP",
+        "source": APP_NAME,
     }
 
     request = urllib.request.Request(

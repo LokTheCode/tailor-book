@@ -26,6 +26,9 @@ import qtawesome as qta
 
 from services.user_service import UserService
 from utils.screen import fit_to_screen
+from utils.brand import app_icon, asset, logo_pixmap
+from config import APP_NAME, APP_TAGLINE, APP_VERSION, APP_WEBSITE, SUPPORT_EMAIL, SUPPORT_PHONE
+from datetime import date
 
 
 class LoginWindow(QWidget):
@@ -36,7 +39,8 @@ class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Dev Tailor ERP")
+        self.setWindowTitle(APP_NAME)
+        self.setWindowIcon(app_icon())
         # Fits any screen; AppManager then opens it maximised
         fit_to_screen(self, min_width=760, min_height=700)
 
@@ -55,7 +59,7 @@ class LoginWindow(QWidget):
 
     def create_background(self):
         palette = QPalette()
-        bg = QPixmap("assets/images/tailor_bg.png")
+        bg = QPixmap(asset("assets/images/tailor_bg.png"))
 
         palette.setBrush(
             QPalette.Window,
@@ -75,7 +79,7 @@ class LoginWindow(QWidget):
         super().resizeEvent(event)
 
         palette = QPalette()
-        bg = QPixmap("assets/images/tailor_bg.png")
+        bg = QPixmap(asset("assets/images/tailor_bg.png"))
 
         palette.setBrush(
             QPalette.Window,
@@ -120,13 +124,19 @@ class LoginWindow(QWidget):
         self.card_layout.setAlignment(Qt.AlignTop)
 
     def create_header(self):
-        title = QLabel("Welcome to Dev Tailor")
+        logo = QLabel()
+        logo.setPixmap(logo_pixmap(72))
+        logo.setAlignment(Qt.AlignCenter)
+        self.card_layout.addWidget(logo)
+        self.card_layout.addSpacing(4)
+
+        title = QLabel(f"Welcome to {APP_NAME}")
         title.setObjectName("LoginTitle")
         title.setAlignment(Qt.AlignCenter)
         title.setFont(QFont("Segoe UI", 22, QFont.Bold))
         self.card_layout.addWidget(title)
 
-        subtitle = QLabel("Smart Tailoring Management System")
+        subtitle = QLabel(APP_TAGLINE)
         subtitle.setObjectName("LoginSubtitle")
         subtitle.setAlignment(Qt.AlignCenter)
         subtitle.setFont(QFont("Segoe UI", 12))
@@ -200,6 +210,7 @@ class LoginWindow(QWidget):
         forgot = QLabel("<a href='#'>Forgot Password?</a>")
         forgot.setObjectName("LoginLink")
         forgot.setOpenExternalLinks(False)
+        forgot.linkActivated.connect(self.forgot_password)
 
         row.addWidget(forgot)
 
@@ -258,55 +269,33 @@ class LoginWindow(QWidget):
             )
 
     def create_social_section(self):
+        """Product support details (config.py), shown when filled in."""
         self.card_layout.addStretch()
 
-        divider = QLabel("──────────── OR ────────────")
-        divider.setObjectName("LoginDivider")
-        divider.setAlignment(Qt.AlignCenter)
-        self.card_layout.addWidget(divider)
+        contacts = [x for x in (SUPPORT_PHONE, SUPPORT_EMAIL, APP_WEBSITE) if x]
+        if not contacts:
+            return
 
-        title = QLabel("Connect With Us")
-        title.setObjectName("LoginFooter")
-        title.setAlignment(Qt.AlignCenter)
-        self.card_layout.addWidget(title)
-        self.card_layout.addSpacing(15)
+        support = QLabel("Need help?  " + "  ·  ".join(contacts))
+        support.setObjectName("LoginFooter")
+        support.setAlignment(Qt.AlignCenter)
+        support.setWordWrap(True)
+        support.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.card_layout.addWidget(support)
 
-        social = QHBoxLayout()
-        social.setSpacing(20)
-        social.setAlignment(Qt.AlignCenter)
-
-        # Brand colours live in theme.qss (QPushButton#SocialButton[brand=...])
-        icons = [
-            ("fa5b.facebook-f", "facebook"),
-            ("fa5b.instagram", "instagram"),
-            ("fa5b.linkedin-in", "linkedin"),
-            ("fa5s.globe", "website")
-        ]
-
-        for icon_name, brand in icons:
-            btn = QPushButton()
-            btn.setObjectName("SocialButton")
-            btn.setProperty("brand", brand)
-            btn.setFixedSize(48, 48)
-            btn.setIcon(
-                qta.icon(icon_name, color="white")
-            )
-            btn.setIconSize(btn.size() * 0.45)
-            btn.setCursor(Qt.PointingHandCursor)
-
-            shadow = QGraphicsDropShadowEffect()
-            shadow.setBlurRadius(18)
-            shadow.setOffset(0, 4)
-            shadow.setColor(QColor(0, 0, 0, 120))
-
-            btn.setGraphicsEffect(shadow)
-            social.addWidget(btn)
-
-        self.card_layout.addLayout(social)
-        self.card_layout.addSpacing(20)
+    def forgot_password(self, *_):
+        QMessageBox.information(
+            self,
+            "Forgot password",
+            "Ask your shop's main administrator to set a new password for you "
+            "in Users (edit your account and type a new password).\n\n"
+            "If you are the main administrator and can't log in, contact "
+            f"{APP_NAME} support"
+            + (f": {SUPPORT_PHONE or SUPPORT_EMAIL}" if (SUPPORT_PHONE or SUPPORT_EMAIL) else ".")
+        )
 
     def create_footer(self):
-        footer = QLabel("© 2026 Dev Tailor ERP")
+        footer = QLabel(f"© {date.today().year} {APP_NAME}  ·  Version {APP_VERSION}")
         footer.setAlignment(Qt.AlignCenter)
         footer.setObjectName("LoginFooter")
         self.card_layout.addSpacing(20)
