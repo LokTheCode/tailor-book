@@ -5,20 +5,69 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-def get_db_path() -> str:
-    """Returns absolute path to store tailor.db safely in user AppData folder."""
-    if sys.platform == "win32":
-        # %LOCALAPPDATA%\TailorManagement
-        base_dir = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
-    elif sys.platform == "darwin":
-        # ~/Library/Application Support/TailorManagement
-        base_dir = Path.home() / "Library" / "Application Support"
-    else:
-        # Linux / Unix
-        base_dir = Path.home() / ".config"
+# Folder used before the app was renamed to Tailor Book
+OLD_DATA_FOLDER_NAME = "TailorManagement"
 
-    app_dir = base_dir / "TailorManagement"
-    app_dir.mkdir(parents=True, exist_ok=True)  # Creates folder if it doesn't exist
+
+def _base_dir() -> Path:
+    if sys.platform == "win32":
+        return Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+    if sys.platform == "darwin":
+        return Path.home() / "Library" / "Application Support"
+    return Path.home() / ".config"
+
+
+def _move_old_data(old_dir: Path, new_dir: Path) -> None:
+    """One-time copy of data from the old folder into the new one.
+
+    The old folder is left untouched as a safety copy. File paths saved
+    in the database (customer photos, shop logo) are updated to point at
+    the new folder.
+    """
+    import shutil
+    import sqlite3
+
+    shutil.copytree(old_dir, new_dir)
+
+    db_file = new_dir / "tailor.db"
+    old_prefix, new_prefix = str(old_dir), str(new_dir)
+    try:
+        conn = sqlite3.connect(db_file)
+        with conn:
+            conn.execute(
+                "UPDATE customers SET photo = REPLACE(photo, ?, ?) WHERE photo LIKE ?",
+                (old_prefix, new_prefix, old_prefix + "%"),
+            )
+            conn.execute(
+                "UPDATE settings SET value = REPLACE(value, ?, ?) WHERE key = 'shop_logo' AND value LIKE ?",
+                (old_prefix, new_prefix, old_prefix + "%"),
+            )
+        conn.close()
+    except sqlite3.Error as error:
+        # Paths still work: the old folder (and its photos) is kept
+        print(f"Could not update saved file paths: {error}")
+
+
+def get_db_path() -> str:
+    r"""Path of tailor.db in the user's app-data folder.
+
+    Windows: %LOCALAPPDATA%\TailorBook\tailor.db
+    """
+    from config import DATA_FOLDER_NAME
+
+    base_dir = _base_dir()
+    app_dir = base_dir / DATA_FOLDER_NAME
+    old_dir = base_dir / OLD_DATA_FOLDER_NAME
+
+    if not app_dir.exists() and (old_dir / "tailor.db").exists():
+        try:
+            _move_old_data(old_dir, app_dir)
+        except OSError as error:
+            # Couldn't copy: keep using the old folder rather than start empty
+            print(f"Using old data folder ({error})")
+            return str(old_dir / "tailor.db")
+
+    app_dir.mkdir(parents=True, exist_ok=True)
     return str(app_dir / "tailor.db")
 
 

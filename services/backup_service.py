@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 from database.database import DB_PATH, engine
+from config import APP_NAME
 from services import settings_service
 
 DATA_DIR = Path(DB_PATH).parent
@@ -26,7 +27,13 @@ class BackupError(Exception):
 
 def backup_folder() -> Path:
     folder = settings_service.get("backup_folder").strip()
-    path = Path(folder) if folder else Path.home() / "Documents" / "TailorBackups"
+    if folder:
+        path = Path(folder)
+    else:
+        path = Path.home() / "Documents" / f"{APP_NAME} Backups"
+        old = Path.home() / "Documents" / "TailorBackups"  # before the rename
+        if old.is_dir() and not path.exists():
+            path = old  # keep existing backups in one place
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -113,7 +120,7 @@ def restore(zip_path: str) -> Path:
         with zipfile.ZipFile(zip_path) as archive:
             names = archive.namelist()
             if "tailor.db" not in names:
-                raise BackupError("This file is not a Tailor ERP backup (tailor.db is missing).")
+                raise BackupError(f"This file is not a {APP_NAME} backup (tailor.db is missing).")
 
             with tempfile.TemporaryDirectory() as tmp:
                 archive.extract("tailor.db", tmp)

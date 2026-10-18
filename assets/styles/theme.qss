@@ -1,5 +1,5 @@
 /* ==========================================================
-   Dev Tailor ERP - shared stylesheet
+   Tailor Book - shared stylesheet
    ----------------------------------------------------------
    This is the ONLY stylesheet in the app. utils/theme.py loads it
    once and replaces every @name below with the colour of the chosen
@@ -682,9 +682,13 @@ QWidget#Sidebar {
 
 QLabel#SidebarLogo {
     color: @sidebar_strong;
-    font-size: 22px;
+    font-size: 16px;
     font-weight: 700;
-    padding: 20px;
+}
+
+QLabel#SidebarProduct {
+    color: @sidebar_text;
+    font-size: 11px;
 }
 
 QPushButton#MenuButton {

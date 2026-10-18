@@ -23,7 +23,7 @@ GENDERS = ["Male", "Female", "Other"]
 
 # Customer photos are copied here so they survive the original file
 # being moved or deleted (next to tailor.db, e.g.
-# %LOCALAPPDATA%\TailorManagement\customer_photos on Windows)
+# %LOCALAPPDATA%\TailorBook\customer_photos on Windows)
 PHOTO_DIR = Path(DB_PATH).parent / "customer_photos"
 
 MOBILE_PATTERN = re.compile(r"^\d{10}$")

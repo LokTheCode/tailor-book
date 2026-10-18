@@ -15,7 +15,7 @@ DEFAULTS = {
     "rows_per_page": ("10", "Default rows per page in lists"),
 
     # ---------------- Shop details ----------------
-    "shop_name": ("Dev Tailors", "Name of the tailoring shop"),
+    "shop_name": ("My Tailor Shop", "Name of the tailoring shop (shown in the sidebar, invoices, messages)"),
     "shop_owner": ("", "Owner name"),
     "shop_phone": ("", "Contact phone number"),
     "shop_email": ("", "Contact email address"),
@@ -81,7 +81,7 @@ DEFAULTS = {
     "notify_order_delivered_email": ("0", "Email when an order is delivered"),
 
     # ---------------- Backup ----------------
-    "backup_folder": ("", "Folder for backups (empty = Documents\\TailorBackups)"),
+    "backup_folder": ("", "Folder for backups (empty = Documents\\Tailor Book Backups)"),
     "backup_daily": ("1", "Make one automatic backup every day"),
     "last_auto_backup_date": ("", "Date of the last daily backup (YYYY-MM-DD)"),
     "backup_on_exit": ("1", "Make a backup when the app closes"),

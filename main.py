@@ -13,6 +13,8 @@ from models.admin import Admin
 from database.database import SessionLocal
 from sqlalchemy import func
 from utils.theme import apply_theme
+from utils.brand import app_icon
+from config import APP_NAME, APP_PUBLISHER, APP_VERSION
 
 
 # ==========================================================
@@ -131,7 +133,19 @@ def main():
     # APPLICATION
     # ======================================================
 
+    # Windows: show the Tailor Book icon in the taskbar (not Python's)
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("TailorBook.Desktop")
+        except Exception:
+            pass
+
     app = QApplication(sys.argv)
+    app.setApplicationName(APP_NAME)
+    app.setApplicationVersion(APP_VERSION)
+    app.setOrganizationName(APP_PUBLISHER)
+    app.setWindowIcon(app_icon())
 
     # One shared theme (assets/styles/theme.qss) for every window
     apply_theme(app)
