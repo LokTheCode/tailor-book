@@ -11,7 +11,7 @@ class OrderStatusChart(QFrame):
         self.build_ui()
 
     def build_ui(self):
-        self.setMinimumWidth(360)
+        self.setMinimumWidth(300)
         self.setMinimumHeight(380)
         self.setObjectName("Card")
 

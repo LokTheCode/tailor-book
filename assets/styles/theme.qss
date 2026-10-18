@@ -396,9 +396,9 @@ QListWidget {
 
 QListWidget::item {
     color: @text_soft;
-    padding: 10px;
+    padding: 8px 10px;
+    border: none;
     border-radius: 8px;
-    margin: 2px 0;
 }
 
 QListWidget::item:hover {
@@ -408,6 +408,22 @@ QListWidget::item:hover {
 QListWidget::item:selected {
     background: @accent;
     color: @on_accent;
+}
+
+/* Settings section menu: no inner box, just the items */
+QListWidget#SettingsMenu {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+QListWidget#SettingsMenu::item {
+    padding: 0 12px;
+    font-size: 14px;
+}
+
+QListWidget#SettingsMenu::item:selected {
+    font-weight: 600;
 }
 
 

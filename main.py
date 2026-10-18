@@ -39,7 +39,8 @@ class AppManager:
         self.login_window.login_successful.connect(
             self.show_dashboard
         )
-        self.login_window.show()
+        # Open full screen on whatever PC / screen size it runs on
+        self.login_window.showMaximized()
 
     # ======================================================
     # DASHBOARD
@@ -58,7 +59,8 @@ class AppManager:
 
         self.connect_dashboard(self.dashboard_window)
 
-        self.dashboard_window.show()
+        # Open full screen on whatever PC / screen size it runs on
+        self.dashboard_window.showMaximized()
 
     def connect_dashboard(self, window):
         window.logoutRequested.connect(self.logout)

@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 )
 
 from services.user_service import PAGES, can_open
+from utils.screen import fit_to_screen
 from widgets.sidebar import Sidebar
 from widgets.topbar import TopBar
 
@@ -45,8 +46,8 @@ class DashboardWindow(QMainWindow):
         self.user = user
 
         self.setWindowTitle("Dev Tailor ERP")
-        self.resize(1500, 900)
-        self.setMinimumSize(1400, 850)
+        # Fits any screen; AppManager then opens it maximised
+        fit_to_screen(self)
 
         self.pages = {}
 

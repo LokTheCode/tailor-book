@@ -113,9 +113,18 @@ class SettingPage(QWidget):
         left_layout.addWidget(title)
 
         self.menu = QListWidget()
+        self.menu.setObjectName("SettingsMenu")
+        self.menu.setSpacing(2)
+        self.menu.setIconSize(QSize(18, 18))
         for name, icon in SECTIONS:
             self.menu.addItem(name)
-            self.menu.item(self.menu.count() - 1).setIcon(qta.icon(icon, color=theme_color("text_label")))
+            item = self.menu.item(self.menu.count() - 1)
+            item.setSizeHint(QSize(0, 40))
+            item.setIcon(qta.icon(
+                icon,
+                color=theme_color("text_label"),
+                color_selected=theme_color("on_accent"),
+            ))
         left_layout.addWidget(self.menu)
         root.addWidget(left)
 
@@ -624,6 +633,15 @@ class SettingPage(QWidget):
         form = self._card(layout, "Text")
         self._combo(form, "font_size", "Text size", list(FONT_SCALES))
 
+        reset = QPushButton(" Restore default look")
+        reset.setIcon(qta.icon("fa5s.undo-alt", color=theme_color("text")))
+        reset.setToolTip("Midnight (dark) theme, its own accent colour, normal text")
+        reset.clicked.connect(self.restore_default_look)
+        reset_row = QHBoxLayout()
+        reset_row.addWidget(reset)
+        reset_row.addStretch()
+        layout.addLayout(reset_row)
+
         layout.addStretch()
         return page
 
@@ -660,6 +678,13 @@ class SettingPage(QWidget):
             else:
                 shades = ACCENTS[name]
             button.setIcon(QIcon(accent_swatch(shades[0], shades[1])))
+
+    def restore_default_look(self):
+        """Back to the dark Midnight theme (click Save to apply)."""
+        self.selected_theme = DEFAULT_THEME
+        self.selected_accent = THEME_DEFAULT_ACCENT
+        self.bindings["font_size"].setCurrentText("Normal")
+        self.refresh_appearance()
 
     def open_section(self, name):
         """Show a section by name, e.g. open_section("Appearance")."""
