@@ -31,5 +31,5 @@ DATA_FOLDER_NAME = "TailorBook"
 # When LICENSE_PUBLIC_KEY is set (and always in the built .exe) the app asks
 # for a license key before the login screen. Leave both empty while you
 # develop from source.
-LICENSE_SERVER_URL = ""   # e.g. "https://www.yourdomain.in"
-LICENSE_PUBLIC_KEY = ""   # 64 hex characters
+LICENSE_SERVER_URL = "https://jeetnetwork.in/tailor-project/public_html"   # e.g. "https://www.yourdomain.in"
+LICENSE_PUBLIC_KEY = "2b055a776a002a562760b2c662426a7d8aa6856f0239a54cf3a30cdeac5a750d"   # 64 hex characters
