@@ -15,8 +15,13 @@ url = getattr(config, "LICENSE_SERVER_URL", "")
 key = getattr(config, "LICENSE_PUBLIC_KEY", "")
 if not url.startswith("https://"):
     problems.append("config.py: set LICENSE_SERVER_URL to your website, e.g. https://www.yourdomain.in")
-if not re.fullmatch(r"[0-9a-f]{64}", key or ""):
-    problems.append("config.py: set LICENSE_PUBLIC_KEY (copy it from your website's Admin > Releases page)")
+key = (key or "").strip().lower()
+if not key:
+    problems.append("config.py: LICENSE_PUBLIC_KEY is empty. Copy it from your website's Admin > Releases page "
+                    "(dark box at the bottom). If that box shows no key, run setup.php on the website first.")
+elif not re.fullmatch(r"[0-9a-f]{64}", key):
+    problems.append(f"config.py: LICENSE_PUBLIC_KEY should be 64 characters (0-9, a-f) but has {len(key)}: "
+                    f"\"{key[:12]}...\". Copy the whole key again, inside the quotes.")
 
 iss = (ROOT / "setup.iss").read_text(encoding="utf-8")
 match = re.search(r'#define MyAppVersion "([^"]+)"', iss)

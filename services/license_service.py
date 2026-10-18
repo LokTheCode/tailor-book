@@ -70,7 +70,7 @@ def server_url():
 
 
 def public_key_hex():
-    return (getattr(config, "LICENSE_PUBLIC_KEY", "") or "").strip()
+    return (getattr(config, "LICENSE_PUBLIC_KEY", "") or "").strip().lower()
 
 
 def required():
