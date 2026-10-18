@@ -20,6 +20,7 @@ class TopBar(QWidget):
 
     changePasswordClicked = Signal()
     logoutClicked = Signal()
+    updateClicked = Signal()
 
     def __init__(self):
         super().__init__()
@@ -96,6 +97,20 @@ class TopBar(QWidget):
         self.dateLabel.setObjectName("TopBarDate")
 
         layout.addWidget(self.dateLabel)
+
+        # ------------------------------------------------
+        # Update available (hidden until a newer version is found)
+        # ------------------------------------------------
+
+        self.updateBtn = QPushButton()
+        self.updateBtn.setObjectName("Success")
+        self.updateBtn.setIcon(qta.icon("fa5s.download", color="white"))
+        self.updateBtn.setFixedHeight(42)
+        self.updateBtn.setCursor(Qt.PointingHandCursor)
+        self.updateBtn.clicked.connect(self.updateClicked.emit)
+        self.updateBtn.hide()
+
+        layout.addWidget(self.updateBtn)
 
         # ------------------------------------------------
         # Notification
@@ -175,3 +190,9 @@ class TopBar(QWidget):
         role = user.get("role_label", "")
         self.profileBtn.setText(f" {name}")
         self.profileBtn.setToolTip(f"{user.get('email', '')}\n{role}".strip())
+
+    def show_update(self, version):
+        """Show the 'Update to vX' button."""
+        self.updateBtn.setText(f" Update to v{version}")
+        self.updateBtn.setToolTip("A new version of the app is available")
+        self.updateBtn.show()

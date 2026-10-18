@@ -49,7 +49,8 @@ from config import (
 )
 from utils.brand import logo_pixmap
 from database.database import DB_PATH
-from services import backup_service, notification_service, settings_service
+from services import backup_service, license_service, notification_service, settings_service
+from utils.background import run_in_background
 from utils.shortcuts import SHORTCUTS
 from utils.theme import (
     ACCENTS,
@@ -771,8 +772,61 @@ class SettingPage(QWidget):
         form.addRow(self._label("Data folder"), data_row)
         form.addRow("", self._hint("Your database (tailor.db), customer photos and logo are stored here."))
 
+        self.build_license_card(layout)
+
         layout.addStretch()
         return page
+
+    def build_license_card(self, layout):
+        form = self._card(layout, "License and updates")
+
+        license_ = license_service.current()
+        if license_:
+            for label, value in (("Licensed to", license_.name), ("Shop", license_.shop),
+                                 ("Email", license_.email), ("License key", license_.masked_key),
+                                 ("Activated", license_.issued)):
+                if value:
+                    text = QLabel(value)
+                    text.setTextInteractionFlags(Qt.TextSelectableByMouse)
+                    form.addRow(self._label(label), text)
+        elif license_service.required():
+            form.addRow(self._label("License"), QLabel("Not activated"))
+        else:
+            form.addRow(self._label("License"), QLabel("Not needed (running from source)"))
+
+        if not license_service.server_url():
+            form.addRow("", self._hint("Update checks are off: no website is set in this copy of the app."))
+            return
+
+        update_row = QHBoxLayout()
+        self.update_status = QLabel(f"You have version {APP_VERSION}.")
+        self.update_status.setWordWrap(True)
+        self.check_updates_btn = QPushButton(" Check for updates")
+        self.check_updates_btn.setIcon(qta.icon("fa5s.sync-alt", color=theme_color("text")))
+        self.check_updates_btn.setCursor(Qt.PointingHandCursor)
+        self.check_updates_btn.clicked.connect(self.check_for_updates)
+        update_row.addWidget(self.update_status, 1)
+        update_row.addWidget(self.check_updates_btn)
+        form.addRow(self._label("Updates"), update_row)
+
+    def check_for_updates(self):
+        self.check_updates_btn.setEnabled(False)
+        self.update_status.setText("Checking...")
+
+        def done(info):
+            self.check_updates_btn.setEnabled(True)
+            if info and license_service.is_newer(info.get("version")):
+                self.update_status.setText(f"Version {info['version']} is available.")
+                from views.license.update_dialog import UpdateDialog
+                UpdateDialog(info, self).exec()
+            else:
+                self.update_status.setText(f"You have the latest version ({APP_VERSION}).")
+
+        def failed(error):
+            self.check_updates_btn.setEnabled(True)
+            self.update_status.setText(str(error))
+
+        run_in_background(license_service.latest, done, failed)
 
     # ======================================================
     # LOAD / SAVE
