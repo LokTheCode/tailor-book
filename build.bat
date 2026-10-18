@@ -39,6 +39,7 @@ echo.
 echo [4/4] Building the installer...
 set ISCC="%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe"
 if not exist %ISCC% set ISCC="%ProgramFiles%\Inno Setup 6\ISCC.exe"
+if not exist %ISCC% set ISCC="%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe"
 if not exist %ISCC% (
   echo Inno Setup 6 not found. Install it from https://jrsoftware.org/isdl.php
   echo The app itself is ready in dist\TailorBook\ - run this file again after installing.
