@@ -103,6 +103,13 @@ page_header('Download', "Download {$product} with your license key.", 'download'
       <h2>Version <?= e($release['version']) ?></h2>
       <p class="muted small">Released <?= e(nice_date($release['created_at'])) ?> · <?= e(number_format($release['size'] / 1048576, 1)) ?> MB · Windows 10 and 11 (64-bit)</p>
       <?php if ($release['notes']): ?><div style="white-space:pre-line"><?= e($release['notes']) ?></div><?php endif; ?>
+      <h3>If your browser or Windows shows a warning</h3>
+      <p>New software that few people have downloaded yet can be flagged even when it is safe. This is the official installer from us.</p>
+      <ul>
+        <li><strong>Chrome</strong> says <em>Suspicious download blocked</em>: open Downloads (Ctrl+J) and click <em>Download suspicious file</em> / <em>Keep</em>.</li>
+        <li><strong>Edge</strong>: click the <em>&hellip;</em> next to the download, then <em>Keep</em>, <em>Show more</em>, <em>Keep anyway</em>.</li>
+        <li><strong>Windows protected your PC</strong>: click <em>More info</em>, then <em>Run anyway</em>.</li>
+      </ul>
       <h3>Already installed?</h3>
       <p>Run the new installer over the old one. Your customers, orders and settings are kept. We still recommend a backup first: Settings &gt; Backup &gt; Back Up Now.</p>
       <?php if ($release['sha256']): ?><p class="muted small">SHA-256: <span class="mono" style="word-break:break-all"><?= e($release['sha256']) ?></span></p><?php endif; ?>
