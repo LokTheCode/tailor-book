@@ -9,6 +9,24 @@ function ini_bytes(string $value): int {
 }
 $maxUpload = min(ini_bytes((string)ini_get('upload_max_filesize')), ini_bytes((string)ini_get('post_max_size')));
 
+// ---- Admin download of any uploaded version (no license needed, not counted)
+if (isset($_GET['download'])) {
+    $q = db()->prepare('SELECT * FROM releases WHERE id = ?');
+    $q->execute([(int)$_GET['download']]);
+    $r = $q->fetch();
+    $path = $r ? releases_dir() . '/' . basename($r['filename']) : '';
+    if (!$r || !is_file($path)) { flash('That installer file is missing on the server.', 'error'); redirect('/admin/releases.php'); }
+    while (ob_get_level()) ob_end_clean();
+    set_time_limit(0);
+    header('Content-Type: application/vnd.microsoft.portable-executable');
+    header('Content-Disposition: attachment; filename="' . preg_replace('/[^A-Za-z0-9._-]/', '_', basename($r['filename'])) . '"');
+    header('Content-Length: ' . filesize($path));
+    header('X-Content-Type-Options: nosniff');
+    header('Cache-Control: private, no-store');
+    readfile($path);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // A too-large upload arrives with an empty $_POST (no CSRF token)
     if (empty($_POST) && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
@@ -102,8 +120,11 @@ admin_header('Releases', 'releases');
           <button class="btn btn-ghost btn-sm">Save</button>
         </form>
       </td>
-      <td>
-        <form method="post" onsubmit="return confirm('Delete version <?= e($r['version']) ?> and its file?')">
+      <td style="white-space:nowrap">
+        <?php if (is_file(releases_dir() . '/' . $r['filename'])): ?>
+          <a class="btn btn-primary btn-sm" href="<?= e(url('admin/releases.php?download=' . (int)$r['id'])) ?>">Download</a>
+        <?php endif; ?>
+        <form method="post" style="margin-top:8px" onsubmit="return confirm('Delete version <?= e($r['version']) ?> and its file?')">
           <?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
           <button class="btn btn-ghost btn-sm">Delete</button>
         </form>
